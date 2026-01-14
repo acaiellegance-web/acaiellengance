@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -12,7 +12,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
 
-    <title>Açaí Ellegance | Pedido Online</title>
+    <title>Açaí Ellegance | Encomenda Online</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -27,6 +27,7 @@
 
         .app-container { background-color: #f9fafb; min-height: 100vh; box-shadow: 0 0 40px rgba(0,0,0,0.05); }
         .bg-acai { background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 100%); }
+        .text-acai { color: #4c1d95; }
         
         .hero-bg {
             background-color: #2e1065;
@@ -39,8 +40,11 @@
         .status-open { background-color: #22c55e; box-shadow: 0 0 0 rgba(34, 197, 94, 0.4); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
         
+        .price-bump { animation: bump 0.2s ease-out; }
+        @keyframes bump { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
         input, select, textarea { font-size: 16px !important; }
-        ::-webkit-scrollbar { display: none; }
+        @media print { body * { visibility: hidden; } #receipt-modal, #receipt-modal * { visibility: visible; } #receipt-modal { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } .no-print { display: none !important; } }
     </style>
 </head>
 <body class="text-slate-800 pb-0">
@@ -56,13 +60,13 @@
                         <div id="store-indicator" class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white bg-gray-300 transition-colors duration-500"></div>
                     </div>
                     <div class="flex flex-col">
-                        <span id="header-store-name" class="font-bold text-lg leading-none text-purple-900 brand-font tracking-wide">A carregar...</span>
+                        <span id="header-store-name" class="font-bold text-lg leading-none text-purple-900 brand-font tracking-wide">Carregando...</span>
                         <span id="store-status" class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">...</span>
                     </div>
                 </div>
                 <button onclick="toggleCart(true)" class="relative group p-2.5 bg-purple-50 text-purple-700 rounded-full hover:bg-purple-100 transition-all active:bg-purple-200">
-                    <i data-lucide="shopping-bag" class="w-6 h-6 text-purple-700"></i>
-                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full hidden shadow-sm">0</span>
+                    <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full hidden shadow-sm transform scale-0 transition-transform duration-200" style="transform: scale(1)">0</span>
                 </button>
             </div>
         </header>
@@ -70,7 +74,7 @@
         <!-- Hero -->
         <section class="relative h-[340px] flex items-end pb-12 justify-center overflow-hidden hero-bg rounded-b-[3rem] shadow-xl mb-10 border-b-4 border-purple-200/20">
             <div class="absolute inset-0">
-                <img src="açai.jpeg" onerror="this.src='https://images.unsplash.com/photo-1590301157890-358015fc44b5?auto=format&fit=crop&w=800&q=80'" class="w-full h-full object-cover opacity-60 mix-blend-overlay" alt="Açaí">
+                <img src="logoacai.jpeg" onerror="this.src='https://images.unsplash.com/photo-1590301157890-358015fc44b5?auto=format&fit=crop&w=800&q=80'" class="w-full h-full object-cover opacity-60 mix-blend-overlay" alt="Açaí">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#2e1065] via-[#4c1d95]/50 to-transparent"></div>
             </div>
             <div class="relative z-20 text-center text-white px-6 fade-in">
@@ -84,6 +88,7 @@
 
         <!-- Conteúdo Principal -->
         <main class="px-4 relative z-20 space-y-10">
+            <!-- TRADICIONAIS -->
             <section>
                 <div class="flex items-center gap-3 mb-5 px-1">
                     <div class="bg-purple-100 text-purple-700 w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm transform -rotate-3">1</div>
@@ -95,6 +100,7 @@
                 <div id="traditional-container" class="grid gap-4"></div>
             </section>
 
+            <!-- GOURMET -->
             <section>
                 <div class="flex items-center gap-3 mb-5 px-1">
                     <div class="bg-pink-100 text-pink-600 w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm transform rotate-3">2</div>
@@ -106,6 +112,7 @@
                 <div id="gourmet-container" class="grid gap-4"></div>
             </section>
 
+            <!-- Observações -->
             <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
                 <label class="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase mb-3">
                     <i data-lucide="message-square" class="w-4 h-4 text-purple-500"></i> Notas da Encomenda
@@ -120,7 +127,7 @@
             </div>
         </main>
 
-        <!-- Ação Inferior -->
+        <!-- Botão Fixo Adicionar -->
         <div class="fixed bottom-0 left-0 right-0 z-30 flex justify-center w-full pointer-events-none">
             <div class="w-full max-w-md bg-white/90 backdrop-blur-xl border-t border-slate-200 shadow-[0_-10px_30px_rgba(0,0,0,0.08)] p-4 pointer-events-auto">
                 <div class="flex items-center justify-between gap-4">
@@ -138,12 +145,12 @@
         </div>
     </div>
 
-    <!-- Carrinho Lateral -->
+    <!-- Carrinho Overlay -->
     <div id="cart-overlay" class="fixed inset-0 bg-slate-900/60 z-50 invisible opacity-0 transition-all duration-300 backdrop-blur-sm flex justify-end" onclick="toggleCart(false)">
-        <div id="cart-panel" class="w-full max-w-md bg-white shadow-2xl translate-x-full cart-transition flex flex-col h-full transition-colors" onclick="event.stopPropagation()">
+        <div id="cart-panel" class="w-full max-w-md bg-white shadow-2xl translate-x-full cart-transition flex flex-col h-full" onclick="event.stopPropagation()">
             <div class="p-6 bg-acai text-white flex justify-between items-center shadow-lg relative overflow-hidden shrink-0">
                 <div class="relative z-10 w-full flex justify-between items-center">
-                    <div><h3 class="text-xl font-bold flex items-center gap-2">Meu Pedido</h3><p class="text-xs text-purple-200">Revise os seus itens</p></div>
+                    <div><h3 class="text-xl font-bold flex items-center gap-2">O Meu Pedido</h3><p class="text-xs text-purple-200">Revise os seus itens</p></div>
                     <button onclick="toggleCart(false)" class="p-2 bg-white/10 hover:bg-white/20 rounded-full transition"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>
             </div>
@@ -154,10 +161,10 @@
                 <div id="customer-form" class="mt-6 bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hidden">
                     <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3 text-xs tracking-wider uppercase"><i data-lucide="user" class="w-4 h-4 text-purple-700"></i> Dados do Cliente</h4>
                     <div class="space-y-4">
-                        <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Nome</label><input type="text" id="client-name" class="w-full mt-1 p-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-purple-500 focus:bg-white transition-colors text-base" placeholder="Seu nome completo"></div>
+                        <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Nome Completo</label><input type="text" id="client-name" class="w-full mt-1 p-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-purple-500 focus:bg-white transition-colors text-base" placeholder="Como o podemos chamar?"></div>
                         <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Telemóvel / WhatsApp</label><input type="tel" id="client-phone" class="w-full mt-1 p-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-purple-500 focus:bg-white transition-colors text-base" placeholder="9xxxxxxxx"></div>
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Entrega</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Tipo de Entrega</label>
                             <div class="grid grid-cols-2 gap-3 mt-1">
                                 <label class="cursor-pointer relative"><input type="radio" name="delivery-type" value="Retirada" class="peer hidden" onchange="toggleAddress(false)" checked><div class="p-3 text-center border-2 border-slate-100 rounded-xl text-xs font-bold text-slate-500 peer-checked:bg-purple-50 peer-checked:border-purple-500 peer-checked:text-purple-700 transition-all flex flex-col items-center gap-1 hover:bg-slate-50 uppercase"><i data-lucide="store" class="w-4 h-4"></i> No Local</div></label>
                                 <label class="cursor-pointer relative"><input type="radio" name="delivery-type" value="Entrega" class="peer hidden" onchange="toggleAddress(true)"><div class="p-3 text-center border-2 border-slate-100 rounded-xl text-xs font-bold text-slate-500 peer-checked:bg-purple-50 peer-checked:border-purple-500 peer-checked:text-purple-700 transition-all flex flex-col items-center gap-1 hover:bg-slate-50 uppercase"><i data-lucide="bike" class="w-4 h-4"></i> Entrega</div></label>
@@ -168,7 +175,7 @@
                             <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Morada Completa</label><textarea id="client-address" rows="2" class="w-full mt-1 p-3 border border-slate-200 rounded-xl bg-white text-base focus:outline-none focus:border-purple-500" placeholder="Rua, Número, Referência..."></textarea></div>
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Pagamento</label>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Método de Pagamento</label>
                             <select id="payment-method" class="w-full mt-1 p-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-purple-500 text-base" onchange="togglePayment()">
                                 <option value="" disabled selected>Escolha o pagamento...</option>
                                 <option value="Pix">Pix / Transferência</option>
@@ -195,9 +202,12 @@
 
             <div class="p-6 bg-white border-t border-slate-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] shrink-0">
                 <div class="flex justify-between items-end mb-4"><span class="text-xs font-bold text-slate-400 uppercase mb-1 block">Total Final</span><div id="cart-total" class="text-3xl font-black text-purple-900 leading-none">R$ 0,00</div></div>
-                <button onclick="sendOrder()" id="checkout-btn" class="w-full bg-green-500 text-white rounded-xl font-bold shadow-lg hover:bg-green-600 flex justify-center items-center gap-2 transition active:scale-[0.98] py-4 uppercase text-sm tracking-widest">
-                    <span>Enviar via WhatsApp</span> <i data-lucide="send" class="w-5 h-5"></i>
-                </button>
+                <div class="flex gap-3">
+                    <button onclick="openReceipt()" class="p-4 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-colors"><i data-lucide="printer" class="w-6 h-6"></i></button>
+                    <button onclick="sendOrder()" id="checkout-btn" class="flex-1 bg-green-500 text-white rounded-xl font-bold shadow-lg hover:bg-green-600 flex justify-center items-center gap-2 transition active:scale-[0.98] py-4 uppercase text-sm tracking-widest">
+                        <span>Finalizar Pedido</span> <i data-lucide="send" class="w-5 h-5"></i>
+                    </button>
+                </div>
                 <p id="closed-msg" class="text-center text-red-500 text-xs font-bold mt-3 hidden bg-red-50 py-2 rounded-lg border border-red-100 uppercase tracking-widest">Loja Fechada</p>
             </div>
         </div>
@@ -262,16 +272,42 @@
             isOpen: true, storeName: "Açaí Ellegance", phone: "557998168282", 
             pixKey: "57970392000139", pixName: "Gabriel Santana Morais", 
             pixWarning: "Por favor, envie o comprovativo pelo WhatsApp.",
-            googleScriptUrl: "https://script.google.com/macros/s/AKfycbwr46VPLD_9bxDrW4heAO02tV7C7URx10Q9dHTMs170El1_Fd7XB92pIyb2IFluc3Uu/exec",
+            googleScriptUrl: "https://script.google.com/macros/s/AKfycbzoqaHm9xE4v2CEfqKNSCS72L26stBRee8_sWahN2v-ANDs13RHG2AG7_nUQxvwhiWx/exec",
             sizes: [
                 { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
+                { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
+                { name: "Amendoim 300ml", description: "Açaí, amendoim, banana e leite condensado", price: 10.00, category: "Tradicional" },
+                { name: "Cupuaçu 300ml", description: "Açaí, cupuaçu, leite condensado", price: 10.00, category: "Tradicional" },
                 { name: "Paçoca 500ml", description: "açai, paçoca, banana e leite condensado", price: 14.00, category: "Tradicional" },
+                { name: "Ninho 500ml", description: "Açai, leite em pó, banana e leite condensado", price: 14.00, category: "Tradicional" },
+                { name: "Amendoim 500ml", description: "açai, amendoim, banana e leite condensado", price: 14.00, category: "Tradicional" },
+                { name: "Cupuaçu 500ml", description: "açai, cupuaçu e leite condensado", price: 14.00, category: "Tradicional" },
+                { name: "Morango 300ml", description: "Açaí, morango, creme de morango e leite condensado", price: 13.00, category: "Gourmet" },
+                { name: "Maracujá 300ml", description: "Açaí, creme de maracujá e leite condensado", price: 13.00, category: "Gourmet" },
+                { name: "Ovomaltine 300ml", description: "Açaí, ovomaltine, nutella", price: 13.00, category: "Gourmet" },
                 { name: "Creme de Ninho 300ml", description: "Açaí, leite em pó, creme de ninho e nutella", price: 13.00, category: "Gourmet" },
-                { name: "Creme de Ninho 500ml", description: "açai, leite em pó, creme de ninho e nutella", price: 18.00, category: "Gourmet" }
+                { name: "Morango 500ml", description: "açai, morango,creme de morango e leite condensado", price: 18.00, category: "Gourmet" },
+                { name: "Maracuja 500ml", description: "açai, creme de maracuja e leite condensado", price: 18.00, category: "Gourmet" },
+                { name: "Ovomaltine 500ml", description: "açai, ovomaltine e nutella", price: 18.00, category: "Gourmet" },
+                { name: "Creme de Ninho 500ml", description: "açai, leite em pó, creme de ninho e nutella", price: 18.00, category: "Gourmet" },
+                { name: "Garrafa Fine 500ml", description: "açai, leite condensado, cobertura de beijinho, m&m e fine. (Banana, dentadura ou tubes)", price: 18.00, category: "Gourmet" }
             ],
             deliveryZones: [
+                // ARACAJU
                 {name: "Aracaju: Bairro Industrial", price: 4.00},
+                {name: "Aracaju: Porto D’antas", price: 3.00},
+                {name: "Aracaju: Lamarão", price: 6.00},
+                {name: "Aracaju: Japãozinho", price: 4.00},
+                {name: "Aracaju: Cidade Nova", price: 5.00},
+                // SOCORRO (Grátis)
                 {name: "Socorro: Albano", price: 0},
+                {name: "Socorro: Marcos Freire 1,2,3", price: 0},
+                {name: "Socorro: João Alves", price: 0},
+                {name: "Socorro: Fernando Collor", price: 0},
+                {name: "Socorro: Piabeta", price: 0},
+                // SOCORRO (Pago)
+                {name: "Socorro: Sede de Socorro", price: 4.00},
+                // BARRA
                 {name: "Barra", price: 6.00}
             ] 
         };
@@ -280,7 +316,7 @@
 
         async function init() {
             if (isDemoMode) {
-                const saved = localStorage.getItem('acai_config_v20_final'); 
+                const saved = localStorage.getItem('acai_config_v22_full'); 
                 if(saved) storeConfig = { ...storeConfig, ...JSON.parse(saved) };
                 updateClientUI();
             } else {
@@ -304,7 +340,7 @@
         async function saveData(newData) {
             if(isDemoMode) {
                 storeConfig = { ...storeConfig, ...newData };
-                localStorage.setItem('acai_config_v20_final', JSON.stringify(storeConfig));
+                localStorage.setItem('acai_config_v22_full', JSON.stringify(storeConfig));
                 updateClientUI();
                 if(!document.getElementById('admin-interface').classList.contains('hidden')) updateAdminUI();
                 showToast();
@@ -318,7 +354,7 @@
             document.getElementById('pix-warning-display').innerText = storeConfig.pixWarning || "...";
 
             const isOpen = storeConfig.isOpen;
-            document.getElementById('store-status').innerHTML = isOpen ? `<span class="text-green-600 font-bold">Loja Aberta</span>` : `<span class="text-red-500 font-bold">Fechada</span>`;
+            document.getElementById('store-status').innerHTML = isOpen ? `<span class="text-green-600 font-bold">Loja Aberta</span>` : `<span class="text-red-500 font-bold">Fechado</span>`;
             document.getElementById('store-indicator').className = `absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${isOpen ? 'bg-green-500 status-open' : 'bg-red-500'}`;
             document.getElementById('add-btn').disabled = !isOpen;
             document.getElementById('closed-msg').classList.toggle('hidden', isOpen);
@@ -329,7 +365,8 @@
             const zoneSelect = document.getElementById('delivery-zone');
             zoneSelect.innerHTML = '<option value="">Escolha o bairro...</option>';
             (storeConfig.deliveryZones || []).forEach(z => {
-                const opt = document.createElement('option'); opt.value = z.price; opt.text = `${z.name} (+R$${z.price.toFixed(2)})`; opt.setAttribute('data-name', z.name);
+                const label = parseFloat(z.price) > 0 ? `${z.name} (+R$${z.price.toFixed(2)})` : `${z.name} (Grátis)`;
+                const opt = document.createElement('option'); opt.value = z.price; opt.text = label; opt.setAttribute('data-name', z.name);
                 zoneSelect.appendChild(opt);
             });
             updateTotal();
@@ -359,7 +396,7 @@
 
         window.changeQty = (diff) => { quantity += diff; if(quantity < 1) quantity = 1; document.getElementById('qty-display').innerText = quantity; updateTotal(); }
         window.togglePayment = () => { const method = document.getElementById('payment-method').value; document.getElementById('pix-container').classList.toggle('hidden', method !== 'Pix'); }
-        window.copyPix = () => { const k = document.getElementById('pix-key-display'); k.select(); document.execCommand('copy'); showToast(); }
+        window.copyPix = () => { const k = document.getElementById('pix-key-display'); k.select(); document.execCommand('copy'); alert("Chave Copiada para a Área de Transferência!"); }
 
         window.addToCart = () => {
             const sizeEls = document.querySelectorAll('input[name="size"]:checked');
@@ -375,12 +412,12 @@
             const list = document.getElementById('cart-list');
             const count = document.getElementById('cart-count');
             count.innerText = cart.length; count.classList.toggle('hidden', cart.length===0);
-            list.innerHTML = cart.length === 0 ? '<div class="text-center py-10 opacity-30 text-xs font-bold uppercase tracking-widest">Carrinho Vazio</div>' : '';
+            list.innerHTML = cart.length === 0 ? '<div class="text-center py-10 opacity-30 text-xs font-bold uppercase tracking-widest">O carrinho está vazio</div>' : '';
             let subtotal = 0;
             cart.forEach(item => {
                 subtotal += item.price;
                 const div = document.createElement('div'); div.className = "bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative";
-                div.innerHTML = `<button onclick="removeCartItem(${item.id})" class="absolute top-3 right-3 text-slate-300 hover:text-red-500 transition-colors p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="font-bold text-sm text-slate-800 pr-8">${item.size}</div><div class="text-[10px] text-slate-400 mt-1">${item.description}</div>${item.obs ? `<div class="text-[10px] text-purple-500 mt-2 font-bold italic">Obs: ${item.obs}</div>` : ''}<div class="font-black text-sm mt-2 text-purple-700">R$ ${item.price.toFixed(2).replace('.', ',')}</div>`;
+                div.innerHTML = `<button onclick="removeCartItem(${item.id})" class="absolute top-3 right-3 text-slate-300 hover:text-red-500 transition-colors p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="font-bold text-sm text-slate-800 pr-8">${item.size}</div><div class="text-[10px] text-slate-400 mt-1">${item.description}</div>${item.obs ? `<div class="text-[10px] text-purple-500 mt-2 italic font-bold">Obs: ${item.obs}</div>` : ''}<div class="font-black text-sm mt-2 text-purple-700">R$ ${item.price.toFixed(2).replace('.', ',')}</div>`;
                 list.appendChild(div);
             });
             let shipping = 0;
@@ -433,6 +470,16 @@
             setTimeout(() => window.location.reload(), 2000);
         }
 
+        window.openReceipt = () => {
+            const c = document.getElementById('receipt-content');
+            let h = `<div style="text-align:center;border-bottom:1px dashed #000;padding-bottom:10px;margin-bottom:10px;font-size:14px"><strong>${storeConfig.storeName}</strong></div>`;
+            h += `<div style="margin-bottom:10px"><strong>Cliente:</strong> ${document.getElementById('client-name').value || 'Final'}</div>`;
+            cart.forEach(i => h += `<div style="margin-bottom:5px">${i.size}<br><div style="text-align:right">R$ ${i.price.toFixed(2).replace('.', ',')}</div></div>`);
+            h += `<div style="text-align:right;font-size:14px;font-weight:bold;border-top:1px dashed #000;margin-top:10px;padding-top:5px">TOTAL: ${document.getElementById('cart-total').innerText}</div>`;
+            c.innerHTML = h; document.getElementById('receipt-modal').classList.remove('hidden');
+        }
+
+        // ADMIN FUNCTIONS
         window.verifyAdmin = () => { if(document.getElementById('admin-pass-input').value === 'admin123') { document.getElementById('admin-login-modal').classList.add('hidden'); document.getElementById('admin-interface').classList.remove('hidden'); updateAdminUI(); } else alert('Senha Incorreta!'); }
         window.closeAdmin = () => document.getElementById('admin-interface').classList.add('hidden');
         window.saveGeneralConfig = () => saveData({ 
