@@ -12,7 +12,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
 
-    <title>Açaí Ellegance | Encomenda Online</title>
+    <title>Açaí Ellegance | Pedido Online</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -65,7 +65,7 @@
                     </div>
                 </div>
                 <button onclick="toggleCart(true)" class="relative group p-2.5 bg-purple-50 text-purple-700 rounded-full hover:bg-purple-100 transition-all active:bg-purple-200">
-                    <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    <i data-lucide="shopping-bag" class="w-6 h-6 text-purple-700"></i>
                     <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full hidden shadow-sm transform scale-0 transition-transform duration-200" style="transform: scale(1)">0</span>
                 </button>
             </div>
@@ -88,7 +88,6 @@
 
         <!-- Conteúdo Principal -->
         <main class="px-4 relative z-20 space-y-10">
-            <!-- TRADICIONAIS -->
             <section>
                 <div class="flex items-center gap-3 mb-5 px-1">
                     <div class="bg-purple-100 text-purple-700 w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm transform -rotate-3">1</div>
@@ -100,7 +99,6 @@
                 <div id="traditional-container" class="grid gap-4"></div>
             </section>
 
-            <!-- GOURMET -->
             <section>
                 <div class="flex items-center gap-3 mb-5 px-1">
                     <div class="bg-pink-100 text-pink-600 w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm transform rotate-3">2</div>
@@ -112,7 +110,6 @@
                 <div id="gourmet-container" class="grid gap-4"></div>
             </section>
 
-            <!-- Observações -->
             <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
                 <label class="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase mb-3">
                     <i data-lucide="message-square" class="w-4 h-4 text-purple-500"></i> Notas da Encomenda
@@ -148,7 +145,7 @@
     <!-- Carrinho Overlay -->
     <div id="cart-overlay" class="fixed inset-0 bg-slate-900/60 z-50 invisible opacity-0 transition-all duration-300 backdrop-blur-sm flex justify-end" onclick="toggleCart(false)">
         <div id="cart-panel" class="w-full max-w-md bg-white shadow-2xl translate-x-full cart-transition flex flex-col h-full" onclick="event.stopPropagation()">
-            <div class="p-6 bg-acai text-white flex justify-between items-center shadow-lg relative overflow-hidden shrink-0">
+            <div class="p-6 bg-acai text-white flex justify-between items-center shadow-lg relative overflow-hidden shrink-0 text-sm">
                 <div class="relative z-10 w-full flex justify-between items-center">
                     <div><h3 class="text-xl font-bold flex items-center gap-2">O Meu Pedido</h3><p class="text-xs text-purple-200">Revise os seus itens</p></div>
                     <button onclick="toggleCart(false)" class="p-2 bg-white/10 hover:bg-white/20 rounded-full transition"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -204,7 +201,7 @@
                 <div class="flex justify-between items-end mb-4"><span class="text-xs font-bold text-slate-400 uppercase mb-1 block">Total Final</span><div id="cart-total" class="text-3xl font-black text-purple-900 leading-none">R$ 0,00</div></div>
                 <div class="flex gap-3">
                     <button onclick="openReceipt()" class="p-4 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-colors"><i data-lucide="printer" class="w-6 h-6"></i></button>
-                    <button onclick="sendOrder()" id="checkout-btn" class="flex-1 bg-green-500 text-white rounded-xl font-bold shadow-lg hover:bg-green-600 flex justify-center items-center gap-2 transition active:scale-[0.98] py-4 uppercase text-sm tracking-widest">
+                    <button onclick="sendOrder()" id="checkout-btn" class="flex-1 bg-green-500 text-white rounded-xl font-bold shadow-lg shadow-green-200 hover:bg-green-600 flex justify-center items-center gap-2 transition active:scale-[0.98] py-4 uppercase text-sm tracking-widest">
                         <span>Finalizar Pedido</span> <i data-lucide="send" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -272,7 +269,7 @@
             isOpen: true, storeName: "Açaí Ellegance", phone: "557998168282", 
             pixKey: "57970392000139", pixName: "Gabriel Santana Morais", 
             pixWarning: "Por favor, envie o comprovativo pelo WhatsApp.",
-            googleScriptUrl: "https://script.google.com/macros/s/AKfycbzoqaHm9xE4v2CEfqKNSCS72L26stBRee8_sWahN2v-ANDs13RHG2AG7_nUQxvwhiWx/exec",
+            googleScriptUrl: "https://script.google.com/macros/s/AKfycbzXbFJyOSCwwgM1yUKG-EizerEd8odeGRx3slK2lg49cXdOUwaEn7EjR9x8hyKdNyTU/exec",
             sizes: [
                 { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
                 { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
@@ -286,6 +283,7 @@
                 { name: "Maracujá 300ml", description: "Açaí, creme de maracujá e leite condensado", price: 13.00, category: "Gourmet" },
                 { name: "Ovomaltine 300ml", description: "Açaí, ovomaltine, nutella", price: 13.00, category: "Gourmet" },
                 { name: "Creme de Ninho 300ml", description: "Açaí, leite em pó, creme de ninho e nutella", price: 13.00, category: "Gourmet" },
+                { name: "M&M 300ml", description: "Açaí, leite em pó,nutella e M&M", price: 13.00, category: "Gourmet" },
                 { name: "Morango 500ml", description: "açai, morango,creme de morango e leite condensado", price: 18.00, category: "Gourmet" },
                 { name: "Maracuja 500ml", description: "açai, creme de maracuja e leite condensado", price: 18.00, category: "Gourmet" },
                 { name: "Ovomaltine 500ml", description: "açai, ovomaltine e nutella", price: 18.00, category: "Gourmet" },
@@ -299,13 +297,13 @@
                 {name: "Aracaju: Lamarão", price: 6.00},
                 {name: "Aracaju: Japãozinho", price: 4.00},
                 {name: "Aracaju: Cidade Nova", price: 5.00},
-                // SOCORRO (Grátis)
+                // SOCORRO GRÁTIS
                 {name: "Socorro: Albano", price: 0},
                 {name: "Socorro: Marcos Freire 1,2,3", price: 0},
                 {name: "Socorro: João Alves", price: 0},
                 {name: "Socorro: Fernando Collor", price: 0},
                 {name: "Socorro: Piabeta", price: 0},
-                // SOCORRO (Pago)
+                // SOCORRO PAGO
                 {name: "Socorro: Sede de Socorro", price: 4.00},
                 // BARRA
                 {name: "Barra", price: 6.00}
@@ -316,7 +314,7 @@
 
         async function init() {
             if (isDemoMode) {
-                const saved = localStorage.getItem('acai_config_v22_full'); 
+                const saved = localStorage.getItem('acai_config_v23_final_zones'); 
                 if(saved) storeConfig = { ...storeConfig, ...JSON.parse(saved) };
                 updateClientUI();
             } else {
@@ -340,7 +338,7 @@
         async function saveData(newData) {
             if(isDemoMode) {
                 storeConfig = { ...storeConfig, ...newData };
-                localStorage.setItem('acai_config_v22_full', JSON.stringify(storeConfig));
+                localStorage.setItem('acai_config_v23_final_zones', JSON.stringify(storeConfig));
                 updateClientUI();
                 if(!document.getElementById('admin-interface').classList.contains('hidden')) updateAdminUI();
                 showToast();
@@ -351,7 +349,7 @@
             document.getElementById('header-store-name').innerText = storeConfig.storeName;
             document.getElementById('pix-name-display').innerText = storeConfig.pixName;
             document.getElementById('pix-key-display').value = storeConfig.pixKey;
-            document.getElementById('pix-warning-display').innerText = storeConfig.pixWarning || "...";
+            document.getElementById('pix-warning-display').innerText = storeConfig.pixWarning || "Atenção ao pagamento.";
 
             const isOpen = storeConfig.isOpen;
             document.getElementById('store-status').innerHTML = isOpen ? `<span class="text-green-600 font-bold">Loja Aberta</span>` : `<span class="text-red-500 font-bold">Fechado</span>`;
@@ -363,7 +361,7 @@
             renderGrid("Gourmet", "gourmet-container");
 
             const zoneSelect = document.getElementById('delivery-zone');
-            zoneSelect.innerHTML = '<option value="">Escolha o bairro...</option>';
+            zoneSelect.innerHTML = '<option value="">Escolha o seu bairro...</option>';
             (storeConfig.deliveryZones || []).forEach(z => {
                 const label = parseFloat(z.price) > 0 ? `${z.name} (+R$${z.price.toFixed(2)})` : `${z.name} (Grátis)`;
                 const opt = document.createElement('option'); opt.value = z.price; opt.text = label; opt.setAttribute('data-name', z.name);
@@ -445,26 +443,49 @@
 
             const delType = document.querySelector('input[name="delivery-type"]:checked').value;
             const morada = document.getElementById('client-address').value;
+            const zoneSelect = document.getElementById('delivery-zone');
+            
+            let envioParaPlanilha = delType;
+            let zoneName = "";
+            let shippingCost = 0;
 
-            // Lógica Especial: Se for Entrega, junta Morada na coluna de Envio
-            const envioParaPlanilha = delType === 'Entrega' ? `${delType} - ${morada}` : delType;
+            if (delType === 'Entrega') {
+                if (!zoneSelect.value || !morada) return alert("Preencha o bairro e endereço!");
+                zoneName = zoneSelect.options[zoneSelect.selectedIndex].getAttribute('data-name');
+                shippingCost = parseFloat(zoneSelect.value || 0);
+                envioParaPlanilha = `${zoneName} - ${morada}`;
+            }
+
+            const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+            const total = subtotal + shippingCost;
 
             const orderData = { 
                 nome: name, 
                 telefone: document.getElementById('client-phone').value, 
-                total: document.getElementById('cart-total').innerText, 
+                total: `R$ ${total.toFixed(2).replace('.', ',')}`, 
                 pagamento: payText, 
-                entrega: envioParaPlanilha, // Envia com a morada se houver
-                itens: cart.map(i => i.size).join(", ") 
+                entrega: envioParaPlanilha, 
+                itens: cart.map(i => i.size).join(", "),
+                taxa: `R$ ${shippingCost.toFixed(2).replace('.', ',')}`
             };
 
             if(storeConfig.googleScriptUrl) {
                 fetch(storeConfig.googleScriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) });
             }
 
-            let msg = `🥤 *PEDIDO - ${storeConfig.storeName.toUpperCase()}*\n👤 *Cliente:* ${name}\n💳 *Pagamento:* ${payText}\n📍 *Local:* ${envioParaPlanilha}\n\n*ITENS:* \n`;
+            let msg = `🥤 *PEDIDO - ${storeConfig.storeName.toUpperCase()}*\n👤 *Cliente:* ${name}\n💳 *Pagamento:* ${payText}\n`;
+            if (delType === 'Entrega') {
+                msg += `📍 *Entrega:* ${zoneName}\n🏠 *Endereço:* ${morada}\n`;
+            } else {
+                msg += `📍 *Retirada no Local*\n`;
+            }
+            msg += `\n*ITENS:* \n`;
             cart.forEach(i => msg += `- ${i.size} (R$ ${i.price.toFixed(2).replace('.', ',')})\n`);
-            msg += `\n💰 *TOTAL FINAL:* ${document.getElementById('cart-total').innerText}`;
+            
+            msg += `\n🧾 *RESUMO:*`;
+            msg += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+            if (delType === 'Entrega') msg += `\nTaxa de Entrega: R$ ${shippingCost.toFixed(2).replace('.', ',')}`;
+            msg += `\n💰 *TOTAL FINAL: R$ ${total.toFixed(2).replace('.', ',')}*`;
             
             window.open(`https://api.whatsapp.com/send?phone=${storeConfig.phone}&text=${encodeURIComponent(msg)}`, '_blank');
             setTimeout(() => window.location.reload(), 2000);
@@ -509,6 +530,7 @@
             }
             lucide.createIcons();
         }
+        window.removeAdminItem = (idx) => { if(confirm('Remover este item definitivamente?')) saveData({ sizes: storeConfig.sizes.filter((_, i) => i !== idx) }); }
         function showToast() { const t = document.getElementById('toast'); t.classList.remove('opacity-0'); setTimeout(()=>t.classList.add('opacity-0'), 2000); }
     </script>
 </body>
