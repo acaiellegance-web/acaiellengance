@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#4c1d95">
+    
+    <!-- Configurações PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Açaí Ellegance">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+
+    <title>Açaí Ellegance | Encomenda Online</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        h1, h2, h3, .brand-font { font-family: 'Fredoka', sans-serif; }
+        
+        body { background-color: #f3f4f6; }
+        @media (min-width: 768px) { body { background-image: linear-gradient(to bottom, #e9d5ff, #f3f4f6); } }
+
+        .app-container { background-color: #f9fafb; min-height: 100vh; box-shadow: 0 0 40px rgba(0,0,0,0.05); }
+        .bg-acai { background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 100%); }
+        
+        .hero-bg {
+            background-color: #2e1065;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239c92ac' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .status-open { background-color: #22c55e; box-shadow: 0 0 0 rgba(34, 197, 94, 0.4); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+        
+        .price-bump { animation: bump 0.2s ease-out; }
+        @keyframes bump { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        input, select, textarea { font-size: 16px !important; }
+        @media print { body * { visibility: hidden; } #receipt-modal, #receipt-modal * { visibility: visible; } #receipt-modal { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } .no-print { display: none !important; } }
+    </style>
+</head>
+<body class="text-slate-800 pb-0">
+
+    <div class="app-container mx-auto max-w-md relative pb-36 bg-gray-50 min-h-screen">
+        
+        <!-- Cabeçalho -->
+        <header id="main-header" class="sticky top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-b border-purple-50 shadow-sm transition-all duration-300">
+            <div class="px-4 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="relative group cursor-pointer" onclick="document.getElementById('admin-login-modal').classList.remove('hidden')">
+                        <img src="WhatsApp Image 2026-01-13 at 15.24.41.jpeg" onerror="this.src='https://ui-avatars.com/api/?name=Acai+E&background=4c1d95&color=fff'" alt="Logo" class="h-11 w-11 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-purple-100">
+                        <div id="store-indicator" class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white bg-gray-300"></div>
+                    </div>
+                    <div class="flex flex-col">
+                        <span id="header-store-name" class="font-bold text-lg leading-none text-purple-900 brand-font tracking-wide text-xs">A carregar...</span>
+                        <span id="store-status" class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">...</span>
+                    </div>
+                </div>
+                <button onclick="toggleCart(true)" class="relative group p-2.5 bg-purple-50 text-purple-700 rounded-full hover:bg-purple-100 transition-all active:bg-purple-200">
+                    <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full hidden shadow-sm transform scale-0 transition-transform duration-200" style="transform: scale(1)">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Hero -->
+        <section class="relative h-[340px] flex items-end pb-12 justify-center overflow-hidden hero-bg rounded-b-[3rem] shadow-xl mb-10 border-b-4 border-purple-200/20">
+            <div class="absolute inset-0">
+                <img src="açai.jpeg" onerror="this.src='https://images.unsplash.com/photo-1590301157890-358015fc44b5?auto=format&fit=crop&w=800&q=80'" class="w-full h-full object-cover opacity-60 mix-blend-overlay" alt="Açaí">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#2e1065] via-[#4c1d95]/50 to-transparent"></div>
+            </div>
+            <div class="relative z-20 text-center text-white px-6 fade-in">
+                <span class="inline-flex items-center gap-1.5 py-1.5 px-4 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 backdrop-blur-md text-white text-[10px] font-bold mb-4 shadow-lg uppercase tracking-wider">
+                    <i data-lucide="sparkles" class="w-3 h-3 fill-current"></i> O Melhor da Cidade
+                </span>
+                <h1 id="hero-title" class="text-4xl md:text-5xl font-black mb-3 drop-shadow-xl brand-font tracking-tight">Escolha seu açaí</h1>
+                <p id="hero-subtitle" class="text-purple-100 font-medium text-sm opacity-95 max-w-md mx-auto">Cremoso e Saboroso.</p>
+            </div>
+        </section>
+
+        <!-- Conteúdo Principal -->
+        <main class="px-4 relative z-20 space-y-10">
+            <!-- TRADICIONAIS -->
+            <section>
+                <div class="flex items-center gap-3 mb-5 px-1">
+                    <div class="bg-purple-100 text-purple-700 w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm transform -rotate-3">1</div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 leading-none">Garrafa Tradicional</h2>
+                        <p class="text-sm text-slate-500 mt-1 font-medium">Sabores clássicos que todo mundo ama</p>
+                    </div>
+                </div>
+                <div id="traditional-container" class="grid gap-4"></div>
+            </section>
+
+            <!-- GOURMET -->
+            <section>
+                <div class="flex items-center gap-3 mb-5 px-1">
+                    <div class="bg-pink-100 text-pink-600 w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm transform rotate-3">2</div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 leading-none">Garrafas Gourmet</h2>
+                        <p class="text-sm text-slate-500 mt-1 font-medium">Ingredientes premium e exclusivos</p>
+                    </div>
+                </div>
+                <div id="gourmet-container" class="grid gap-4"></div>
+            </section>
+
+            <!-- Observações -->
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <label class="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase mb-3 text-xs">
+                    <i data-lucide="message-square" class="w-4 h-4 text-purple-500"></i> Notas sobre a Encomenda
+                </label>
+                <textarea id="item-observation" rows="2" placeholder="Ex: Capricha no leite em pó, tirar a banana..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-base transition-all resize-none"></textarea>
+            </div>
+            
+            <div class="text-center pt-6 pb-6 opacity-40 hover:opacity-100 transition-opacity">
+                <button onclick="document.getElementById('admin-login-modal').classList.remove('hidden')" class="text-[10px] uppercase font-bold tracking-widest flex items-center justify-center gap-1 mx-auto text-slate-400 hover:text-purple-600 transition-colors py-4">
+                    <i data-lucide="lock" class="w-3 h-3"></i> Área Reservada
+                </button>
+            </div>
+        </main>
+
+        <!-- Botão Fixo Adicionar -->
+        <div class="fixed bottom-0 left-0 right-0 z-30 flex justify-center w-full pointer-events-none">
+            <div class="w-full max-w-md bg-white/90 backdrop-blur-xl border-t border-slate-200 shadow-[0_-10px_30px_rgba(0,0,0,0.08)] p-4 pointer-events-auto">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center bg-slate-100 rounded-2xl h-14 px-2 shadow-inner ring-1 ring-slate-200">
+                        <button onclick="changeQty(-1)" class="w-10 h-full text-slate-400 hover:text-purple-600 font-bold text-xl active:scale-90 transition flex items-center justify-center rounded-l-xl">-</button>
+                        <span id="qty-display" class="w-6 text-center font-bold text-slate-800 text-lg">1</span>
+                        <button onclick="changeQty(1)" class="w-10 h-full text-slate-400 hover:text-purple-600 font-bold text-xl active:scale-90 transition flex items-center justify-center rounded-r-xl">+</button>
+                    </div>
+                    <button onclick="addToCart()" id="add-btn" class="flex-1 bg-acai text-white h-14 rounded-2xl font-bold flex items-center justify-between px-5 shadow-lg shadow-purple-500/30 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale disabled:shadow-none hover:shadow-xl group">
+                        <span class="flex flex-col items-start leading-none"><span class="text-[10px] opacity-90 font-medium uppercase tracking-wide">Adicionar</span><span class="text-base text-sm">ao Carrinho</span></span>
+                        <span id="current-price-display" class="bg-white/20 px-3 py-1.5 rounded-lg text-sm font-black backdrop-blur-sm group-hover:bg-white/30 transition border border-white/10">R$ 0,00</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Carrinho Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-slate-900/60 z-50 invisible opacity-0 transition-all duration-300 backdrop-blur-sm flex justify-end" onclick="toggleCart(false)">
+        <div id="cart-panel" class="w-full max-w-md bg-white shadow-2xl translate-x-full cart-transition flex flex-col h-full" onclick="event.stopPropagation()">
+            <div class="p-6 bg-acai text-white flex justify-between items-center shadow-lg relative overflow-hidden shrink-0 text-sm">
+                <div class="relative z-10 w-full flex justify-between items-center">
+                    <div><h3 class="text-xl font-bold flex items-center gap-2">O Meu Pedido</h3><p class="text-xs text-purple-200">Reveja os seus itens</p></div>
+                    <button onclick="toggleCart(false)" class="p-2 bg-white/10 hover:bg-white/20 rounded-full transition"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+            </div>
+
+            <div class="flex-grow overflow-y-auto bg-slate-50 p-4 pb-32">
+                <div id="cart-list" class="space-y-3"></div>
+                
+                <div id="customer-form" class="mt-6 bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hidden">
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3 text-xs tracking-wider uppercase"><i data-lucide="user" class="w-4 h-4 text-purple-700"></i> Dados de Envio</h4>
+                    <div class="space-y-4">
+                        <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Nome Completo</label><input type="text" id="client-name" class="w-full mt-1 p-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-purple-500 focus:bg-white transition-colors text-base" placeholder="Como o podemos chamar?"></div>
+                        <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Telemóvel / WhatsApp</label><input type="tel" id="client-phone" class="w-full mt-1 p-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-purple-500 focus:bg-white transition-colors text-base" placeholder="9xxxxxxxx"></div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Tipo de Entrega</label>
+                            <div class="grid grid-cols-2 gap-3 mt-1">
+                                <label class="cursor-pointer relative"><input type="radio" name="delivery-type" value="Retirada" class="peer hidden" onchange="toggleAddress(false)" checked><div class="p-3 text-center border-2 border-slate-100 rounded-xl text-sm font-bold text-slate-500 peer-checked:bg-purple-50 peer-checked:border-purple-500 peer-checked:text-purple-700 transition-all flex flex-col items-center gap-1 hover:bg-slate-50 text-xs uppercase"><i data-lucide="store" class="w-4 h-4"></i> No Local</div></label>
+                                <label class="cursor-pointer relative"><input type="radio" name="delivery-type" value="Entrega" class="peer hidden" onchange="toggleAddress(true)"><div class="p-3 text-center border-2 border-slate-100 rounded-xl text-sm font-bold text-slate-500 peer-checked:bg-purple-50 peer-checked:border-purple-500 peer-checked:text-purple-700 transition-all flex flex-col items-center gap-1 hover:bg-slate-50 text-xs uppercase"><i data-lucide="bike" class="w-4 h-4"></i> Entrega</div></label>
+                            </div>
+                        </div>
+                        <div id="address-block" class="hidden space-y-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Bairro / Zona</label><select id="delivery-zone" class="w-full mt-1 p-3 border border-slate-200 rounded-xl bg-white text-base focus:outline-none focus:border-purple-500" onchange="renderCart()"></select></div>
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Endereço Completo</label><textarea id="client-address" rows="2" class="w-full mt-1 p-3 border border-slate-200 rounded-xl bg-white text-base focus:outline-none focus:border-purple-500" placeholder="Rua, Número, Referência..."></textarea></div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Método de Pagamento</label>
+                            <select id="payment-method" class="w-full mt-1 p-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-purple-500 text-base" onchange="togglePayment()">
+                                <option value="" disabled selected>Escolha o pagamento...</option>
+                                <option value="Pix">Pix / Transferência</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Cartão">Cartão Multibanco</option>
+                            </select>
+                            
+                            <div id="pix-container" class="hidden mt-3 p-4 bg-purple-50 border border-purple-200 rounded-xl animate-pulse-soft">
+                                <p class="text-xs font-bold text-purple-800 mb-2 uppercase tracking-tight">Chave Pix (CNPJ):</p>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <input type="text" id="pix-key-display" readonly class="w-full p-2 bg-white border border-purple-200 rounded-lg text-sm font-mono text-center text-slate-600 select-all focus:outline-none">
+                                    <button onclick="copyPix()" class="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-sm active:scale-95"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                                </div>
+                                <p class="text-xs text-center text-slate-500">Titular: <strong id="pix-name-display" class="text-purple-900 uppercase">...</strong></p>
+                                
+                                <!-- AVISO DO PIX RESTAURADO -->
+                                <div class="bg-yellow-100 border border-yellow-300 rounded-lg p-3 my-3 text-[10px] text-yellow-900 flex gap-2 items-start font-medium leading-relaxed">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 mt-0.5 text-yellow-600"></i>
+                                    <p id="pix-warning-display">A carregar aviso...</p>
+                                </div>
+
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer p-2 mt-2 hover:bg-purple-100 rounded-lg transition select-none"><input type="checkbox" id="pix-confirmed" class="w-5 h-5 accent-purple-600 rounded cursor-pointer"><span>Já efetuei o pagamento</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 bg-white border-t border-slate-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-10 w-full shrink-0">
+                <div class="flex justify-between items-end mb-4"><span class="text-xs font-bold text-slate-400 uppercase mb-1 block">Total a Pagar</span><div id="cart-total" class="text-3xl font-black text-purple-900 leading-none">R$ 0,00</div></div>
+                <div class="flex gap-3">
+                    <button onclick="openReceipt()" class="p-4 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-colors"><i data-lucide="printer" class="w-6 h-6"></i></button>
+                    <button onclick="sendOrder()" id="checkout-btn" class="flex-1 bg-green-500 text-white rounded-xl font-bold shadow-lg shadow-green-200 hover:bg-green-600 flex justify-center items-center gap-2 transition active:scale-[0.98] py-4">
+                        <span>Finalizar Pedido</span> <i data-lucide="send" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <p id="closed-msg" class="text-center text-red-500 text-xs font-bold mt-3 hidden bg-red-50 py-2 rounded-lg border border-red-100 uppercase tracking-widest">Loja Fechada</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interface Admin -->
+    <div id="admin-interface" class="fixed inset-0 z-[60] bg-slate-50 hidden overflow-y-auto pb-20">
+        <div class="bg-white text-slate-800 p-4 sticky top-0 z-10 flex justify-between items-center shadow-sm border-b">
+            <h2 class="font-bold text-lg flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-purple-600"></i> Painel de Gestão</h2>
+            <button onclick="closeAdmin()" class="bg-slate-100 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest">Fechar</button>
+        </div>
+        <div class="container mx-auto p-4 max-w-lg space-y-6">
+            
+            <!-- STATUS -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest">Estado da Loja</h3>
+                <div class="flex gap-3">
+                    <button onclick="updateConfig({ isOpen: true })" id="adm-btn-open" class="flex-1 p-4 rounded-xl border-2 font-bold text-sm transition-all">ABRIR</button>
+                    <button onclick="updateConfig({ isOpen: false })" id="adm-btn-close" class="flex-1 p-4 rounded-xl border-2 font-bold text-sm transition-all">FECHAR</button>
+                </div>
+            </div>
+
+            <!-- DADOS DA LOJA E GOOGLE SHEETS -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest">Definições e Integração</h3>
+                <div class="space-y-4">
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Nome da Loja</label><input id="adm-store-name" class="w-full p-3 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-1 focus:ring-purple-400"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">URL do Script (Planilha)</label><input id="adm-google-url" class="w-full p-3 border border-purple-200 rounded-lg text-sm bg-purple-50/50 outline-none" placeholder="https://script.google.com/macros/s/.../exec"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">WhatsApp (Número Completo)</label><input id="adm-whatsapp" class="w-full p-3 border rounded-lg text-sm bg-slate-50 outline-none"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Chave Pix</label><input id="adm-pix-key" class="w-full p-3 border rounded-lg text-sm bg-slate-50 outline-none"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Titular do Pix</label><input id="adm-pix-name" class="w-full p-3 border rounded-lg text-sm bg-slate-50 outline-none"></div>
+                    
+                    <!-- CAMPO DE AVISO RESTAURADO NO ADMIN -->
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Aviso de Pagamento Pix (Caixa Amarela)</label>
+                        <textarea id="adm-pix-warning" class="w-full p-3 border rounded-lg text-sm bg-yellow-50/50 outline-none focus:ring-1 focus:ring-yellow-400" rows="3"></textarea>
+                    </div>
+
+                    <button onclick="saveGeneralConfig()" class="w-full bg-acai text-white p-4 rounded-xl font-bold text-sm shadow-md hover:scale-[1.01] active:scale-95 transition-transform uppercase tracking-wider">Guardar Alterações</button>
+                </div>
+            </div>
+
+            <!-- CARDÁPIO -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-purple-100">
+                <h3 class="text-xs font-bold text-purple-700 uppercase mb-4 tracking-widest text-center">Itens do Cardápio</h3>
+                <div id="adm-list-sizes" class="space-y-2 mb-4"></div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-3">Novo Produto</p>
+                    <div class="grid grid-cols-2 gap-2 mb-2"><input id="new-size-name" class="p-3 border rounded-lg text-sm" placeholder="Nome"><input id="new-size-price" type="number" step="0.50" class="p-3 border rounded-lg text-sm" placeholder="Preço €"></div>
+                    <textarea id="new-size-desc" class="w-full p-3 border rounded-lg text-sm mb-2" placeholder="Ingredientes/Descrição"></textarea>
+                    <div class="flex gap-2"><select id="new-size-cat" class="p-3 border rounded-lg text-sm flex-1"><option>Tradicional</option><option>Gourmet</option></select><button onclick="addNewSize()" class="bg-purple-600 text-white px-5 rounded-lg text-sm font-bold uppercase tracking-tighter">Add</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Admin -->
+    <div id="admin-login-modal" class="fixed inset-0 z-[60] bg-black/80 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-3xl w-full max-w-sm text-center relative shadow-2xl">
+            <button onclick="document.getElementById('admin-login-modal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i data-lucide="x"></i></button>
+            <h2 class="text-2xl font-bold mb-4 uppercase tracking-tighter text-slate-800">Área do Dono</h2>
+            <input type="password" id="admin-pass-input" class="w-full p-4 border border-slate-200 rounded-xl mb-4 text-center text-lg outline-none focus:ring-1 focus:ring-purple-400" placeholder="Palavra-passe">
+            <button onclick="verifyAdmin()" class="w-full bg-purple-600 text-white p-4 rounded-xl font-bold uppercase shadow-lg">Entrar</button>
+        </div>
+    </div>
+
+    <!-- Modal Recibo -->
+    <div id="receipt-modal" class="fixed inset-0 z-[100] bg-black/80 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm shadow-2xl max-h-[80vh] flex flex-col font-mono text-[10px]">
+            <div id="receipt-content" class="overflow-y-auto flex-grow"></div>
+            <div class="mt-4 flex gap-2">
+                <button onclick="window.print()" class="flex-1 bg-slate-800 text-white py-3 rounded-xl font-bold uppercase tracking-widest">Imprimir</button>
+                <button onclick="document.getElementById('receipt-modal').classList.add('hidden')" class="bg-slate-100 py-3 px-4 rounded-xl font-bold">X</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-slate-800/90 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl opacity-0 transition-all pointer-events-none z-[200] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i><p class="font-bold text-sm">Atualizado!</p></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "COLE_A_SUA_API_KEY_AQUI", 
+            authDomain: "demo.firebaseapp.com",
+            projectId: "demo-project",
+            storageBucket: "demo.appspot.com",
+            messagingSenderId: "00000000",
+            appId: "1:123456:web:789abc"
+        };
+
+        let storeConfig = { 
+            isOpen: true, 
+            storeName: "Açaí Ellegance",
+            heroTitle: "Escolha seu açaí",
+            heroSubtitle: "Cremoso e Saboroso.",
+            phone: "557998168282",
+            pixKey: "57970392000139",
+            pixName: "Gabriel Santana Morais",
+            pixWarning: "Por favor, envie o comprovativo pelo WhatsApp logo após concluir o pedido para acelerar a sua entrega.",
+            googleScriptUrl: "https://script.google.com/macros/s/AKfycbwa3YSKvLh5KefiKzw-JoRJWJR_UNJvuwOo_juYvr7PAnAWDLLm15V33h319NdpJeQ-/exec",
+            sizes: [
+                { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
+                { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
+                { name: "Amendoim 300ml", description: "Açaí, amendoim, banana e leite condensado", price: 10.00, category: "Tradicional" },
+                { name: "Cupuaçu 300ml", description: "Açaí, cupuaçu, leite condensado", price: 10.00, category: "Tradicional" },
+                { name: "Paçoca 500ml", description: "açai, paçoca, banana e leite condensado", price: 14.00, category: "Tradicional" },
+                { name: "Ninho 500ml", description: "Açai, leite em pó, banana e leite condensado", price: 14.00, category: "Tradicional" },
+                { name: "Amendoim 500ml", description: "açai, amendoim, banana e leite condensado", price: 14.00, category: "Tradicional" },
+                { name: "Cupuaçu 500ml", description: "açai, cupuaçu e leite condensado", price: 14.00, category: "Tradicional" },
+                { name: "Morango 300ml", description: "Açaí, morango, creme de morango e leite condensado", price: 13.00, category: "Gourmet" },
+                { name: "Maracujá 300ml", description: "Açaí, creme de maracujá e leite condensado", price: 13.00, category: "Gourmet" },
+                { name: "Ovomaltine 300ml", description: "Açaí, ovomaltine, nutella", price: 13.00, category: "Gourmet" },
+                { name: "Creme de Ninho 300ml", description: "Açaí, leite em pó, creme de ninho e nutella", price: 13.00, category: "Gourmet" },
+                { name: "M&M 300ml", description: "Açaí, leite em pó,nutella e M&M", price: 13.00, category: "Gourmet" },
+                { name: "Morango 500ml", description: "açai, morango,creme de morango e leite condensado", price: 18.00, category: "Gourmet" },
+                { name: "Maracuja 500ml", description: "açai, creme de maracuja e leite condensado", price: 18.00, category: "Gourmet" },
+                { name: "Ovomaltine 500ml", description: "açai, ovomaltine e nutella", price: 18.00, category: "Gourmet" },
+                { name: "Creme de Ninho 500ml", description: "açai, leite em pó, creme de ninho e nutella", price: 18.00, category: "Gourmet" },
+                { name: "Garrafa Fine 500ml", description: "açai, leite condensado, cobertura de beijinho, m&m e fine. (Banana, dentadura ou tubes)", price: 18.00, category: "Gourmet" }
+            ],
+            deliveryZones: [{name: "Aracaju", price: 0}, {name: "Barra", price: 0}, {name: "Socorro", price: 0}] 
+        };
+        
+        let cart = []; let quantity = 1; let isDemoMode = firebaseConfig.apiKey.includes("COLE_A_SUA"); let app, auth, db;
+
+        async function init() {
+            if (isDemoMode) {
+                const saved = localStorage.getItem('acai_config_v18_final'); 
+                if(saved) storeConfig = { ...storeConfig, ...JSON.parse(saved) };
+                updateClientUI();
+            } else {
+                try {
+                    app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app);
+                    await signInAnonymously(auth);
+                    const docRef = doc(db, 'loja', 'configuracao');
+                    onSnapshot(docRef, (snap) => {
+                        if(snap.exists()) {
+                            storeConfig = { ...storeConfig, ...snap.data() };
+                            updateClientUI();
+                            if(!document.getElementById('admin-interface').classList.contains('hidden')) updateAdminUI();
+                        } else { setDoc(docRef, storeConfig); }
+                    });
+                } catch (e) { console.error(e); }
+            }
+            lucide.createIcons();
+        }
+        init();
+
+        async function saveData(newData) {
+            if(isDemoMode) {
+                storeConfig = { ...storeConfig, ...newData };
+                localStorage.setItem('acai_config_v18_final', JSON.stringify(storeConfig));
+                updateClientUI();
+                if(!document.getElementById('admin-interface').classList.contains('hidden')) updateAdminUI();
+                showToast();
+            } else { await updateDoc(doc(db, 'loja', 'configuracao'), newData); showToast(); }
+        }
+
+        function updateClientUI() {
+            document.title = storeConfig.storeName;
+            document.getElementById('header-store-name').innerText = storeConfig.storeName;
+            document.getElementById('hero-title').innerText = storeConfig.heroTitle;
+            document.getElementById('hero-subtitle').innerText = storeConfig.heroSubtitle;
+            document.getElementById('pix-name-display').innerText = storeConfig.pixName;
+            document.getElementById('pix-key-display').value = storeConfig.pixKey;
+            document.getElementById('pix-warning-display').innerText = storeConfig.pixWarning || "Atenção ao pagamento.";
+
+            const isOpen = storeConfig.isOpen;
+            document.getElementById('store-status').innerHTML = isOpen ? `<span class="text-green-600 font-bold">Loja Aberta</span>` : `<span class="text-red-500 font-bold">Fechado</span>`;
+            document.getElementById('store-indicator').className = `absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${isOpen ? 'bg-green-500 status-open' : 'bg-red-500'}`;
+            document.getElementById('add-btn').disabled = !isOpen;
+            document.getElementById('closed-msg').classList.toggle('hidden', isOpen);
+
+            renderGrid("Tradicional", "traditional-container");
+            renderGrid("Gourmet", "gourmet-container");
+
+            const zoneSelect = document.getElementById('delivery-zone');
+            zoneSelect.innerHTML = '<option value="">Escolha o seu bairro...</option>';
+            (storeConfig.deliveryZones || []).forEach(z => {
+                const opt = document.createElement('option'); opt.value = z.price; opt.text = `${z.name} (+R$${z.price})`; opt.setAttribute('data-name', z.name);
+                zoneSelect.appendChild(opt);
+            });
+            updateTotal();
+        }
+
+        function renderGrid(category, containerId) {
+            const container = document.getElementById(containerId); container.innerHTML = '';
+            const items = (storeConfig.sizes || []).filter(s => s.category === category);
+            items.forEach(item => {
+                const label = document.createElement('label');
+                label.className = "relative flex flex-col p-5 bg-white border border-slate-100 rounded-2xl cursor-pointer hover:border-purple-300 transition-all has-[:checked]:border-purple-600 has-[:checked]:ring-1 has-[:checked]:bg-purple-50/30 group";
+                label.onclick = function(e) { if (e.target.tagName === 'INPUT') { window.updateTotal(); return; } e.preventDefault(); const checkbox = this.querySelector('input'); checkbox.checked = !checkbox.checked; window.updateTotal(); };
+                label.innerHTML = `<div class="flex items-start gap-4 mb-3 pointer-events-none"><div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform"><i data-lucide="ice-cream-2" class="w-6 h-6"></i></div><div class="flex-1"><span class="block font-bold text-slate-800 text-sm leading-tight">${item.name}</span><span class="text-[10px] text-slate-500 block mt-1">${item.description}</span></div></div><div class="mt-auto border-t border-dashed border-slate-100 pt-3 flex justify-between items-center w-full pointer-events-none"><span class="font-black text-purple-900 text-base">R$ ${parseFloat(item.price).toFixed(2).replace('.', ',')}</span><div class="relative"><input type="checkbox" name="size" value="${item.name}" data-price="${item.price}" data-desc="${item.description}" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-full checked:border-purple-600 checked:bg-purple-600 transition-all"><i data-lucide="check" class="w-3 h-3 text-white absolute top-1 left-1 opacity-0 peer-checked:opacity-100"></i></div></div>`;
+                container.appendChild(label);
+            });
+            lucide.createIcons();
+        }
+
+        function updateTotal() {
+            const sizeEls = document.querySelectorAll('input[name="size"]:checked');
+            const displayEl = document.getElementById('current-price-display');
+            if(sizeEls.length === 0) { displayEl.innerText = "R$ 0,00"; return; }
+            let totalBase = 0; sizeEls.forEach(el => totalBase += parseFloat(el.dataset.price));
+            displayEl.innerText = `R$ ${(totalBase * quantity).toFixed(2).replace('.', ',')}`;
+        }
+        window.updateTotal = updateTotal;
+
+        window.changeQty = (diff) => { quantity += diff; if(quantity < 1) quantity = 1; document.getElementById('qty-display').innerText = quantity; updateTotal(); }
+        window.togglePayment = () => { const method = document.getElementById('payment-method').value; document.getElementById('pix-container').classList.toggle('hidden', method !== 'Pix'); }
+        window.copyPix = () => { const k = document.getElementById('pix-key-display'); k.select(); document.execCommand('copy'); alert("Chave Copiada para a Área de Transferência!"); }
+
+        window.addToCart = () => {
+            const sizeEls = document.querySelectorAll('input[name="size"]:checked');
+            if(sizeEls.length === 0) return alert("Selecione pelo menos um item!");
+            const obs = document.getElementById('item-observation').value;
+            sizeEls.forEach(el => { for(let i=0; i<quantity; i++) cart.push({ id: Date.now()+Math.random(), size: el.value, description: el.getAttribute('data-desc'), price: parseFloat(el.dataset.price), obs }); });
+            quantity = 1; document.getElementById('qty-display').innerText = 1; document.getElementById('item-observation').value = '';
+            document.querySelectorAll('input[name="size"]').forEach(el => el.checked = false);
+            renderCart(); toggleCart(true); showToast();
+        }
+
+        window.renderCart = () => {
+            const list = document.getElementById('cart-list');
+            const count = document.getElementById('cart-count');
+            count.innerText = cart.length; count.classList.toggle('hidden', cart.length===0);
+            list.innerHTML = cart.length === 0 ? '<div class="text-center py-10 opacity-30 text-xs font-bold uppercase tracking-widest">O carrinho está vazio</div>' : '';
+            let subtotal = 0;
+            cart.forEach(item => {
+                subtotal += item.price;
+                const div = document.createElement('div'); div.className = "bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative";
+                div.innerHTML = `<button onclick="removeCartItem(${item.id})" class="absolute top-3 right-3 text-slate-300 hover:text-red-500 transition-colors p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="font-bold text-sm text-slate-800 pr-8">${item.size}</div><div class="text-[10px] text-slate-400 mt-1">${item.description}</div>${item.obs ? `<div class="text-[10px] text-purple-500 mt-2 italic font-bold">Obs: ${item.obs}</div>` : ''}<div class="font-black text-sm mt-2 text-purple-700">R$ ${item.price.toFixed(2).replace('.', ',')}</div>`;
+                list.appendChild(div);
+            });
+            let shipping = 0;
+            if(document.querySelector('input[name="delivery-type"]:checked').value === 'Entrega') shipping = parseFloat(document.getElementById('delivery-zone').value || 0);
+            document.getElementById('cart-total').innerText = `R$ ${(subtotal + shipping).toFixed(2).replace('.', ',')}`;
+            document.getElementById('customer-form').classList.toggle('hidden', cart.length === 0);
+            lucide.createIcons();
+        }
+
+        window.removeCartItem = (id) => { cart = cart.filter(c => c.id !== id); renderCart(); }
+        window.toggleCart = (show) => { const el = document.getElementById('cart-panel'); const ov = document.getElementById('cart-overlay'); if(show) { el.classList.remove('translate-x-full'); ov.classList.remove('invisible','opacity-0'); } else { el.classList.add('translate-x-full'); ov.classList.add('opacity-0'); setTimeout(()=>ov.classList.add('invisible'), 300); } }
+        window.toggleAddress = (show) => { document.getElementById('address-block').classList.toggle('hidden', !show); renderCart(); }
+
+        window.sendOrder = () => {
+            const name = document.getElementById('client-name').value;
+            if(!name) return alert('Por favor, diga o seu nome!');
+            const payment = document.getElementById('payment-method').value;
+            if(!payment) return alert('Escolha o método de pagamento!');
+            
+            let payText = payment;
+            if(payment === 'Pix') {
+                if(!document.getElementById('pix-confirmed').checked) return alert('Confirme que já efetuou o pagamento Pix!');
+                payText = "Pix (Confirmado no Site ✅)";
+            }
+
+            const delType = document.querySelector('input[name="delivery-type"]:checked').value;
+
+            const orderData = { 
+                nome: name, 
+                telefone: document.getElementById('client-phone').value, 
+                total: document.getElementById('cart-total').innerText, 
+                pagamento: payText, 
+                entrega: delType,
+                itens: cart.map(i => i.size).join(", ") 
+            };
+
+            if(storeConfig.googleScriptUrl) {
+                fetch(storeConfig.googleScriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) });
+            }
+
+            let msg = `🥤 *PEDIDO - ${storeConfig.storeName.toUpperCase()}*\n👤 *Cliente:* ${name}\n💳 *Pagamento:* ${payText}\n\n*ITENS:* \n`;
+            cart.forEach(i => msg += `- ${i.size} (R$ ${i.price.toFixed(2).replace('.', ',')})\n`);
+            msg += `\n💰 *TOTAL FINAL:* ${document.getElementById('cart-total').innerText}`;
+            
+            window.open(`https://api.whatsapp.com/send?phone=${storeConfig.phone}&text=${encodeURIComponent(msg)}`, '_blank');
+            setTimeout(() => window.location.reload(), 2000);
+        }
+
+        window.openReceipt = () => {
+            const c = document.getElementById('receipt-content');
+            let h = `<div style="text-align:center;border-bottom:1px dashed #000;padding-bottom:10px;margin-bottom:10px;font-size:14px"><strong>${storeConfig.storeName}</strong></div>`;
+            h += `<div style="margin-bottom:10px"><strong>Cliente:</strong> ${document.getElementById('client-name').value || 'Final'}</div>`;
+            cart.forEach(i => h += `<div style="margin-bottom:5px">${i.size}<br><div style="text-align:right">R$ ${i.price.toFixed(2).replace('.', ',')}</div></div>`);
+            h += `<div style="text-align:right;font-size:14px;font-weight:bold;border-top:1px dashed #000;margin-top:10px;padding-top:5px">TOTAL: ${document.getElementById('cart-total').innerText}</div>`;
+            c.innerHTML = h; document.getElementById('receipt-modal').classList.remove('hidden');
+        }
+
+        // ADMIN FUNCTIONS
+        window.verifyAdmin = () => { if(document.getElementById('admin-pass-input').value === 'admin123') { document.getElementById('admin-login-modal').classList.add('hidden'); document.getElementById('admin-interface').classList.remove('hidden'); updateAdminUI(); } else alert('Senha Incorreta!'); }
+        window.closeAdmin = () => document.getElementById('admin-interface').classList.add('hidden');
+        window.updateConfig = (data) => saveData(data);
+        window.saveGeneralConfig = () => saveData({ 
+            storeName: document.getElementById('adm-store-name').value, 
+            phone: document.getElementById('adm-whatsapp').value, 
+            pixKey: document.getElementById('adm-pix-key').value, 
+            pixName: document.getElementById('adm-pix-name').value,
+            pixWarning: document.getElementById('adm-pix-warning').value,
+            googleScriptUrl: document.getElementById('adm-google-url').value.trim()
+        });
+        window.addNewSize = () => { 
+            const n = document.getElementById('new-size-name').value; 
+            const p = parseFloat(document.getElementById('new-size-price').value); 
+            const d = document.getElementById('new-size-desc').value; 
+            const c = document.getElementById('new-size-cat').value; 
+            if(n && p) saveData({ sizes: [...storeConfig.sizes, { name: n, price: p, description: d, category: c }] }); 
+            document.getElementById('new-size-name').value = "";
+            document.getElementById('new-size-price').value = "";
+            document.getElementById('new-size-desc').value = "";
+        }
+        
+        function updateAdminUI() {
+            const sizesList = document.getElementById('adm-list-sizes'); sizesList.innerHTML = '';
+            storeConfig.sizes.forEach((s, i) => {
+                sizesList.innerHTML += `<div class="flex justify-between items-center bg-white p-3 rounded-lg border text-sm mb-2 shadow-sm"><div><strong>${s.name}</strong><br><small class="text-slate-400">${s.category}</small></div><button onclick="removeAdminItem(${i})" class="text-red-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+            });
+            document.getElementById('adm-store-name').value = storeConfig.storeName || "";
+            document.getElementById('adm-whatsapp').value = storeConfig.phone || "";
+            document.getElementById('adm-pix-key').value = storeConfig.pixKey || "";
+            document.getElementById('adm-pix-name').value = storeConfig.pixName || "";
+            document.getElementById('adm-pix-warning').value = storeConfig.pixWarning || "";
+            document.getElementById('adm-google-url').value = storeConfig.googleScriptUrl || "";
+
+            const open = document.getElementById('adm-btn-open'); const close = document.getElementById('adm-btn-close');
+            if(storeConfig.isOpen) { 
+                open.className="flex-1 p-4 rounded-xl border-2 border-green-500 bg-green-50 text-green-700 font-bold text-sm shadow-sm";
+                close.className="flex-1 p-4 rounded-xl border-2 border-slate-100 bg-white text-slate-400 font-bold text-sm opacity-50";
+            } else {
+                open.className="flex-1 p-4 rounded-xl border-2 border-slate-100 bg-white text-slate-400 font-bold text-sm opacity-50";
+                close.className="flex-1 p-4 rounded-xl border-2 border-red-500 bg-red-50 text-red-700 font-bold text-sm shadow-sm";
+            }
+            lucide.createIcons();
+        }
+        window.removeAdminItem = (idx) => { if(confirm('Remover este item definitivamente?')) saveData({ sizes: storeConfig.sizes.filter((_, i) => i !== idx) }); }
+        function showToast() { const t = document.getElementById('toast'); t.classList.remove('opacity-0'); setTimeout(()=>t.classList.add('opacity-0'), 2000); }
+    </script>
+</body>
+</html>
