@@ -33,14 +33,19 @@
         ::-webkit-scrollbar { display: none; }
         input, select, textarea { font-size: 16px !important; }
         
-        /* --- EFEITOS ESPECIAIS --- */
+        /* --- EFEITOS ESPECIAIS RESTAURADOS --- */
         @keyframes selectPop {
             0% { transform: scale(0.95); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        .option-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-width: 2px; }
-        .option-card:active { transform: scale(0.95); }
+        
+        .option-card { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-width: 2px;
+        }
+        
+        /* Quando selecionado (borda roxa, fundo claro e sombra) */
         .peer:checked + .option-card {
             border-color: #7c3aed !important; 
             background-color: #f3e8ff !important; 
@@ -48,6 +53,8 @@
             box-shadow: 0 8px 20px -4px rgba(124, 58, 237, 0.2);
             animation: selectPop 0.4s ease-out forwards;
         }
+        
+        /* Animação do ícone dentro do botão */
         .peer:checked + .option-card svg {
             transform: scale(1.2);
             stroke: #7c3aed;
@@ -184,7 +191,7 @@
                             <input type="text" id="pix-key-display" readonly class="w-full p-2 border bg-white rounded-lg text-[10px] text-center font-mono outline-none">
                             <button onclick="window.copyPix()" class="p-2 bg-purple-600 text-white rounded-lg active:scale-90 transition"><i data-lucide="copy" class="w-4 h-4"></i></button>
                         </div>
-                        <p class="text-[10px] text-slate-500">Titular: <strong id="pix-name-display" class="text-purple-900 uppercase">...</strong></p>
+                        <p class="text-[10px] text-slate-500">Titular: <strong id="pix-name-display" class="text-purple-900 uppercase">Gabriel Santana Morais</strong></p>
                         <div class="bg-yellow-100 border border-yellow-200 p-3 rounded-xl text-[10px] text-yellow-800 flex gap-2 items-start text-left leading-relaxed">
                             <i data-lucide="alert-circle" class="w-5 h-5 shrink-0 text-yellow-600"></i>
                             <p id="pix-warning-display">...</p>
@@ -202,7 +209,7 @@
         </div>
     </div>
 
-    <!-- Admin interface -->
+    <!-- Interface Admin -->
     <div id="admin-interface" class="fixed inset-0 z-[70] bg-white hidden overflow-y-auto p-4 pb-32">
         <div class="flex justify-between items-center mb-6 border-b pb-4">
             <h2 class="font-bold uppercase tracking-widest text-purple-900">Painel Administrativo</h2>
@@ -254,36 +261,40 @@
             appId: "1:123456:web:789abc"
         };
 
-        // --- DADOS ---
+        // --- LISTA DE PRODUTOS HARDCODED ---
+        const DEFAULT_SIZES = [
+            { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
+            { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
+            { name: "Amendoim 300ml", description: "Açaí, amendoim, banana e leite condensado", price: 10.00, category: "Tradicional" },
+            { name: "Cupuaçu 300ml", description: "Açaí, cupuaçu, leite condensado", price: 10.00, category: "Tradicional" },
+            { name: "Paçoca 500ml", description: "açai, paçoca, banana e leite condensado", price: 14.00, category: "Tradicional" },
+            { name: "Ninho 500ml", description: "Açai, leite em pó, banana e leite condensado", price: 14.00, category: "Tradicional" },
+            { name: "Amendoim 500ml", description: "açai, amendoim, banana e leite condensado", price: 14.00, category: "Tradicional" },
+            { name: "Cupuaçu 500ml", description: "açai, cupuaçu e leite condensado", price: 14.00, category: "Tradicional" },
+            { name: "Morango 300ml", description: "Açaí, morango, creme de morango e leite condensado", price: 13.00, category: "Gourmet" },
+            // ITEM EM FALTA (300ml)
+            { name: "Maracujá 300ml (EM FALTA)", description: "Açaí, creme de maracujá e leite condensado", price: 13.00, category: "Gourmet", available: false },
+            { name: "Ovomaltine 300ml", description: "Açaí, ovomaltine, nutella", price: 13.00, category: "Gourmet" },
+            { name: "Creme de Ninho 300ml", description: "Açaí, leite em pó, creme de ninho e nutella", price: 13.00, category: "Gourmet" },
+            { name: "M&M 300ml", description: "Açaí, leite em pó,nutella e M&M", price: 13.00, category: "Gourmet" },
+            { name: "Morango com nutella 300ml", description: "Açaí, morango, creme de morango e nutella", price: 13.00, category: "Gourmet" },
+            { name: "Ovomaltine com creme de ninho 300ml", description: "Açaí, ovomaltine, creme de ninho", price: 13.00, category: "Gourmet" },
+            { name: "Morango 500ml", description: "açai, morango,creme de morango e leite condensado", price: 18.00, category: "Gourmet" },
+            // ITEM EM FALTA (500ml)
+            { name: "Maracuja 500ml (EM FALTA)", description: "açai, creme de maracuja e leite condensado", price: 18.00, category: "Gourmet", available: false },
+            { name: "Ovomaltine 500ml", description: "açai, ovomaltine e nutella", price: 18.00, category: "Gourmet" },
+            { name: "Creme de Ninho 500ml", description: "açai, leite em pó, creme de ninho e nutella", price: 18.00, category: "Gourmet" },
+            { name: "Garrafa Fine 500ml", description: "açai, leite condensado, cobertura de beijinho, m&m e fine. (Banana, dentadura ou tubes)", price: 18.00, category: "Gourmet" },
+            { name: "Morango com nutella 500ml", description: "Açaí, morango, creme de morango e nutella", price: 18.00, category: "Gourmet" },
+            { name: "Ovomaltine com creme de ninho 500ml", description: "Açaí, ovomaltine, creme de ninho", price: 18.00, category: "Gourmet" },
+        ];
+
         let storeConfig = { 
             isOpen: true, storeName: "Açaí Ellegance", phone: "557998168282", 
             pixKey: "57970392000139", pixName: "Gabriel Santana Morais", 
             pixWarning: "Envie o comprovativo pelo WhatsApp após o pedido.",
             googleScriptUrl: "https://script.google.com/macros/s/AKfycbxp6ScFCNAGaqgH3e1gIRBuGFjWDKsVqXk-At2D2FL5YEffp8CZRTuRjlmEMhSShXAj/exec",
-            sizes: [
-                { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
-                { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
-                { name: "Amendoim 300ml", description: "Açaí, amendoim, banana e leite condensado", price: 10.00, category: "Tradicional" },
-                { name: "Cupuaçu 300ml", description: "Açaí, cupuaçu, leite condensado", price: 10.00, category: "Tradicional" },
-                { name: "Paçoca 500ml", description: "açai, paçoca, banana e leite condensado", price: 14.00, category: "Tradicional" },
-                { name: "Ninho 500ml", description: "Açai, leite em pó, banana e leite condensado", price: 14.00, category: "Tradicional" },
-                { name: "Amendoim 500ml", description: "açai, amendoim, banana e leite condensado", price: 14.00, category: "Tradicional" },
-                { name: "Cupuaçu 500ml", description: "açai, cupuaçu e leite condensado", price: 14.00, category: "Tradicional" },
-                { name: "Morango 300ml", description: "Açaí, morango, creme de morango e leite condensado", price: 13.00, category: "Gourmet" },
-                { name: "Maracujá 300ml", description: "Açaí, creme de maracujá e leite condensado", price: 13.00, category: "Gourmet" },
-                { name: "Ovomaltine 300ml", description: "Açaí, ovomaltine, nutella", price: 13.00, category: "Gourmet" },
-                { name: "Creme de Ninho 300ml", description: "Açaí, leite em pó, creme de ninho e nutella", price: 13.00, category: "Gourmet" },
-                { name: "M&M 300ml", description: "Açaí, leite em pó,nutella e M&M", price: 13.00, category: "Gourmet" },
-                { name: "Morango com nutella 300ml", description: "Açaí, morango, creme de morango e nutella", price: 13.00, category: "Gourmet" },
-                { name: "Ovomaltine com creme de ninho 300ml", description: "Açaí, ovomaltine, creme de ninho", price: 13.00, category: "Gourmet" },
-                { name: "Morango 500ml", description: "açai, morango,creme de morango e leite condensado", price: 18.00, category: "Gourmet" },
-                { name: "Maracuja 500ml", description: "açai, creme de maracuja e leite condensado", price: 18.00, category: "Gourmet" },
-                { name: "Ovomaltine 500ml", description: "açai, ovomaltine e nutella", price: 18.00, category: "Gourmet" },
-                { name: "Creme de Ninho 500ml", description: "açai, leite em pó, creme de ninho e nutella", price: 18.00, category: "Gourmet" },
-                { name: "Garrafa Fine 500ml", description: "açai, leite condensado, cobertura de beijinho, m&m e fine. (Banana, dentadura ou tubes)", price: 18.00, category: "Gourmet" },
-                { name: "Morango com nutella 500ml", description: "Açaí, morango, creme de morango e nutella", price: 18.00, category: "Gourmet" },
-                { name: "Ovomaltine com creme de ninho 500ml", description: "Açaí, ovomaltine, creme de ninho", price: 18.00, category: "Gourmet" },
-            ],
+            sizes: DEFAULT_SIZES,
             deliveryZones: [
                 {name: "Aracaju: Bairro Industrial", price: 4.00},
                 {name: "Aracaju: Porto D’antas", price: 3.00},
@@ -302,19 +313,17 @@
 
         let cart = []; let quantity = 1; let isDemoMode = firebaseConfig.apiKey.includes("COLE_A_SUA"); let db;
 
-        // --- SISTEMA DE HORÁRIO ---
         function checkOperatingHours() {
             const agora = new Date();
             const dia = agora.getDay();
             const min = agora.getHours() * 60 + agora.getMinutes();
             const fecho = 23 * 60 + 20;
             if (dia === 1) return false;
-            if (dia >= 2 && dia <= 5) return (min >= 1110 && min <= fecho); // 18:30
-            if (dia === 0 || dia === 6) return (min >= 960 && min <= fecho); // 16:00
+            if (dia >= 2 && dia <= 5) return (min >= 1110 && min <= fecho);
+            if (dia === 0 || dia === 6) return (min >= 960 && min <= fecho);
             return false;
         }
 
-        // --- ATUALIZAÇÃO DA INTERFACE ---
         function updateClientUI() {
             const isTimeOpen = checkOperatingHours();
             const isOpen = storeConfig.isOpen && isTimeOpen;
@@ -350,12 +359,27 @@
 
         function renderGrid(cat, id) {
             const cont = document.getElementById(id);
-            if (!cont || cont.innerHTML !== '') return;
-            storeConfig.sizes.filter(s => s.category === cat).forEach(item => {
+            if (!cont) return;
+            cont.innerHTML = ""; // LIMPA ANTES DE RENDERIZAR
+            
+            // Usa a lista local se a do banco estiver desatualizada
+            const items = storeConfig.sizes && storeConfig.sizes.length > 0 ? storeConfig.sizes : DEFAULT_SIZES;
+
+            items.filter(s => s.category === cat).forEach(item => {
+                const isAvailable = item.available !== false;
                 const label = document.createElement('label');
-                label.className = "card-item relative flex flex-col p-4 bg-white border border-slate-100 rounded-2xl cursor-pointer shadow-sm mb-2";
-                label.onclick = (e) => { if(e.target.tagName==='INPUT'){updateTotal(); return;} e.preventDefault(); const i = label.querySelector('input'); i.checked=!i.checked; updateTotal(); };
-                label.innerHTML = `<div class="flex items-start gap-4 mb-3 pointer-events-none"><div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-600"><i data-lucide="ice-cream-2"></i></div><div class="flex-1"><span class="block font-bold text-sm text-slate-800">${item.name}</span><span class="text-[10px] text-slate-400 block mt-1">${item.description}</span></div></div><div class="mt-auto border-t border-dashed pt-3 flex justify-between items-center pointer-events-none"><span class="font-black text-purple-900">R$ ${item.price.toFixed(2).replace('.', ',')}</span><input type="checkbox" name="size" value="${item.name}" data-price="${item.price}" class="w-5 h-5 accent-purple-600"></div>`;
+                
+                const baseClass = "card-item relative flex flex-col p-4 bg-white border border-slate-100 rounded-2xl cursor-pointer shadow-sm mb-2";
+                label.className = isAvailable ? baseClass : baseClass + " opacity-50 grayscale cursor-not-allowed";
+                
+                if (isAvailable) {
+                    label.onclick = (e) => { if(e.target.tagName==='INPUT'){updateTotal(); return;} e.preventDefault(); const i = label.querySelector('input'); i.checked=!i.checked; updateTotal(); };
+                }
+
+                const priceDisplay = isAvailable ? `R$ ${item.price.toFixed(2).replace('.', ',')}` : 'Esgotado';
+                const inputState = isAvailable ? '' : 'disabled';
+
+                label.innerHTML = `<div class="flex items-start gap-4 mb-3 pointer-events-none"><div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-600"><i data-lucide="ice-cream-2"></i></div><div class="flex-1"><span class="block font-bold text-sm text-slate-800">${item.name}</span><span class="text-[10px] text-slate-400 block mt-1">${item.description}</span></div></div><div class="mt-auto border-t border-dashed pt-3 flex justify-between items-center pointer-events-none"><span class="font-black text-purple-900">${priceDisplay}</span><input type="checkbox" name="size" value="${item.name}" data-price="${item.price}" class="w-5 h-5 accent-purple-600" ${inputState}></div>`;
                 cont.appendChild(label);
             });
             lucide.createIcons();
@@ -398,6 +422,7 @@
 
         async function init() {
             if (isDemoMode) {
+                storeConfig.sizes = DEFAULT_SIZES; // Garante uso da lista local no modo demo
                 updateClientUI();
             } else {
                 try {
@@ -406,20 +431,25 @@
                     await signInAnonymously(auth);
                     onSnapshot(doc(db, 'loja', 'configuracao'), (snap) => {
                         if(snap.exists()) { 
-                            // Mescla configurações do banco com padrões para não perder dados importantes
-                            storeConfig = { ...storeConfig, ...snap.data() }; 
+                            const dbData = snap.data();
+                            // PRIORIDADE AO CÓDIGO LOCAL PARA OS PRODUTOS
+                            storeConfig = { ...storeConfig, ...dbData, sizes: DEFAULT_SIZES }; 
                             updateClientUI(); 
                             updateAdminUI(); 
                         } else { 
                             setDoc(doc(db, 'loja', 'configuracao'), storeConfig); 
                         }
                     });
-                } catch (e) { console.error(e); }
+                } catch (e) { 
+                    console.error(e);
+                    // Fallback se DB falhar
+                    storeConfig.sizes = DEFAULT_SIZES;
+                    updateClientUI();
+                }
             }
             setInterval(updateClientUI, 20000); 
         }
 
-        // --- EXPOSIÇÃO WINDOW ---
         window.renderCart = renderCart;
         window.changeQty = (d) => { quantity = Math.max(1, quantity + d); document.getElementById('qty-display').innerText = quantity; updateTotal(); }
         window.toggleCart = (s) => { const p = document.getElementById('cart-panel'); const o = document.getElementById('cart-overlay'); if(s) { p.classList.remove('translate-x-full'); o.classList.remove('invisible','opacity-0'); renderCart(); } else { p.classList.add('translate-x-full'); o.classList.add('opacity-0'); setTimeout(()=>o.classList.add('invisible'), 300); } }
@@ -473,8 +503,7 @@
                 envio = `${zName} - ${morada}`;
             }
             const subTotal = cart.reduce((s, i) => s + i.price, 0);
-            const totalVal = subTotal + shipCost;
-            const totalStr = `R$ ${totalVal.toFixed(2).replace('.', ',')}`;
+            const totalStr = `R$ ${(subTotal + shipCost).toFixed(2).replace('.', ',')}`;
             const pagamentoFinal = pay === 'Pix' && isConfirmed ? "Pix (Confirmado ✅)" : pay;
 
             const orderData = { 
@@ -487,10 +516,8 @@
             if(storeConfig.googleScriptUrl) fetch(storeConfig.googleScriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) });
             
             let wMsg = `🥤 *PEDIDO - ${storeConfig.storeName.toUpperCase()}*\n👤 *Cliente:* ${name}\n📞 *Tel:* ${phone}\n💳 *Pagamento:* ${pagamentoFinal}\n📍 *Local:* ${envio}\n\n*ITENS:* \n` + cart.map(i => `- ${i.size}`).join("\n");
-            if(shipCost > 0) wMsg += `\n🛵 *Taxa de Entrega:* R$ ${shipCost.toFixed(2).replace('.', ',')}`;
             wMsg += `\n\n💰 *TOTAL FINAL: ${totalStr}*`;
             
-            // Remove caracteres não numéricos do telefone da loja para criar o link
             const cleanPhone = storeConfig.phone.replace(/\D/g, '');
             window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(wMsg)}`, '_blank');
         }
