@@ -33,7 +33,7 @@
         ::-webkit-scrollbar { display: none; }
         input, select, textarea { font-size: 16px !important; }
         
-        /* --- EFEITOS ESPECIAIS RESTAURADOS --- */
+        /* --- EFEITOS ESPECIAIS (Animação Pop) --- */
         @keyframes selectPop {
             0% { transform: scale(0.95); }
             50% { transform: scale(1.05); }
@@ -45,21 +45,25 @@
             border-width: 2px;
         }
         
-        /* Quando selecionado (borda roxa, fundo claro e sombra) */
+        /* Aplica animação e sombra quando selecionado */
         .peer:checked + .option-card {
-            border-color: #7c3aed !important; 
-            background-color: #f3e8ff !important; 
-            color: #5b21b6 !important;
             box-shadow: 0 8px 20px -4px rgba(124, 58, 237, 0.2);
             animation: selectPop 0.4s ease-out forwards;
         }
         
-        /* Animação do ícone dentro do botão */
+        /* Anima o ícone */
         .peer:checked + .option-card svg {
             transform: scale(1.2);
             stroke: #7c3aed;
             filter: drop-shadow(0 2px 4px rgba(124, 58, 237, 0.3));
             transition: all 0.4s ease;
+        }
+        
+        /* CORRIGIDO: CSS Padrão Válido */
+        .btn-status-active { 
+            box-shadow: 0 0 0 4px rgba(0,0,0,0.1); 
+            transform: scale(0.98); 
+            opacity: 1 !important; 
         }
     </style>
 </head>
@@ -160,13 +164,13 @@
                         <div class="grid grid-cols-2 gap-3">
                             <label class="cursor-pointer">
                                 <input type="radio" name="delivery-type" value="Retirada" class="peer hidden" onchange="window.toggleAddress(false)" checked>
-                                <div class="option-card p-4 text-center border-2 border-slate-100 rounded-2xl text-xs font-black text-slate-400 uppercase flex flex-col items-center gap-2">
+                                <div class="option-card p-4 text-center border-2 border-slate-100 rounded-2xl text-xs font-black text-slate-400 uppercase flex flex-col items-center gap-2 peer-checked:border-purple-600 peer-checked:bg-purple-50 peer-checked:text-purple-800 transition-colors">
                                     <i data-lucide="store" class="w-5 h-5 mb-1 text-slate-300"></i> No Local
                                 </div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="delivery-type" value="Entrega" class="peer hidden" onchange="window.toggleAddress(true)">
-                                <div class="option-card p-4 text-center border-2 border-slate-100 rounded-2xl text-xs font-black text-slate-400 uppercase flex flex-col items-center gap-2">
+                                <div class="option-card p-4 text-center border-2 border-slate-100 rounded-2xl text-xs font-black text-slate-400 uppercase flex flex-col items-center gap-2 peer-checked:border-purple-600 peer-checked:bg-purple-50 peer-checked:text-purple-800 transition-colors">
                                     <i data-lucide="bike" class="w-5 h-5 mb-1 text-slate-300"></i> Entrega
                                 </div>
                             </label>
@@ -217,6 +221,15 @@
         </div>
         <div class="space-y-6 max-w-md mx-auto">
             <div class="bg-white p-5 rounded-2xl border-2 space-y-4">
+                <p class="text-xs font-bold text-slate-400 uppercase">Estado da Loja</p>
+                <div class="flex gap-3">
+                    <button onclick="window.setStatus('open')" id="btn-status-open" class="flex-1 p-4 bg-green-500 text-white font-black rounded-xl shadow-lg hover:scale-95 transition-all opacity-50">ABRIR AGORA</button>
+                    <button onclick="window.setStatus('auto')" id="btn-status-auto" class="flex-1 p-4 bg-blue-500 text-white font-black rounded-xl shadow-lg hover:scale-95 transition-all opacity-50 flex flex-col items-center justify-center text-xs"><span class="text-lg">⏰</span> AUTOMÁTICO</button>
+                    <button onclick="window.setStatus('closed')" id="btn-status-closed" class="flex-1 p-4 bg-red-500 text-white font-black rounded-xl shadow-lg hover:scale-95 transition-all opacity-50">FECHAR AGORA</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border-2 space-y-4">
                 <p class="text-xs font-bold text-slate-400 uppercase">Configurações Gerais</p>
                 <input id="adm-store-name" class="w-full p-3 border rounded-lg text-sm" placeholder="Nome da Loja">
                 <input id="adm-whatsapp" class="w-full p-3 border rounded-lg text-sm" placeholder="WhatsApp do Dono">
@@ -225,11 +238,6 @@
                 <textarea id="adm-pix-warning" class="w-full p-3 border rounded-lg text-sm" rows="3" placeholder="Aviso Pix"></textarea>
                 <input id="adm-google-url" class="w-full p-3 border rounded-lg text-sm bg-purple-50" placeholder="URL da Planilha">
                 <button onclick="window.saveGeneralConfig()" class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">Salvar Dados</button>
-                
-                <div class="flex gap-3 pt-4 border-t">
-                    <button onclick="window.updateStatus(true)" id="adm-btn-open" class="flex-1 p-4 bg-green-500 text-white font-black rounded-xl">ABRIR MANUAL</button>
-                    <button onclick="window.updateStatus(false)" id="adm-btn-close" class="flex-1 p-4 bg-red-500 text-white font-black rounded-xl">FECHAR MANUAL</button>
-                </div>
             </div>
         </div>
     </div>
@@ -261,7 +269,7 @@
             appId: "1:123456:web:789abc"
         };
 
-        // --- LISTA DE PRODUTOS HARDCODED (Para garantir que aparecem sempre) ---
+        // --- LISTA DE PRODUTOS ---
         const DEFAULT_SIZES = [
             // TRADICIONAIS - 300ml (TODOS ESGOTADOS)
             { name: "Paçoca 300ml (ESGOTADO)", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional", available: false },
@@ -286,6 +294,7 @@
             
             // GOURMET - 500ml
             { name: "Morango 500ml", description: "açai, morango,creme de morango e leite condensado", price: 18.00, category: "Gourmet" },
+            // ITEM EM FALTA (500ml)
             { name: "Maracuja 500ml (EM FALTA)", description: "açai, creme de maracuja e leite condensado", price: 18.00, category: "Gourmet", available: false },
             { name: "Ovomaltine 500ml", description: "açai, ovomaltine e nutella", price: 18.00, category: "Gourmet" },
             { name: "Creme de Ninho 500ml", description: "açai, leite em pó, creme de ninho e nutella", price: 18.00, category: "Gourmet" },
@@ -295,7 +304,8 @@
         ];
 
         let storeConfig = { 
-            isOpen: true, storeName: "Açaí Ellegance", phone: "557998168282", 
+            statusMode: 'auto', // auto, open, closed
+            storeName: "Açaí Ellegance", phone: "557998168282", 
             pixKey: "57970392000139", pixName: "Gabriel Santana Morais", 
             pixWarning: "Envie o comprovativo pelo WhatsApp após o pedido.",
             googleScriptUrl: "https://script.google.com/macros/s/AKfycbxp6ScFCNAGaqgH3e1gIRBuGFjWDKsVqXk-At2D2FL5YEffp8CZRTuRjlmEMhSShXAj/exec",
@@ -331,7 +341,19 @@
 
         function updateClientUI() {
             const isTimeOpen = checkOperatingHours();
-            const isOpen = storeConfig.isOpen && isTimeOpen;
+            let isOpen = false;
+            let statusText = "";
+
+            if (storeConfig.statusMode === 'open') {
+                isOpen = true;
+                statusText = "Aberto (Manual)";
+            } else if (storeConfig.statusMode === 'closed') {
+                isOpen = false;
+                statusText = "Fechado (Manual)";
+            } else {
+                isOpen = isTimeOpen;
+                statusText = isTimeOpen ? "Aberto Agora" : "Fechado";
+            }
 
             if(document.getElementById('header-store-name')) document.getElementById('header-store-name').innerText = storeConfig.storeName;
             if(document.getElementById('pix-name-display')) document.getElementById('pix-name-display').innerText = storeConfig.pixName;
@@ -344,30 +366,46 @@
             const msgClose = document.getElementById('closed-msg');
 
             if (isOpen) {
-                if(statusTxt) statusTxt.innerHTML = `<span class="text-green-600 font-bold text-[9px]">Aberto Agora</span>`;
+                if(statusTxt) statusTxt.innerHTML = `<span class="text-green-600 font-bold text-[9px] uppercase tracking-wider">${statusText}</span>`;
                 if(indEl) indEl.className = "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white bg-green-500 status-open";
                 if(btnAdd) btnAdd.disabled = false;
                 if(msgClose) msgClose.classList.add('hidden');
             } else {
-                if(statusTxt) statusTxt.innerHTML = `<span class="text-red-500 font-bold text-[9px]">Fechado</span>`;
+                if(statusTxt) statusTxt.innerHTML = `<span class="text-red-500 font-bold text-[9px] uppercase tracking-wider">${statusText}</span>`;
                 if(indEl) indEl.className = "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white bg-red-500";
                 if(btnAdd) btnAdd.disabled = true;
                 if(msgClose) {
                     msgClose.classList.remove('hidden');
-                    msgClose.innerText = !isTimeOpen ? "Abre às 18:30 (Fim de semana 16:00)" : "Fechado no Momento";
+                    msgClose.innerText = storeConfig.statusMode === 'auto' ? "Abre às 18:30 (Fim de semana 16:00)" : "Fechado Pelo Dono";
                 }
             }
             renderGrid("Tradicional", "traditional-container");
             renderGrid("Gourmet", "gourmet-container");
             updateTotal();
+            updateAdminButtons();
+        }
+
+        function updateAdminButtons() {
+            const mode = storeConfig.statusMode || 'auto';
+            const btnOpen = document.getElementById('btn-status-open');
+            const btnAuto = document.getElementById('btn-status-auto');
+            const btnClosed = document.getElementById('btn-status-closed');
+
+            if(btnOpen && btnAuto && btnClosed) {
+                [btnOpen, btnAuto, btnClosed].forEach(b => b.classList.remove('btn-status-active', 'opacity-100'));
+                [btnOpen, btnAuto, btnClosed].forEach(b => b.classList.add('opacity-50'));
+
+                if(mode === 'open') { btnOpen.classList.add('btn-status-active', 'opacity-100'); }
+                if(mode === 'auto') { btnAuto.classList.add('btn-status-active', 'opacity-100'); }
+                if(mode === 'closed') { btnClosed.classList.add('btn-status-active', 'opacity-100'); }
+            }
         }
 
         function renderGrid(cat, id) {
             const cont = document.getElementById(id);
             if (!cont) return;
-            cont.innerHTML = ""; // LIMPA ANTES DE RENDERIZAR
+            cont.innerHTML = ""; 
             
-            // Usa a lista local se a do banco estiver desatualizada
             const items = storeConfig.sizes && storeConfig.sizes.length > 0 ? storeConfig.sizes : DEFAULT_SIZES;
 
             items.filter(s => s.category === cat).forEach(item => {
@@ -427,7 +465,7 @@
 
         async function init() {
             if (isDemoMode) {
-                storeConfig.sizes = DEFAULT_SIZES; // Garante uso da lista local no modo demo
+                storeConfig.sizes = DEFAULT_SIZES; 
                 updateClientUI();
             } else {
                 try {
@@ -437,7 +475,6 @@
                     onSnapshot(doc(db, 'loja', 'configuracao'), (snap) => {
                         if(snap.exists()) { 
                             const dbData = snap.data();
-                            // PRIORIDADE AO CÓDIGO LOCAL PARA OS PRODUTOS
                             storeConfig = { ...storeConfig, ...dbData, sizes: DEFAULT_SIZES }; 
                             updateClientUI(); 
                             updateAdminUI(); 
@@ -447,7 +484,6 @@
                     });
                 } catch (e) { 
                     console.error(e);
-                    // Fallback se DB falhar
                     storeConfig.sizes = DEFAULT_SIZES;
                     updateClientUI();
                 }
@@ -472,11 +508,22 @@
             const method = document.getElementById('payment-method').value;
             if(container) container.classList.toggle('hidden', method !== 'Pix');
         }
-        window.copyPix = () => { const k = document.getElementById('pix-key-display'); if(k) { k.select(); document.execCommand('copy'); showToast(); } }
+        
+        window.copyPix = () => { 
+            const k = document.getElementById('pix-key-display'); 
+            if(k) { 
+                navigator.clipboard.writeText(k.value).then(showToast).catch(() => {
+                    k.select();
+                    document.execCommand('copy'); 
+                    showToast();
+                });
+            } 
+        }
+
         window.openAdminLogin = () => document.getElementById('admin-login-modal').classList.remove('hidden');
         window.closeAdmin = () => document.getElementById('admin-interface').classList.add('hidden');
         window.verifyAdmin = () => { if(document.getElementById('admin-pass-input').value === 'admin123') { document.getElementById('admin-login-modal').classList.add('hidden'); document.getElementById('admin-interface').classList.remove('hidden'); updateAdminUI(); } else alert('Incorreto!'); }
-        window.updateStatus = (s) => saveData({ isOpen: s });
+        window.setStatus = (status) => saveData({ statusMode: status }); 
         window.saveGeneralConfig = () => saveData({ storeName: document.getElementById('adm-store-name').value, phone: document.getElementById('adm-whatsapp').value, pixKey: document.getElementById('adm-pix-key').value, pixName: document.getElementById('adm-pix-name').value, pixWarning: document.getElementById('adm-pix-warning').value, googleScriptUrl: document.getElementById('adm-google-url').value.trim() });
 
         window.addToCart = () => {
@@ -521,6 +568,7 @@
             if(storeConfig.googleScriptUrl) fetch(storeConfig.googleScriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) });
             
             let wMsg = `🥤 *PEDIDO - ${storeConfig.storeName.toUpperCase()}*\n👤 *Cliente:* ${name}\n📞 *Tel:* ${phone}\n💳 *Pagamento:* ${pagamentoFinal}\n📍 *Local:* ${envio}\n\n*ITENS:* \n` + cart.map(i => `- ${i.size}`).join("\n");
+            if(shipCost > 0) wMsg += `\n🛵 *Taxa de Entrega:* R$ ${shipCost.toFixed(2).replace('.', ',')}`;
             wMsg += `\n\n💰 *TOTAL FINAL: ${totalStr}*`;
             
             const cleanPhone = storeConfig.phone.replace(/\D/g, '');
@@ -543,6 +591,7 @@
             if(document.getElementById('adm-pix-name')) document.getElementById('adm-pix-name').value = storeConfig.pixName;
             if(document.getElementById('adm-pix-warning')) document.getElementById('adm-pix-warning').value = storeConfig.pixWarning;
             if(document.getElementById('adm-google-url')) document.getElementById('adm-google-url').value = storeConfig.googleScriptUrl;
+            updateAdminButtons();
         }
 
         function showToast() { const t = document.getElementById('toast'); if(t) { t.classList.remove('opacity-0'); setTimeout(()=>t.classList.add('opacity-0'), 2000); } }
