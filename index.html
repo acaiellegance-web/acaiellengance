@@ -33,25 +33,18 @@
         ::-webkit-scrollbar { display: none; }
         input, select, textarea { font-size: 16px !important; }
         
-        /* --- EFEITOS ESPECIAIS (Animação Pop) --- */
+        /* EFEITOS */
         @keyframes selectPop {
             0% { transform: scale(0.95); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        
-        .option-card { 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            border-width: 2px;
-        }
-        
-        /* Aplica animação e sombra quando selecionado */
+        .option-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-width: 2px; }
+        .option-card:active { transform: scale(0.95); }
         .peer:checked + .option-card {
             box-shadow: 0 8px 20px -4px rgba(124, 58, 237, 0.2);
             animation: selectPop 0.4s ease-out forwards;
         }
-        
-        /* Anima o ícone */
         .peer:checked + .option-card svg {
             transform: scale(1.2);
             stroke: #7c3aed;
@@ -59,11 +52,11 @@
             transition: all 0.4s ease;
         }
         
-        /* CORRIGIDO: CSS Padrão Válido */
         .btn-status-active { 
-            box-shadow: 0 0 0 4px rgba(0,0,0,0.1); 
+            box-shadow: 0 0 0 4px rgba(0,0,0,0.2) !important; 
             transform: scale(0.98); 
-            opacity: 1 !important; 
+            opacity: 1 !important;
+            filter: brightness(1.1);
         }
     </style>
 </head>
@@ -269,42 +262,42 @@
             appId: "1:123456:web:789abc"
         };
 
-        // --- LISTA DE PRODUTOS ---
+        // --- LISTA DE PRODUTOS RESTAURADA ---
         const DEFAULT_SIZES = [
-            // TRADICIONAIS - 300ml (TODOS ESGOTADOS)
-            { name: "Paçoca 300ml (ESGOTADO)", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional", available: false },
-            { name: "Ninho 300ml (ESGOTADO)", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional", available: false },
-            { name: "Amendoim 300ml (ESGOTADO)", description: "Açaí, amendoim, banana e leite condensado", price: 10.00, category: "Tradicional", available: false },
-            { name: "Cupuaçu 300ml (ESGOTADO)", description: "Açaí, cupuaçu, leite condensado", price: 10.00, category: "Tradicional", available: false },
+            // TRADICIONAIS - 300ml (AGORA DISPONÍVEIS)
+            { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
+            { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
+            { name: "Amendoim 300ml", description: "Açaí, amendoim, banana e leite condensado", price: 10.00, category: "Tradicional" },
+            { name: "Cupuaçu 300ml", description: "Açaí, cupuaçu, leite condensado", price: 10.00, category: "Tradicional" },
             
             // TRADICIONAIS - 500ml
-            { name: "Paçoca 500ml", description: "açai, paçoca, banana e leite condensado", price: 12.00, category: "Tradicional" },
-            { name: "Ninho 500ml", description: "Açai, leite em pó, banana e leite condensado", price: 12.00, category: "Tradicional" },
-            { name: "Amendoim 500ml", description: "açai, amendoim, banana e leite condensado", price: 12.00, category: "Tradicional" },
-            { name: "Cupuaçu 500ml", description: "açai, cupuaçu e leite condensado", price: 12.00, category: "Tradicional" },
+            { name: "Paçoca 500ml", description: "açai, paçoca, banana e leite condensado", price: 14.00, category: "Tradicional" },
+            { name: "Ninho 500ml", description: "Açai, leite em pó, banana e leite condensado", price: 14.00, category: "Tradicional" },
+            { name: "Amendoim 500ml", description: "açai, amendoim, banana e leite condensado", price: 14.00, category: "Tradicional" },
+            { name: "Cupuaçu 500ml", description: "açai, cupuaçu e leite condensado", price: 14.00, category: "Tradicional" },
             
-            // GOURMET - 300ml (TODOS ESGOTADOS)
-            { name: "Morango 300ml (ESGOTADO)", description: "Açaí, morango, creme de morango e leite condensado", price: 13.00, category: "Gourmet", available: false },
-            { name: "Maracujá 300ml (ESGOTADO)", description: "Açaí, creme de maracujá e leite condensado", price: 13.00, category: "Gourmet", available: false },
-            { name: "Ovomaltine 300ml (ESGOTADO)", description: "Açaí, ovomaltine, nutella", price: 13.00, category: "Gourmet", available: false },
-            { name: "Creme de Ninho 300ml (ESGOTADO)", description: "Açaí, leite em pó, creme de ninho e nutella", price: 13.00, category: "Gourmet", available: false },
-            { name: "M&M 300ml (ESGOTADO)", description: "Açaí, leite em pó,nutella e M&M", price: 13.00, category: "Gourmet", available: false },
-            { name: "Morango com nutella 300ml (ESGOTADO)", description: "Açaí, morango, creme de morango e nutella", price: 13.00, category: "Gourmet", available: false },
-            { name: "Ovomaltine com creme de ninho 300ml (ESGOTADO)", description: "Açaí, ovomaltine, creme de ninho", price: 13.00, category: "Gourmet", available: false },
+            // GOURMET - 300ml (AGORA DISPONÍVEIS)
+            { name: "Morango 300ml", description: "Açaí, morango, creme de morango e leite condensado", price: 14.00, category: "Gourmet" },
+            { name: "Maracujá 300ml", description: "Açaí, creme de maracujá e leite condensado", price: 14.00, category: "Gourmet" },
+            { name: "Ovomaltine 300ml", description: "Açaí, ovomaltine, nutella", price: 14.00, category: "Gourmet" },
+            { name: "Creme de Ninho 300ml", description: "Açaí, leite em pó, creme de ninho e nutella", price: 14.00, category: "Gourmet" },
+            { name: "M&M 300ml", description: "Açaí, leite em pó,nutella e M&M", price: 14.00, category: "Gourmet" },
+            { name: "Morango com nutella 300ml", description: "Açaí, morango, creme de morango e nutella", price: 14.00, category: "Gourmet" },
+            { name: "Ovomaltine com creme de ninho 300ml", description: "Açaí, ovomaltine, creme de ninho", price: 14.00, category: "Gourmet" },
             
             // GOURMET - 500ml
-            { name: "Morango 500ml", description: "açai, morango,creme de morango e leite condensado", price: 16.00, category: "Gourmet" },
-            // ITEM EM FALTA (500ml)
-            { name: "Maracuja 500ml (EM FALTA)", description: "açai, creme de maracuja e leite condensado", price: 18.00, category: "Gourmet", available: false },
-            { name: "Ovomaltine 500ml", description: "açai, ovomaltine e nutella", price: 16.00, category: "Gourmet" },
-            { name: "Creme de Ninho 500ml", description: "açai, leite em pó, creme de ninho e nutella", price: 16.00, category: "Gourmet" },
-            { name: "Garrafa Fine 500ml", description: "açai, leite condensado, cobertura de beijinho, m&m e fine. (Banana, dentadura ou tubes)", price: 16.00, category: "Gourmet" },
-            { name: "Morango com nutella 500ml", description: "Açaí, morango, creme de morango e nutella", price: 16.00, category: "Gourmet" },
-            { name: "Ovomaltine com creme de ninho 500ml", description: "Açaí, ovomaltine, creme de ninho", price: 16.00, category: "Gourmet" },
+            { name: "Morango 500ml", description: "açai, morango,creme de morango e leite condensado", price: 18.00, category: "Gourmet" },
+            { name: "Maracuja 500ml", description: "açai, creme de maracuja e leite condensado", price: 18.00, category: "Gourmet" },
+            { name: "Ovomaltine 500ml", description: "açai, ovomaltine e nutella", price: 18.00, category: "Gourmet" },
+            { name: "Creme de Ninho 500ml", description: "açai, leite em pó, creme de ninho e nutella", price: 18.00, category: "Gourmet" },
+            { name: "Garrafa Fine 500ml", description: "açai, leite condensado, cobertura de beijinho, m&m e fine. (Banana, dentadura ou tubes)", price: 18.00, category: "Gourmet" },
+            { name: "Morango com nutella 500ml", description: "Açaí, morango, creme de morango e nutella", price: 18.00, category: "Gourmet" },
+            { name: "Ovomaltine com creme de ninho 500ml", description: "Açaí, ovomaltine, creme de ninho", price: 18.00, category: "Gourmet" },
         ];
 
+        // ⚠️ STATUS AINDA FECHADO MANUALMENTE (Para evitar pedidos indesejados)
         let storeConfig = { 
-            statusMode: 'closed', // DEFAULT PARA FECHADO MANUALMENTE
+            statusMode: 'auto', // OBRIGATORIAMENTE FECHADO
             storeName: "Açaí Ellegance", phone: "557998168282", 
             pixKey: "57970392000139", pixName: "Gabriel Santana Morais", 
             pixWarning: "Envie o comprovativo pelo WhatsApp após o pedido.",
@@ -376,7 +369,7 @@
                 if(btnAdd) btnAdd.disabled = true;
                 if(msgClose) {
                     msgClose.classList.remove('hidden');
-                    msgClose.innerText = storeConfig.statusMode === 'auto' ? "Abre às 18:30 (Fim de semana 16:00)" : "Fechado Pelo Dono";
+                    msgClose.innerText = storeConfig.statusMode === 'auto' ? "Abre às 18:30 (Fim de semana 16:00)" : "LOJA FECHADA PELO DONO";
                 }
             }
             renderGrid("Tradicional", "traditional-container");
@@ -598,13 +591,4 @@
         window.addEventListener('load', init);
     </script>
 </body>
-
 </html>
-
-
-
-
-
-
-
-
