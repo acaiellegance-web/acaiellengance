@@ -58,6 +58,15 @@
             opacity: 1 !important;
             filter: brightness(1.1);
         }
+
+        /* Animação Flutuante */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="text-slate-800 pb-0">
@@ -120,7 +129,22 @@
             </div>
         </main>
 
-        <!-- Botão Inferior -->
+        <!-- MARCA DE ÁGUA FLUTUANTE (@Ferreira) -->
+        <div class="fixed bottom-32 left-4 z-40 pointer-events-none animate-float">
+            <div class="bg-white/80 backdrop-blur-md border border-purple-100 shadow-lg px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-80 hover:opacity-100 transition-opacity">
+                <div class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></div>
+                <p class="text-[9px] font-black text-purple-900 uppercase tracking-widest">
+                    @Ferreira - Web Designer
+                </p>
+            </div>
+        </div>
+
+        <!-- BOTÃO FLUTUANTE WHATSAPP -->
+        <a href="https://api.whatsapp.com/send?phone=557998168282&text=Ol%C3%A1!%20Gostaria%20de%20tirar%20uma%20d%C3%BAvida%20sobre%20o%20card%C3%A1pio." target="_blank" class="fixed bottom-28 right-4 z-40 bg-green-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center border-4 border-white">
+            <i data-lucide="message-circle" class="w-7 h-7 fill-current"></i>
+        </a>
+
+        <!-- Botão Inferior (Carrinho) -->
         <div class="fixed bottom-0 left-0 right-0 z-30 flex justify-center p-4 pointer-events-none">
             <div class="w-full max-w-md bg-white/95 backdrop-blur-md border border-slate-200 rounded-3xl shadow-2xl p-4 pointer-events-auto flex items-center gap-3">
                 <div class="flex items-center bg-slate-100 rounded-xl h-12 px-2 shadow-inner">
@@ -262,9 +286,9 @@
             appId: "1:123456:web:789abc"
         };
 
-        // --- LISTA DE PRODUTOS RESTAURADA ---
+        // --- LISTA DE PRODUTOS ---
         const DEFAULT_SIZES = [
-            // TRADICIONAIS - 300ml (AGORA DISPONÍVEIS)
+            // TRADICIONAIS - 300ml
             { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
             { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
             { name: "Amendoim 300ml", description: "Açaí, amendoim, banana e leite condensado", price: 10.00, category: "Tradicional" },
@@ -276,7 +300,7 @@
             { name: "Amendoim 500ml", description: "açai, amendoim, banana e leite condensado", price: 14.00, category: "Tradicional" },
             { name: "Cupuaçu 500ml", description: "açai, cupuaçu e leite condensado", price: 14.00, category: "Tradicional" },
             
-            // GOURMET - 300ml (AGORA DISPONÍVEIS)
+            // GOURMET - 300ml
             { name: "Morango 300ml", description: "Açaí, morango, creme de morango e leite condensado", price: 13.00, category: "Gourmet" },
             { name: "Maracujá 300ml", description: "Açaí, creme de maracujá e leite condensado", price: 13.00, category: "Gourmet" },
             { name: "Ovomaltine 300ml", description: "Açaí, ovomaltine, nutella", price: 13.00, category: "Gourmet" },
@@ -295,9 +319,8 @@
             { name: "Ovomaltine com creme de ninho 500ml", description: "Açaí, ovomaltine, creme de ninho", price: 18.00, category: "Gourmet" },
         ];
 
-        // ⚠️ STATUS AINDA FECHADO MANUALMENTE (Para evitar pedidos indesejados)
         let storeConfig = { 
-            statusMode: 'auto', // OBRIGATORIAMENTE FECHADO
+            statusMode: 'closed', // OBRIGATORIAMENTE FECHADO
             storeName: "Açaí Ellegance", phone: "557998168282", 
             pixKey: "57970392000139", pixName: "Gabriel Santana Morais", 
             pixWarning: "Envie o comprovativo pelo WhatsApp após o pedido.",
@@ -394,10 +417,16 @@
             }
         }
 
+        // CORREÇÃO DO BUG: MEMORIZA A SELEÇÃO ANTES DE RE-RENDERIZAR
         function renderGrid(cat, id) {
             const cont = document.getElementById(id);
             if (!cont) return;
-            cont.innerHTML = ""; 
+            
+            // 1. Memoriza quais checkboxes estão marcadas NESTE contentor
+            const currentlyChecked = Array.from(cont.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+            // 2. Limpa o HTML
+            cont.innerHTML = ""; 
             
             const items = storeConfig.sizes && storeConfig.sizes.length > 0 ? storeConfig.sizes : DEFAULT_SIZES;
 
@@ -414,8 +443,11 @@
 
                 const priceDisplay = isAvailable ? `R$ ${item.price.toFixed(2).replace('.', ',')}` : 'Esgotado';
                 const inputState = isAvailable ? '' : 'disabled';
+                
+                // 3. Verifica se este item estava marcado antes
+                const isChecked = currentlyChecked.includes(item.name) ? 'checked' : '';
 
-                label.innerHTML = `<div class="flex items-start gap-4 mb-3 pointer-events-none"><div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-600"><i data-lucide="ice-cream-2"></i></div><div class="flex-1"><span class="block font-bold text-sm text-slate-800">${item.name}</span><span class="text-[10px] text-slate-400 block mt-1">${item.description}</span></div></div><div class="mt-auto border-t border-dashed pt-3 flex justify-between items-center pointer-events-none"><span class="font-black text-purple-900">${priceDisplay}</span><input type="checkbox" name="size" value="${item.name}" data-price="${item.price}" class="w-5 h-5 accent-purple-600" ${inputState}></div>`;
+                label.innerHTML = `<div class="flex items-start gap-4 mb-3 pointer-events-none"><div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-600"><i data-lucide="ice-cream-2"></i></div><div class="flex-1"><span class="block font-bold text-sm text-slate-800">${item.name}</span><span class="text-[10px] text-slate-400 block mt-1">${item.description}</span></div></div><div class="mt-auto border-t border-dashed pt-3 flex justify-between items-center pointer-events-none"><span class="font-black text-purple-900">${priceDisplay}</span><input type="checkbox" name="size" value="${item.name}" data-price="${item.price}" class="w-5 h-5 accent-purple-600" ${inputState} ${isChecked}></div>`;
                 cont.appendChild(label);
             });
             lucide.createIcons();
@@ -423,7 +455,7 @@
 
         function updateTotal() {
             const items = document.querySelectorAll('input[name="size"]:checked');
-            let base = 0; 
+            let base = 0; 
             items.forEach(i => {
                 const price = parseFloat(i.getAttribute('data-price') || 0);
                 if(!isNaN(price)) base += price;
@@ -432,6 +464,8 @@
             if(display) display.innerText = `R$ ${(base * quantity).toFixed(2).replace('.', ',')}`;
         }
 
+        // Restante do código (renderCart, init, etc) permanece igual...
+        
         function renderCart() {
             const list = document.getElementById('cart-list');
             const count = document.getElementById('cart-count');
@@ -458,7 +492,7 @@
 
         async function init() {
             if (isDemoMode) {
-                storeConfig.sizes = DEFAULT_SIZES; 
+                storeConfig.sizes = DEFAULT_SIZES; 
                 updateClientUI();
             } else {
                 try {
@@ -466,56 +500,56 @@
                     db = getFirestore(appInstance);
                     await signInAnonymously(auth);
                     onSnapshot(doc(db, 'loja', 'configuracao'), (snap) => {
-                        if(snap.exists()) { 
+                        if(snap.exists()) { 
                             const dbData = snap.data();
-                            storeConfig = { ...storeConfig, ...dbData, sizes: DEFAULT_SIZES }; 
-                            updateClientUI(); 
-                            updateAdminUI(); 
-                        } else { 
-                            setDoc(doc(db, 'loja', 'configuracao'), storeConfig); 
+                            storeConfig = { ...storeConfig, ...dbData, sizes: DEFAULT_SIZES }; 
+                            updateClientUI(); 
+                            updateAdminUI(); 
+                        } else { 
+                            setDoc(doc(db, 'loja', 'configuracao'), storeConfig); 
                         }
                     });
-                } catch (e) { 
+                } catch (e) { 
                     console.error(e);
                     storeConfig.sizes = DEFAULT_SIZES;
                     updateClientUI();
                 }
             }
-            setInterval(updateClientUI, 20000); 
+            setInterval(updateClientUI, 20000); 
         }
 
         window.renderCart = renderCart;
         window.changeQty = (d) => { quantity = Math.max(1, quantity + d); document.getElementById('qty-display').innerText = quantity; updateTotal(); }
         window.toggleCart = (s) => { const p = document.getElementById('cart-panel'); const o = document.getElementById('cart-overlay'); if(s) { p.classList.remove('translate-x-full'); o.classList.remove('invisible','opacity-0'); renderCart(); } else { p.classList.add('translate-x-full'); o.classList.add('opacity-0'); setTimeout(()=>o.classList.add('invisible'), 300); } }
-        window.toggleAddress = (s) => { 
+        window.toggleAddress = (s) => { 
             document.getElementById('address-block').classList.toggle('hidden', !s);
             const z = document.getElementById('delivery-zone');
             if(z.options.length <= 1) {
                 z.innerHTML = '<option value="">Escolha o bairro...</option>';
                 storeConfig.deliveryZones.forEach(dz => z.innerHTML += `<option value="${dz.price}" data-name="${dz.name}">${dz.name} ${dz.price > 0 ? `(+R$${dz.price.toFixed(2)})` : '(Grátis)'}</option>`);
             }
-            renderCart(); 
+            renderCart(); 
         }
-        window.togglePaymentUI = () => { 
+        window.togglePaymentUI = () => { 
             const container = document.getElementById('pix-container');
             const method = document.getElementById('payment-method').value;
             if(container) container.classList.toggle('hidden', method !== 'Pix');
         }
-        window.copyPix = () => { 
-            const k = document.getElementById('pix-key-display'); 
-            if(k) { 
+        window.copyPix = () => { 
+            const k = document.getElementById('pix-key-display'); 
+            if(k) { 
                 navigator.clipboard.writeText(k.value).then(showToast).catch(() => {
                     k.select();
-                    document.execCommand('copy'); 
+                    document.execCommand('copy'); 
                     showToast();
                 });
-            } 
+            } 
         }
 
         window.openAdminLogin = () => document.getElementById('admin-login-modal').classList.remove('hidden');
         window.closeAdmin = () => document.getElementById('admin-interface').classList.add('hidden');
         window.verifyAdmin = () => { if(document.getElementById('admin-pass-input').value === 'admin123') { document.getElementById('admin-login-modal').classList.add('hidden'); document.getElementById('admin-interface').classList.remove('hidden'); updateAdminUI(); } else alert('Incorreto!'); }
-        window.setStatus = (status) => saveData({ statusMode: status }); 
+        window.setStatus = (status) => saveData({ statusMode: status }); 
         window.saveGeneralConfig = () => saveData({ storeName: document.getElementById('adm-store-name').value, phone: document.getElementById('adm-whatsapp').value, pixKey: document.getElementById('adm-pix-key').value, pixName: document.getElementById('adm-pix-name').value, pixWarning: document.getElementById('adm-pix-warning').value, googleScriptUrl: document.getElementById('adm-google-url').value.trim() });
 
         window.addToCart = () => {
@@ -550,11 +584,11 @@
             const totalStr = `R$ ${(subTotal + shipCost).toFixed(2).replace('.', ',')}`;
             const pagamentoFinal = pay === 'Pix' && isConfirmed ? "Pix (Confirmado ✅)" : pay;
 
-            const orderData = { 
-                nome: name, telefone: phone, total: totalStr, 
-                pagamento: pagamentoFinal, entrega: envio, 
-                itens: cart.map(i => i.size).join(", "), 
-                taxa: `R$ ${shipCost.toFixed(2).replace('.', ',')}` 
+            const orderData = { 
+                nome: name, telefone: phone, total: totalStr, 
+                pagamento: pagamentoFinal, entrega: envio, 
+                itens: cart.map(i => i.size).join(", "), 
+                taxa: `R$ ${shipCost.toFixed(2).replace('.', ',')}` 
             };
             
             if(storeConfig.googleScriptUrl) fetch(storeConfig.googleScriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) });
@@ -592,4 +626,3 @@
     </script>
 </body>
 </html>
-
