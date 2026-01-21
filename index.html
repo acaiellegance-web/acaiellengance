@@ -555,7 +555,12 @@
                     hasItems = true;
                     const el = document.createElement('label');
                     const isChecked = currentChecks.includes(item.name) ? 'checked' : '';
-                    el.className = "card-item relative flex flex-col p-4 bg-white rounded-2xl cursor-pointer border border-white shadow-sm hover:shadow-lg hover:border-purple-200 select-none group transition-all";
+                    
+                    const selectionClasses = currentChecks.includes(item.name) 
+                        ? 'ring-2 ring-purple-500 bg-purple-50 border-purple-200' 
+                        : 'border-white';
+
+                    el.className = `card-item relative flex flex-col p-4 bg-white rounded-2xl cursor-pointer border shadow-sm hover:shadow-lg hover:border-purple-200 select-none group transition-all ${selectionClasses}`;
                     
                     const iconColor = item.category === 'Gourmet' ? 'text-pink-500 bg-pink-50' : 'text-purple-600 bg-purple-50';
 
@@ -584,7 +589,16 @@
                         if(e.target.tagName !== 'INPUT') {
                             e.preventDefault();
                             const chk = el.querySelector('input');
-                            if(chk) chk.checked = !chk.checked;
+                            if(chk) {
+                                chk.checked = !chk.checked;
+                                if(chk.checked) {
+                                    el.classList.remove('border-white');
+                                    el.classList.add('ring-2', 'ring-purple-500', 'bg-purple-50', 'border-purple-200');
+                                } else {
+                                    el.classList.add('border-white');
+                                    el.classList.remove('ring-2', 'ring-purple-500', 'bg-purple-50', 'border-purple-200');
+                                }
+                            }
                         }
                         window.updateTotal();
                     };
