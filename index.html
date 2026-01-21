@@ -85,8 +85,8 @@
         <!-- CABEÇALHO -->
         <header class="sticky top-0 z-40 glass-nav transition-all duration-300">
             <div class="px-5 h-16 flex items-center justify-between">
-                <!-- CLIQUE AQUI PARA ADMIN (ÁREA AUMENTADA PARA FACILITAR O CLIQUE) -->
-                <button class="flex items-center gap-3 cursor-pointer select-none active:opacity-70 transition-opacity text-left bg-transparent border-0 p-0" onclick="window.openAdminLogin()">
+                <!-- CLIQUE AQUI PARA ADMIN -->
+                <button class="flex items-center gap-3 cursor-pointer select-none active:opacity-70 transition-opacity bg-transparent border-0 p-0 text-left" onclick="window.openAdminLogin()">
                     <div class="relative pointer-events-none">
                         <div class="p-0.5 rounded-full bg-gradient-brand">
                             <img src="logoacai.jpeg" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover">
@@ -174,9 +174,7 @@
 
             <!-- MENU (GRID) -->
             <section class="px-5 min-h-[40vh]">
-                <div id="menu-loader" class="space-y-3 hidden">
-                    <!-- Loader opcional se quiser implementar skeleton -->
-                </div>
+                <div id="menu-loader" class="space-y-3 hidden"></div>
                 <div id="menu-grid" class="grid gap-3"></div>
                 
                 <div id="empty-search" class="hidden flex flex-col items-center justify-center py-10 text-center">
@@ -421,7 +419,7 @@
             storeName: "Açaí Ellegance", phone: "557998168282", 
             pixKey: "57970392000139", pixName: "Gabriel Santana Morais", 
             pixWarning: "Envie o comprovante no WhatsApp.",
-            googleScriptUrl: "https://script.google.com/macros/s/AKfycby7fRv1AeFRZOnWxqKnnmreja1lvtWt2o5JRiYxbPdgbwq2t510QKIKW1Xx8tbByLCj/exec",
+            googleScriptUrl: "https://script.google.com/macros/s/AKfycbwwLlrS62R7lol68oZjRCbDjwLSs87n54O4lSSUayDvkuWSpo3Y_QWHNda6D8I1U7Ni/exec",
             sizes: DEFAULT_SIZES,
             deliveryZones: [
                 {name: "Aracaju: Bairro Industrial", price: 4.00},
@@ -438,8 +436,8 @@
         let currentFilter = 'Todos';
 
         // --- FUNÇÕES GLOBAIS ---
-        function saveCart() { try { localStorage.setItem('acai_cart_v95', JSON.stringify(cart)); } catch (e) {} }
-        function loadCart() { try { const s = localStorage.getItem('acai_cart_v95'); if(s) cart = JSON.parse(s); } catch (e) {} }
+        function saveCart() { try { localStorage.setItem('acai_cart_v98', JSON.stringify(cart)); } catch (e) {} }
+        function loadCart() { try { const s = localStorage.getItem('acai_cart_v98'); if(s) cart = JSON.parse(s); } catch (e) {} }
         
         function checkRecentOrder() {
             try {
@@ -472,8 +470,8 @@
                 });
             }
 
-            // CARREGAMENTO COM VERSÃO NOVA (V95) PARA FORÇAR ATUALIZAÇÃO
-            const saved = localStorage.getItem('acai_config_v95');
+            // CARREGAMENTO COM VERSÃO NOVA (V98) PARA FORÇAR ATUALIZAÇÃO
+            const saved = localStorage.getItem('acai_config_v98');
             if(saved) storeConfig = JSON.parse(saved);
             
             loadCart();
@@ -729,6 +727,25 @@
             const subtotal = cart.reduce((acc, i) => acc + i.price, 0);
             const total = subtotal + shipping;
 
+            const orderData = { 
+                nome: name, telefone: phone, total: `R$ ${total.toFixed(2).replace('.', ',')}`, 
+                pagamento: payMethod, entrega: location, 
+                itens: cart.map(i => i.size).join(", "), 
+                taxa: `R$ ${shipping.toFixed(2).replace('.', ',')}` 
+            };
+
+            // TENTATIVA ROBUSTA DE ENVIO PARA O GOOGLE SHEETS
+            if(storeConfig.googleScriptUrl) {
+                fetch(storeConfig.googleScriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: JSON.stringify(orderData)
+                }).catch(err => console.error("Erro envio:", err));
+            }
+
             let msg = `🥤 *PEDIDO NOVO - AÇAÍ ELLEGANCE*\n\n`;
             msg += `👤 *Cliente:* ${name}\n📱 *Tel:* ${phone}\n💳 *Pagamento:* ${payMethod}\n📍 *${location}*\n\n`;
             msg += `*ITENS:* \n`;
@@ -905,7 +922,7 @@
         }
         async function saveConfig() {
             if(isDemoMode) {
-                localStorage.setItem('acai_config_v95', JSON.stringify(storeConfig));
+                localStorage.setItem('acai_config_v98', JSON.stringify(storeConfig));
                 showToast("Salvo (Demo Mode)");
             } else {
                 try {
