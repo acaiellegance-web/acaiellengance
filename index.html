@@ -307,7 +307,13 @@
                             <input type="text" id="pix-key-display" readonly class="flex-1 p-2 bg-white rounded-lg text-[10px] text-center font-mono text-slate-500 border border-purple-100 outline-none">
                             <button onclick="window.copyPix()" class="p-2 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700"><i data-lucide="copy" class="w-4 h-4"></i></button>
                         </div>
-                        <p class="text-[10px] text-slate-500">Titular: <span class="font-bold text-purple-900" id="pix-name-display">...</span></p>
+                        <p class="text-[10px] text-slate-500 mb-3">Titular: <span class="font-bold text-purple-900" id="pix-name-display">...</span></p>
+                        
+                        <!-- BOTÃO DE CONFIRMAÇÃO RESTAURADO -->
+                        <label class="flex items-center justify-center gap-2 text-xs font-bold text-purple-700 cursor-pointer p-3 bg-white rounded-xl border border-purple-200 hover:bg-purple-50 transition shadow-sm">
+                            <input type="checkbox" id="pix-confirmed" class="w-4 h-4 accent-purple-600 rounded"> 
+                            JÁ FIZ O PAGAMENTO
+                        </label>
                     </div>
                 </div>
             </div>
@@ -707,6 +713,7 @@
             const name = document.getElementById('client-name').value.trim();
             const phone = document.getElementById('client-phone').value.trim();
             const payMethod = document.getElementById('payment-method').value;
+            const pixConfirmed = document.getElementById('pix-confirmed')?.checked; // Verifica se marcou
             
             if(!name || phone.length < 13 || !payMethod) return showToast("Preencha todos os dados!", "error");
 
@@ -727,9 +734,15 @@
             const subtotal = cart.reduce((acc, i) => acc + i.price, 0);
             const total = subtotal + shipping;
 
+            // Adiciona confirmação visual no texto
+            let paymentText = payMethod;
+            if (payMethod === 'Pix' && pixConfirmed) {
+                paymentText += " (✅ Pago)";
+            }
+
             const orderData = { 
                 nome: name, telefone: phone, total: `R$ ${total.toFixed(2).replace('.', ',')}`, 
-                pagamento: payMethod, entrega: location, 
+                pagamento: paymentText, entrega: location, 
                 itens: cart.map(i => i.size).join(", "), 
                 taxa: `R$ ${shipping.toFixed(2).replace('.', ',')}` 
             };
@@ -747,7 +760,7 @@
             }
 
             let msg = `🥤 *PEDIDO NOVO - AÇAÍ ELLEGANCE*\n\n`;
-            msg += `👤 *Cliente:* ${name}\n📱 *Tel:* ${phone}\n💳 *Pagamento:* ${payMethod}\n📍 *${location}*\n\n`;
+            msg += `👤 *Cliente:* ${name}\n📱 *Tel:* ${phone}\n💳 *Pagamento:* ${paymentText}\n📍 *${location}*\n\n`;
             msg += `*ITENS:* \n`;
             cart.forEach(i => msg += `• ${i.size} ${i.obs ? `(${i.obs})` : ''}\n`);
             msg += `\n🧾 *Subtotal:* R$ ${subtotal.toFixed(2).replace('.',',')}`;
