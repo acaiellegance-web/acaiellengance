@@ -85,19 +85,19 @@
         <!-- CABEÇALHO -->
         <header class="sticky top-0 z-40 glass-nav transition-all duration-300">
             <div class="px-5 h-16 flex items-center justify-between">
-                <!-- CLIQUE AQUI PARA ADMIN -->
-                <div class="flex items-center gap-3 cursor-pointer select-none active:opacity-70 transition-opacity" onclick="window.openAdminLogin()">
-                    <div class="relative">
+                <!-- CLIQUE AQUI PARA ADMIN (ÁREA AUMENTADA PARA FACILITAR O CLIQUE) -->
+                <button class="flex items-center gap-3 cursor-pointer select-none active:opacity-70 transition-opacity text-left bg-transparent border-0 p-0" onclick="window.openAdminLogin()">
+                    <div class="relative pointer-events-none">
                         <div class="p-0.5 rounded-full bg-gradient-brand">
                             <img src="logoacai.jpeg" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover">
                         </div>
                         <span id="store-status-dot" class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-gray-300 border-2 border-white rounded-full shadow-sm"></span>
                     </div>
-                    <div class="flex flex-col">
+                    <div class="flex flex-col pointer-events-none">
                         <h1 class="font-extrabold text-lg leading-none text-slate-800 brand-font uppercase tracking-tight">Açaí Ellegance</h1>
                         <span id="store-status-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">A carregar...</span>
                     </div>
-                </div>
+                </button>
                 
                 <div class="flex items-center gap-2">
                     <button onclick="window.toggleCart(true)" id="cart-btn" class="relative p-2.5 rounded-full bg-white/50 hover:bg-purple-50 transition-colors active:scale-90 shadow-sm border border-white/50">
@@ -438,8 +438,8 @@
         let currentFilter = 'Todos';
 
         // --- FUNÇÕES GLOBAIS ---
-        function saveCart() { try { localStorage.setItem('acai_cart_v2', JSON.stringify(cart)); } catch (e) {} }
-        function loadCart() { try { const s = localStorage.getItem('acai_cart_v2'); if(s) cart = JSON.parse(s); } catch (e) {} }
+        function saveCart() { try { localStorage.setItem('acai_cart_v95', JSON.stringify(cart)); } catch (e) {} }
+        function loadCart() { try { const s = localStorage.getItem('acai_cart_v95'); if(s) cart = JSON.parse(s); } catch (e) {} }
         
         function checkRecentOrder() {
             try {
@@ -453,6 +453,7 @@
         }
 
         async function init() {
+            // TELA DE INÍCIO MAIS RÁPIDA (0.6s)
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.visibility = 'hidden', 300); }
@@ -471,7 +472,8 @@
                 });
             }
 
-            const saved = localStorage.getItem('acai_config_v90');
+            // CARREGAMENTO COM VERSÃO NOVA (V95) PARA FORÇAR ATUALIZAÇÃO
+            const saved = localStorage.getItem('acai_config_v95');
             if(saved) storeConfig = JSON.parse(saved);
             
             loadCart();
@@ -903,7 +905,7 @@
         }
         async function saveConfig() {
             if(isDemoMode) {
-                localStorage.setItem('acai_config_v90', JSON.stringify(storeConfig));
+                localStorage.setItem('acai_config_v95', JSON.stringify(storeConfig));
                 showToast("Salvo (Demo Mode)");
             } else {
                 try {
