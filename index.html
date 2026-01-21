@@ -56,7 +56,7 @@
         .animate-fade-in { animation: fadeInUp 0.4s ease-out forwards; }
 
         /* Elementos Interativos */
-        .card-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-item { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .card-item:active { transform: scale(0.97); }
         
         /* Abas de Categoria */
@@ -65,19 +65,19 @@
         .tab-inactive { background: white; color: #64748b; border: 1px solid #e2e8f0; }
 
         /* Splash */
-        #splash-screen { transition: opacity 0.4s ease-out, visibility 0.4s; background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 100%); }
+        #splash-screen { transition: opacity 0.3s ease-out, visibility 0.3s; background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 100%); }
     </style>
 </head>
 <body class="text-slate-800 antialiased bg-gray-50">
 
-    <!-- TELA DE ABERTURA (SPLASH) -->
+    <!-- TELA DE ABERTURA (SPLASH) - AGORA MAIS RÁPIDA -->
     <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center">
         <div class="relative w-28 h-28 mb-6">
             <div class="absolute inset-0 bg-white rounded-full animate-ping opacity-20"></div>
             <img src="logoacai.jpeg" class="w-full h-full object-cover rounded-full shadow-2xl border-4 border-white/20 relative z-10 animate-float">
         </div>
         <h1 class="brand-font text-3xl font-bold text-white mb-2 tracking-wide">Açaí Ellegance</h1>
-        <p class="text-white/80 text-sm font-medium tracking-widest uppercase">Carregando Sabores...</p>
+        <p class="text-white/80 text-sm font-medium tracking-widest uppercase">A iniciar...</p>
     </div>
 
     <div class="app-container">
@@ -174,7 +174,6 @@
 
             <!-- MENU (GRID) -->
             <section class="px-5 min-h-[40vh]">
-                <div id="menu-loader" class="space-y-3 hidden"></div>
                 <div id="menu-grid" class="grid gap-3"></div>
                 
                 <div id="empty-search" class="hidden flex flex-col items-center justify-center py-10 text-center">
@@ -440,10 +439,12 @@
 
         let cart = []; let quantity = 1; let isDemoMode = true; let db; 
         let currentFilter = 'Todos';
+        // Global Set to track selected items independently of DOM/category visibility
+        window.selectedItems = new Set();
 
         // --- FUNÇÕES GLOBAIS ---
-        function saveCart() { try { localStorage.setItem('acai_cart_v98', JSON.stringify(cart)); } catch (e) {} }
-        function loadCart() { try { const s = localStorage.getItem('acai_cart_v98'); if(s) cart = JSON.parse(s); } catch (e) {} }
+        function saveCart() { try { localStorage.setItem('acai_cart_v99', JSON.stringify(cart)); } catch (e) {} }
+        function loadCart() { try { const s = localStorage.getItem('acai_cart_v99'); if(s) cart = JSON.parse(s); } catch (e) {} }
         
         function checkRecentOrder() {
             try {
@@ -457,11 +458,11 @@
         }
 
         async function init() {
-            // TELA DE INÍCIO MAIS RÁPIDA (0.6s)
+            // TELA DE INÍCIO ULTRA RÁPIDA (0.1s)
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
-                if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.visibility = 'hidden', 300); }
-            }, 600);
+                if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.visibility = 'hidden', 200); }
+            }, 100);
 
             const phoneInput = document.getElementById('client-phone');
             if(phoneInput) {
@@ -476,8 +477,8 @@
                 });
             }
 
-            // CARREGAMENTO COM VERSÃO NOVA (V98) PARA FORÇAR ATUALIZAÇÃO
-            const saved = localStorage.getItem('acai_config_v98');
+            // CARREGAMENTO COM VERSÃO NOVA (V99) PARA FORÇAR ATUALIZAÇÃO
+            const saved = localStorage.getItem('acai_config_v99');
             if(saved) storeConfig = JSON.parse(saved);
             
             loadCart();
@@ -550,7 +551,6 @@
             
             if(grid) grid.innerHTML = "";
             let hasItems = false;
-            const currentChecks = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(c=>c.value);
 
             (storeConfig.sizes || DEFAULT_SIZES).forEach(item => {
                 if(item.available === false) return; 
@@ -560,9 +560,9 @@
                 if(matchesSearch && matchesCat) {
                     hasItems = true;
                     const el = document.createElement('label');
-                    const isChecked = currentChecks.includes(item.name) ? 'checked' : '';
+                    const isChecked = window.selectedItems.has(item.name) ? 'checked' : '';
                     
-                    const selectionClasses = currentChecks.includes(item.name) 
+                    const selectionClasses = window.selectedItems.has(item.name) 
                         ? 'ring-2 ring-purple-500 bg-purple-50 border-purple-200' 
                         : 'border-white';
 
@@ -597,6 +597,10 @@
                             const chk = el.querySelector('input');
                             if(chk) {
                                 chk.checked = !chk.checked;
+                                // UPDATE GLOBAL STATE
+                                if(chk.checked) window.selectedItems.add(item.name);
+                                else window.selectedItems.delete(item.name);
+
                                 if(chk.checked) {
                                     el.classList.remove('border-white');
                                     el.classList.add('ring-2', 'ring-purple-500', 'bg-purple-50', 'border-purple-200');
@@ -618,9 +622,15 @@
         }
 
         window.updateTotal = () => {
-            const selected = document.querySelectorAll('input[name="size"]:checked');
             let total = 0;
-            selected.forEach(el => total += parseFloat(el.getAttribute('data-price')));
+            // Iterate over ALL items in config to calculate total based on global state
+            const allItems = storeConfig.sizes || DEFAULT_SIZES;
+            allItems.forEach(item => {
+                if(window.selectedItems.has(item.name)) {
+                    total += item.price;
+                }
+            });
+            
             const final = total * quantity;
             const display = document.getElementById('current-price-display');
             if(display) display.innerText = `R$ ${final.toFixed(2).replace('.',',')}`;
@@ -634,23 +644,29 @@
         }
 
         window.addToCart = () => {
-            const selected = document.querySelectorAll('input[name="size"]:checked');
-            if(selected.length === 0) return showToast("Selecione um item!", "error");
+            if(window.selectedItems.size === 0) return showToast("Selecione um item!", "error");
             
             const obs = document.getElementById('item-observation').value;
-            selected.forEach(el => {
-                for(let i=0; i<quantity; i++) {
-                    cart.push({ id: Date.now() + Math.random(), size: el.value, price: parseFloat(el.getAttribute('data-price')), obs });
+            const allItems = storeConfig.sizes || DEFAULT_SIZES;
+            
+            // Add items from global set
+            allItems.forEach(item => {
+                if(window.selectedItems.has(item.name)) {
+                    for(let i=0; i<quantity; i++) {
+                        cart.push({ id: Date.now() + Math.random(), size: item.name, price: item.price, obs });
+                    }
                 }
             });
 
+            // Clear global set and reset UI
+            window.selectedItems.clear();
             quantity = 1; document.getElementById('qty-display').innerText = "1";
             document.getElementById('item-observation').value = "";
-            selected.forEach(el => el.checked = false);
             
             window.updateTotal();
             saveCart();
             window.renderCart();
+            window.filterMenu(); // Re-render menu to uncheck visual boxes
             
             const badge = document.getElementById('cart-badge');
             if(badge) {
@@ -935,7 +951,7 @@
         }
         async function saveConfig() {
             if(isDemoMode) {
-                localStorage.setItem('acai_config_v98', JSON.stringify(storeConfig));
+                localStorage.setItem('acai_config_v99', JSON.stringify(storeConfig));
                 showToast("Salvo (Demo Mode)");
             } else {
                 try {
