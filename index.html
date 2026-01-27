@@ -68,7 +68,7 @@
         #splash-screen { transition: opacity 0.3s ease-out, visibility 0.3s; background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 100%); }
         
         /* Loader Spinner */
-        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        .spinner { border: 3px solid rgba(76, 29, 149, 0.3); border-radius: 50%; border-top: 3px solid #4c1d95; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Payment Badges */
@@ -320,19 +320,28 @@
                         </div>
                         <p class="text-[10px] text-slate-500 mb-4">Titular: <span class="font-bold text-purple-900" id="pix-name-display">...</span></p>
                         
-                        <!-- BOTÃO DE CONFIRMAÇÃO (Substituindo checkbox) -->
-                        <div id="pix-action-area">
-                            <button onclick="window.confirmPix()" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-xs shadow-md shadow-purple-200 transition-all flex items-center justify-center gap-2">
-                                <span>Já fiz o Pagamento</span>
-                                <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        <!-- BOTÃO DE NOTIFICAÇÃO DO PIX -->
+                        <div id="pix-action-area" class="space-y-3">
+                            <div class="p-3 bg-yellow-50 border border-yellow-100 rounded-xl text-center">
+                                <p class="text-xs text-yellow-800 font-medium">Após pagar, clique abaixo para notificar a loja.</p>
+                            </div>
+                            <button onclick="window.createPixOrder()" id="btn-notify-pix" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-xs shadow-md shadow-purple-200 transition-all flex items-center justify-center gap-2">
+                                <span>Já paguei, avisar Loja</span>
+                                <i data-lucide="bell" class="w-3 h-3"></i>
                             </button>
                         </div>
                         
-                        <!-- Mensagem de Sucesso (Oculta Inicialmente) -->
+                        <!-- Mensagem de Sucesso -->
                         <div id="pix-success-msg" class="hidden bg-green-50 border border-green-100 p-3 rounded-xl mt-2 animate-fade-in">
                             <p class="text-xs font-bold text-green-700 flex items-center justify-center gap-2">
-                                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Pagamento Confirmado
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Pagamento Confirmado pela Loja!
                             </p>
+                        </div>
+
+                         <!-- Mensagem de Espera -->
+                         <div id="pix-waiting-msg" class="hidden p-4 bg-slate-50 rounded-xl mt-2 animate-pulse">
+                            <div class="spinner mx-auto mb-2 !border-slate-300 !border-t-purple-600"></div>
+                            <p class="text-[10px] font-bold text-slate-500 text-center">Aguardando aprovação do admin...</p>
                         </div>
                     </div>
                 </div>
@@ -387,11 +396,24 @@
         </div>
         <div class="p-5 max-w-md mx-auto space-y-6">
             
+            <!-- PEDIDOS EM TEMPO REAL -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                     <h3 class="text-xs font-bold text-slate-400 uppercase flex items-center gap-2"><i data-lucide="bell-ring" class="w-4 h-4 text-purple-600"></i> Pedidos Pix (Real-Time)</h3>
+                     <span class="text-[10px] bg-purple-100 text-purple-700 px-2 py-1 rounded font-bold" id="admin-pending-count">0</span>
+                </div>
+                <div id="admin-orders-list" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar">
+                    <p class="text-xs text-center text-slate-400 italic py-4">Nenhum pedido pendente.</p>
+                </div>
+            </div>
+
+            <!-- Estoque e Produtos -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2"><i data-lucide="boxes" class="w-4 h-4"></i> Estoque</h3>
                 <div id="admin-stock-list" class="max-h-64 overflow-y-auto space-y-2 pr-1 custom-scrollbar"></div>
             </div>
 
+            <!-- Status da Loja -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4"></i> Status</h3>
                 <div class="flex gap-2">
@@ -401,6 +423,7 @@
                 </div>
             </div>
 
+            <!-- Configurações Gerais -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <h3 class="text-xs font-bold text-slate-400 uppercase mb-2 flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4"></i> Configurações</h3>
                 <input id="adm-store-name" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm" placeholder="Nome da Loja">
@@ -429,7 +452,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         // Importando auth real (email/senha) e onAuthStateChanged
         import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBakH1kufhFKj-ibAkQNTXhs-WLfxUob28",
@@ -480,6 +503,7 @@
         let currentFilter = 'Todos';
         let isAdminLoggedIn = false;
         let paymentStatus = 'none'; // 'none', 'pending', 'approved'
+        let currentPixOrderId = null;
         
         window.selectedItems = new Set();
 
@@ -547,6 +571,7 @@
                         document.getElementById('admin-interface').classList.remove('hidden');
                         window.updateAdminUI(); 
                         window.renderAdminStock();
+                        window.listenToAdminOrders(); // START LISTENING TO PENDING ORDERS
                         showToast("Admin conectado");
                     } else if (user) {
                         isAdminLoggedIn = false;
@@ -613,6 +638,115 @@
             window.updateAdminButtons();
             window.updateCheckoutButton();
         }
+
+        // --- ADMIN: REAL-TIME ORDERS ---
+        window.listenToAdminOrders = () => {
+            if(!isAdminLoggedIn) return;
+            // Listen to ALL pending orders (simple query, no indexes required usually for small datasets)
+            const q = query(collection(db, "pedidos"), where("status", "==", "pending"));
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('admin-orders-list');
+                const badge = document.getElementById('admin-pending-count');
+                if(!list) return;
+
+                list.innerHTML = "";
+                const orders = [];
+                snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
+                
+                if(badge) badge.innerText = orders.length;
+
+                if(orders.length === 0) {
+                    list.innerHTML = '<p class="text-xs text-center text-slate-400 italic py-4">Nenhum pedido pendente.</p>';
+                    return;
+                }
+
+                orders.forEach(order => {
+                    list.innerHTML += `
+                        <div class="p-3 bg-yellow-50 border border-yellow-100 rounded-xl flex justify-between items-center animate-fade-in">
+                            <div>
+                                <p class="font-bold text-xs text-slate-800">${order.cliente} <span class="font-normal text-slate-500">(${order.telefone})</span></p>
+                                <p class="text-[10px] text-slate-500">Total: <span class="font-bold text-slate-700">${order.total}</span></p>
+                            </div>
+                            <button onclick="window.approveOrder('${order.id}')" class="bg-green-500 text-white text-[10px] font-bold px-3 py-2 rounded-lg shadow-sm hover:bg-green-600 transition">APROVAR</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        window.approveOrder = async (id) => {
+            try {
+                await updateDoc(doc(db, "pedidos", id), { status: 'approved' });
+                showToast("Pedido Aprovado!");
+            } catch(e) { showToast("Erro ao aprovar", "error"); }
+        }
+
+        // --- CLIENT: REAL-TIME PIX ---
+        window.createPixOrder = async () => {
+            if(isDemoMode) { window.confirmPix(); return; } // Fallback for demo
+            
+            const name = document.getElementById('client-name').value;
+            const phone = document.getElementById('client-phone').value;
+            const subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+            
+            // Get Shipping
+            let shipping = 0;
+            const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
+            if(deliveryType === 'Entrega') {
+                const zonePrice = document.getElementById('delivery-zone').value;
+                shipping = parseFloat(zonePrice || 0);
+            }
+            const total = subtotal + shipping;
+
+            if(!name) return showToast("Preencha seu nome primeiro!", "error");
+
+            const btn = document.getElementById('btn-notify-pix');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<div class="spinner border-white/50 border-t-white mx-auto"></div>';
+            btn.disabled = true;
+
+            try {
+                // Create Doc - Using addDoc to auto-generate ID
+                const orderRef = await addDoc(collection(db, "pedidos"), {
+                    cliente: name,
+                    telefone: phone,
+                    total: `R$ ${total.toFixed(2).replace('.',',')}`,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                });
+                
+                currentPixOrderId = orderRef.id;
+
+                // Update UI to Waiting State
+                document.getElementById('pix-action-area').classList.add('hidden');
+                document.getElementById('pix-waiting-msg').classList.remove('hidden');
+
+                // Listen for Approval
+                onSnapshot(orderRef, (doc) => {
+                    if (doc.exists() && doc.data().status === 'approved') {
+                        paymentStatus = 'approved';
+                        document.getElementById('pix-waiting-msg').classList.add('hidden');
+                        document.getElementById('pix-success-msg').classList.remove('hidden');
+                        
+                        const statusBadge = document.getElementById('payment-status-badge');
+                        statusBadge.classList.remove('status-pending'); 
+                        statusBadge.classList.add('status-paid'); 
+                        statusBadge.innerHTML = '<i data-lucide="check-circle" class="w-3 h-3"></i> <span>Aprovado</span>';
+                        
+                        showToast("Pagamento Confirmado!"); 
+                        window.updateCheckoutButton(); 
+                        lucide.createIcons();
+                    }
+                });
+
+            } catch (e) {
+                console.error(e);
+                showToast("Erro ao criar pedido. Tente novamente.", "error");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
 
         window.filterMenu = () => {
             const term = document.getElementById('search-input').value.toLowerCase();
@@ -964,6 +1098,7 @@
             paymentStatus = (method === 'Pix') ? 'pending' : 'none';
             document.getElementById('pix-action-area').classList.remove('hidden');
             document.getElementById('pix-success-msg').classList.add('hidden');
+            document.getElementById('pix-waiting-msg').classList.add('hidden');
 
             if(method === 'Pix') {
                 pixBox.classList.remove('hidden');
@@ -978,24 +1113,19 @@
             lucide.createIcons();
         }
 
+        // CONFIRM PIX (OLD SIMULATION FALLBACK)
         window.confirmPix = () => {
-            const btn = document.querySelector('#pix-action-area button');
-            const original = btn.innerHTML;
+             const btn = document.querySelector('#pix-action-area button');
             btn.innerHTML = '<div class="spinner border-white/50 border-t-white"></div>';
-            
             setTimeout(() => {
                 paymentStatus = 'approved';
                 document.getElementById('pix-action-area').classList.add('hidden');
                 document.getElementById('pix-success-msg').classList.remove('hidden');
-                
                 const statusBadge = document.getElementById('payment-status-badge');
                 statusBadge.classList.remove('status-pending');
                 statusBadge.classList.add('status-paid');
                 statusBadge.innerHTML = '<i data-lucide="check-circle" class="w-3 h-3"></i> <span>Aprovado</span>';
-                
-                showToast("Pagamento Confirmado!");
-                window.updateCheckoutButton();
-                lucide.createIcons();
+                showToast("Pagamento Confirmado!"); window.updateCheckoutButton(); lucide.createIcons();
             }, 1000);
         }
 
@@ -1058,6 +1188,7 @@
             }
         }
 
+        // ADMIN
         window.openAdminLogin = () => {
             if(isAdminLoggedIn) {
                 document.getElementById('admin-interface').classList.remove('hidden');
