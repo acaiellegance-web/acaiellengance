@@ -7,12 +7,12 @@
     
     <meta property="og:title" content="Açaí Ellegance | Pedido Online">
     <meta property="og:description" content="O melhor açaí da região! Peça agora pelo nosso App. Rápido e prático.">
-    <meta property="og:image" content="logoacai.jpeg">
+    <meta property="og:image" content="https://placehold.co/400x400/4c1d95/ffffff?text=Acai+Ellegance">
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="logoacai.jpeg">
+    <link rel="apple-touch-icon" href="https://placehold.co/400x400/4c1d95/ffffff?text=Acai+Ellegance">
 
     <title>Açaí Ellegance</title>
     
@@ -66,15 +66,24 @@
 
         /* Splash */
         #splash-screen { transition: opacity 0.3s ease-out, visibility 0.3s; background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 100%); }
+        
+        /* Loader Spinner */
+        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Payment Badges */
+        .status-badge { @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors duration-300; }
+        .status-pending { @apply bg-yellow-100 text-yellow-700 border border-yellow-200; }
+        .status-paid { @apply bg-green-100 text-green-700 border border-green-200; }
     </style>
 </head>
 <body class="text-slate-800 antialiased bg-gray-50">
 
-    <!-- TELA DE ABERTURA (SPLASH) - AGORA MAIS RÁPIDA -->
+    <!-- TELA DE ABERTURA (SPLASH) -->
     <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center">
         <div class="relative w-28 h-28 mb-6">
             <div class="absolute inset-0 bg-white rounded-full animate-ping opacity-20"></div>
-            <img src="logoacai.jpeg" class="w-full h-full object-cover rounded-full shadow-2xl border-4 border-white/20 relative z-10 animate-float">
+            <img src="https://placehold.co/400x400/4c1d95/ffffff?text=Acai+Ellegance" class="w-full h-full object-cover rounded-full shadow-2xl border-4 border-white/20 relative z-10 animate-float">
         </div>
         <h1 class="brand-font text-3xl font-bold text-white mb-2 tracking-wide">Açaí Ellegance</h1>
         <p class="text-white/80 text-sm font-medium tracking-widest uppercase">A iniciar...</p>
@@ -85,17 +94,24 @@
         <!-- CABEÇALHO -->
         <header class="sticky top-0 z-40 glass-nav transition-all duration-300">
             <div class="px-5 h-16 flex items-center justify-between">
-                <!-- CLIQUE AQUI PARA ADMIN -->
-                <button class="flex items-center gap-3 cursor-pointer select-none active:opacity-70 transition-opacity bg-transparent border-0 p-0 text-left" onclick="window.openAdminLogin()">
+                <!-- BOTÃO ADMIN -->
+                <button class="flex items-center gap-3 cursor-pointer select-none active:opacity-70 transition-opacity bg-transparent border-0 p-0 text-left" onclick="window.handleAdminClick()">
                     <div class="relative pointer-events-none">
                         <div class="p-0.5 rounded-full bg-gradient-brand">
-                            <img src="logoacai.jpeg" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover">
+                            <img src="https://placehold.co/100x100/4c1d95/ffffff?text=AE" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover">
                         </div>
                         <span id="store-status-dot" class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-gray-300 border-2 border-white rounded-full shadow-sm"></span>
                     </div>
                     <div class="flex flex-col pointer-events-none">
                         <h1 class="font-extrabold text-lg leading-none text-slate-800 brand-font uppercase tracking-tight">Açaí Ellegance</h1>
-                        <span id="store-status-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">A carregar...</span>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span id="store-status-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">A carregar...</span>
+                            <span class="text-[10px] text-slate-300">|</span>
+                            <div class="flex items-center gap-1 text-[10px] text-slate-500 font-medium">
+                                <i data-lucide="clock" class="w-3 h-3"></i> 
+                                <span id="delivery-time-display">-- min</span>
+                            </div>
+                        </div>
                     </div>
                 </button>
                 
@@ -111,12 +127,11 @@
         <!-- CONTEÚDO PRINCIPAL -->
         <main class="pb-36 pt-6 space-y-7">
             
-            <!-- BANNERS (Carrossel) -->
+            <!-- BANNERS -->
             <section class="px-5">
                 <div class="flex overflow-x-auto gap-4 snap-x no-scrollbar pb-4">
-                    <!-- Slide 1 -->
                     <div class="min-w-[85%] h-44 rounded-3xl bg-purple-900 relative overflow-hidden shadow-xl shadow-purple-900/30 snap-center group cursor-pointer active:scale-95 transition-transform duration-300">
-                        <img src="logoacai.jpeg" class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:scale-105 transition-transform duration-700">
+                        <img src="https://placehold.co/600x300/2e1065/ffffff?text=Linha+Gourmet" class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:scale-105 transition-transform duration-700">
                         <div class="absolute inset-0 bg-gradient-to-r from-[#2e1065] via-[#4c1d95]/90 to-transparent"></div>
                         <div class="absolute inset-0 p-6 flex flex-col justify-center text-white relative z-10">
                             <span class="inline-block px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-lg text-[10px] font-black uppercase tracking-wider w-fit mb-2 shadow-sm border border-white/10">Destaque</span>
@@ -124,14 +139,13 @@
                             <p class="text-xs text-purple-100 font-medium opacity-90 max-w-[70%]">Sinta o sabor do verdadeiro açaí cremoso.</p>
                         </div>
                     </div>
-                    <!-- Slide 2 -->
                     <div class="min-w-[85%] h-44 rounded-3xl bg-pink-600 relative overflow-hidden shadow-xl shadow-pink-600/30 snap-center cursor-pointer active:scale-95 transition-transform duration-300">
                         <div class="absolute inset-0 bg-gradient-to-br from-pink-600 to-rose-500"></div>
                         <div class="absolute -right-4 -bottom-4 text-white/10 rotate-12"><i data-lucide="bike" class="w-32 h-32"></i></div>
                         <div class="absolute inset-0 p-6 flex flex-col justify-center text-white relative z-10">
                             <span class="inline-block px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-lg text-[10px] font-black uppercase tracking-wider w-fit mb-2 shadow-sm border border-white/10">Promoção</span>
                             <h2 class="brand-font text-2xl font-bold mb-1 drop-shadow-md">Taxa Grátis</h2>
-                            <p class="text-xs text-pink-100 font-medium opacity-90 max-w-[70%]">Em bairros selecionados de Socorro.</p>
+                            <p class="text-xs text-pink-100 font-medium opacity-90 max-w-[70%]">Em bairros selecionados. Confira as zonas de entrega.</p>
                         </div>
                     </div>
                 </div>
@@ -165,11 +179,8 @@
                         <input type="text" id="search-input" onkeyup="window.filterMenu()" placeholder="O que deseja hoje?" class="block w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-2xl leading-5 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all text-sm font-medium shadow-sm">
                     </div>
                 </div>
-                <div class="flex gap-2.5 px-5 overflow-x-auto no-scrollbar" id="category-tabs">
-                    <button onclick="window.filterCategory('Todos')" class="tab-btn tab-active px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="Todos">Todos</button>
-                    <button onclick="window.filterCategory('Tradicional')" class="tab-btn tab-inactive px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="Tradicional">Tradicional</button>
-                    <button onclick="window.filterCategory('Gourmet')" class="tab-btn tab-inactive px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="Gourmet">Gourmet</button>
-                </div>
+                <!-- Categorias Dinâmicas (Preenchido via JS) -->
+                <div class="flex gap-2.5 px-5 overflow-x-auto no-scrollbar" id="category-tabs"></div>
             </div>
 
             <!-- MENU (GRID) -->
@@ -251,7 +262,6 @@
 
             <!-- Form Cliente -->
             <div id="customer-form" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-5">
-                
                 <!-- Info Pessoal -->
                 <div>
                     <h4 class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-3 flex items-center gap-2"><i data-lucide="user" class="w-4 h-4"></i> Seus Dados</h4>
@@ -291,7 +301,13 @@
 
                 <!-- Pagamento -->
                 <div>
-                    <h4 class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-3 flex items-center gap-2"><i data-lucide="credit-card" class="w-4 h-4"></i> Pagamento</h4>
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-xs font-bold text-purple-600 uppercase tracking-wider flex items-center gap-2"><i data-lucide="credit-card" class="w-4 h-4"></i> Pagamento</h4>
+                        <div id="payment-status-badge" class="hidden status-badge status-pending">
+                            <i data-lucide="clock" class="w-3 h-3"></i> <span>Aguardando</span>
+                        </div>
+                    </div>
+                    
                     <select id="payment-method" class="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-purple-500/20 outline-none text-slate-700" onchange="window.togglePaymentUI()">
                         <option value="" disabled selected>Como deseja pagar?</option>
                         <option value="Pix">Pix (Instantâneo)</option>
@@ -300,19 +316,26 @@
                     </select>
                     
                     <!-- Pix Box -->
-                    <div id="pix-container" class="hidden mt-3 p-4 bg-purple-50 rounded-xl border border-purple-100 text-center animate-fade-in">
+                    <div id="pix-container" class="hidden mt-3 p-4 bg-purple-50 rounded-xl border border-purple-100 text-center animate-fade-in relative overflow-hidden">
                         <p class="text-[10px] font-bold text-purple-800 uppercase mb-2">Chave Pix (Copia e Cola)</p>
                         <div class="flex gap-2 mb-2">
                             <input type="text" id="pix-key-display" readonly class="flex-1 p-2 bg-white rounded-lg text-[10px] text-center font-mono text-slate-500 border border-purple-100 outline-none">
                             <button onclick="window.copyPix()" class="p-2 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700"><i data-lucide="copy" class="w-4 h-4"></i></button>
                         </div>
-                        <p class="text-[10px] text-slate-500 mb-3">Titular: <span class="font-bold text-purple-900" id="pix-name-display">...</span></p>
+                        <p class="text-[10px] text-slate-500 mb-4">Titular: <span class="font-bold text-purple-900" id="pix-name-display">...</span></p>
                         
-                        <!-- BOTÃO DE CONFIRMAÇÃO RESTAURADO -->
-                        <label class="flex items-center justify-center gap-2 text-xs font-bold text-purple-700 cursor-pointer p-3 bg-white rounded-xl border border-purple-200 hover:bg-purple-50 transition shadow-sm">
-                            <input type="checkbox" id="pix-confirmed" class="w-4 h-4 accent-purple-600 rounded"> 
-                            JÁ FIZ O PAGAMENTO
-                        </label>
+                        <div id="pix-action-area">
+                            <button onclick="window.confirmPix()" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-xs shadow-md shadow-purple-200 transition-all flex items-center justify-center gap-2">
+                                <span>Já fiz o Pagamento</span>
+                                <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="pix-success-msg" class="hidden bg-green-50 border border-green-100 p-3 rounded-xl mt-2 animate-fade-in">
+                            <p class="text-xs font-bold text-green-700 flex items-center justify-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Pagamento Confirmado
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -324,10 +347,12 @@
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total a Pagar</span>
                 <span id="cart-total" class="font-black text-3xl text-slate-800 tracking-tight">R$ 0,00</span>
             </div>
-            <button onclick="window.sendOrder()" id="checkout-btn" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-bold text-sm uppercase tracking-wider shadow-lg shadow-green-500/30 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2">
+            
+            <button onclick="window.sendOrder()" id="checkout-btn" class="w-full bg-slate-200 text-slate-400 py-4 rounded-xl font-bold text-sm uppercase tracking-wider shadow-none flex items-center justify-center gap-2 transition-all cursor-not-allowed" disabled>
                 <i data-lucide="whatsapp" class="w-5 h-5"></i>
-                <span>Finalizar no WhatsApp</span>
+                <span id="checkout-text">Escolha Pagamento</span>
             </button>
+            
             <p id="closed-msg" class="hidden text-center text-red-500 text-xs font-bold mt-3 bg-red-50 p-2 rounded-lg border border-red-100 uppercase">Loja Fechada</p>
         </div>
     </div>
@@ -338,28 +363,44 @@
              <button onclick="document.getElementById('admin-login-modal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
              <div class="text-center mb-6">
                  <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3 text-purple-600"><i data-lucide="lock" class="w-6 h-6"></i></div>
-                 <h3 class="font-bold text-slate-800 text-lg">Acesso Restrito</h3>
+                 <h3 class="font-bold text-slate-800 text-lg">Acesso Admin</h3>
+                 <p class="text-xs text-slate-400">Área restrita para gerência</p>
              </div>
-             <input type="password" id="admin-pass-input" placeholder="Senha Admin" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl mb-4 text-center text-lg font-bold focus:ring-2 focus:ring-purple-500/20 outline-none transition-all">
-             <button onclick="window.verifyAdmin()" class="w-full bg-gradient-brand text-white p-4 rounded-2xl font-bold shadow-lg shadow-purple-500/30 hover:brightness-110 transition-all">Entrar</button>
+             
+             <div class="space-y-3">
+                 <input type="email" id="admin-email-input" placeholder="E-mail Admin" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-purple-500/20 outline-none transition-all">
+                 <input type="password" id="admin-pass-input" placeholder="Senha" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center text-lg font-bold focus:ring-2 focus:ring-purple-500/20 outline-none transition-all">
+             </div>
+             
+             <button id="btn-admin-login" onclick="window.performAdminLogin()" class="w-full bg-gradient-brand text-white p-4 rounded-2xl font-bold shadow-lg shadow-purple-500/30 hover:brightness-110 transition-all mt-4 flex justify-center items-center gap-2">
+                 <span>Entrar</span>
+             </button>
         </div>
     </div>
 
     <!-- PAINEL ADMIN -->
     <div id="admin-interface" class="fixed inset-0 z-[90] bg-slate-50 hidden overflow-y-auto pb-20">
         <div class="bg-white p-5 sticky top-0 z-10 border-b border-slate-200 flex justify-between items-center shadow-sm">
-            <h2 class="font-black text-slate-800 text-sm uppercase tracking-wider">Gestão da Loja</h2>
-            <button onclick="window.closeAdmin()" class="bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors">Fechar</button>
+            <div>
+                <h2 class="font-black text-slate-800 text-sm uppercase tracking-wider">Gestão da Loja</h2>
+                <p class="text-[10px] text-green-600 font-bold">● Admin Logado</p>
+            </div>
+            <button onclick="window.adminLogout()" class="bg-red-50 text-red-600 border border-red-100 px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors">Sair</button>
         </div>
+        
         <div class="p-5 max-w-md mx-auto space-y-6">
-            <!-- ALERTA DEMO REMOVIDO -->
-            <div id="demo-alert" class="hidden"></div>
-            
+            <!-- Estoque e Produtos (AGORA COM BOTÃO ADICIONAR) -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2"><i data-lucide="boxes" class="w-4 h-4"></i> Estoque</h3>
-                <div id="admin-stock-list" class="max-h-64 overflow-y-auto space-y-2 pr-1 custom-scrollbar"></div>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase flex items-center gap-2"><i data-lucide="boxes" class="w-4 h-4"></i> Produtos</h3>
+                    <button onclick="window.openProductEditor()" class="text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg font-bold hover:bg-purple-200 transition-colors flex items-center gap-1">
+                        <i data-lucide="plus" class="w-3 h-3"></i> Novo
+                    </button>
+                </div>
+                <div id="admin-stock-list" class="max-h-80 overflow-y-auto space-y-2 pr-1 custom-scrollbar"></div>
             </div>
 
+            <!-- Status da Loja -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4"></i> Status</h3>
                 <div class="flex gap-2">
@@ -369,14 +410,67 @@
                 </div>
             </div>
 
+            <!-- Configurações Gerais -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <h3 class="text-xs font-bold text-slate-400 uppercase mb-2 flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4"></i> Configurações</h3>
                 <input id="adm-store-name" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm" placeholder="Nome da Loja">
                 <input id="adm-whatsapp" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm" placeholder="WhatsApp">
+                <input id="adm-delivery-time" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm" placeholder="Tempo Entrega (ex: 30-40 min)">
                 <input id="adm-pix-key" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm" placeholder="Chave Pix">
                 <input id="adm-pix-name" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm" placeholder="Titular Pix">
+                
+                <div class="bg-yellow-50 p-3 rounded-xl border border-yellow-100 text-[10px] text-yellow-800 mt-2">
+                    <span class="font-bold">Nota:</span> As configurações são salvas automaticamente na nuvem ao clicar abaixo.
+                </div>
+                
                 <button onclick="window.saveGeneralConfig()" class="w-full bg-slate-800 text-white p-3 rounded-xl font-bold text-sm mt-2 hover:bg-slate-700 transition-colors">Salvar Alterações</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITOR DE PRODUTO -->
+    <div id="admin-item-modal" class="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-md hidden flex items-center justify-center p-4 transition-all">
+        <div class="bg-white p-6 rounded-3xl w-full max-w-sm shadow-2xl relative animate-fade-in flex flex-col max-h-[90vh]">
+             <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                 <h3 class="font-bold text-slate-800 text-lg" id="modal-title">Novo Produto</h3>
+                 <button onclick="document.getElementById('admin-item-modal').classList.add('hidden')" class="p-1 hover:bg-slate-100 rounded-full"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+             </div>
+             
+             <div class="overflow-y-auto space-y-3 flex-1 pr-1 custom-scrollbar">
+                 <input type="hidden" id="edit-item-id">
+                 
+                 <div>
+                     <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Nome do Produto</label>
+                     <input id="edit-item-name" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-purple-500/20 outline-none">
+                 </div>
+
+                 <div>
+                     <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Descrição</label>
+                     <textarea id="edit-item-desc" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500/20 outline-none resize-none"></textarea>
+                 </div>
+
+                 <div class="grid grid-cols-2 gap-3">
+                     <div>
+                         <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Preço (R$)</label>
+                         <input type="number" step="0.01" id="edit-item-price" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-purple-500/20 outline-none">
+                     </div>
+                     <div>
+                         <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Categoria</label>
+                         <input id="edit-item-cat" list="cat-suggestions" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500/20 outline-none" placeholder="Ex: Tradicional">
+                         <datalist id="cat-suggestions"></datalist>
+                     </div>
+                 </div>
+
+                 <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer" onclick="document.getElementById('edit-item-popular').click()">
+                     <input type="checkbox" id="edit-item-popular" class="w-4 h-4 accent-purple-600">
+                     <span class="text-sm font-bold text-slate-600">Marcar como "Mais Vendido"</span>
+                 </div>
+             </div>
+             
+             <div class="pt-4 mt-2 border-t border-slate-100 flex gap-3">
+                 <button type="button" onclick="window.deleteProduct()" id="btn-delete-item" class="p-3 text-red-500 bg-red-50 hover:bg-red-100 rounded-xl font-bold transition-colors hidden"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                 <button type="button" onclick="window.saveProduct()" class="flex-1 bg-slate-800 text-white p-3 rounded-xl font-bold shadow-lg hover:brightness-110 transition-all">Salvar Produto</button>
+             </div>
         </div>
     </div>
 
@@ -389,7 +483,7 @@
     <!-- LOGICA -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -402,105 +496,88 @@
         };
 
         const DEFAULT_SIZES = [
-            { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
-            { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
-            { name: "Amendoim 300ml", description: "Açaí, amendoim, banana e leite condensado", price: 10.00, category: "Tradicional" },
-            { name: "Cupuaçu 300ml", description: "Açaí, cupuaçu, leite condensado", price: 10.00, category: "Tradicional" },
-            { name: "Paçoca 500ml", description: "Açai, paçoca, banana e leite condensado", price: 14.00, category: "Tradicional" },
-            { name: "Ninho 500ml", description: "Açai, leite em pó, banana e leite condensado", price: 14.00, category: "Tradicional" },
-            { name: "Amendoim 500ml", description: "Açai, amendoim, banana e leite condensado", price: 14.00, category: "Tradicional" },
-            { name: "Cupuaçu 500ml", description: "Açai, cupuaçu e leite condensado", price: 14.00, category: "Tradicional" },
-            { name: "Morango 300ml", description: "Açaí, morango, creme de morango", price: 13.00, category: "Gourmet" },
-            { name: "Maracujá 300ml", description: "Açaí, creme de maracujá e leite condensado", price: 13.00, category: "Gourmet" },
-            { name: "Ovomaltine 300ml", description: "Açaí, ovomaltine, nutella", price: 13.00, category: "Gourmet" },
-            { name: "Creme de Ninho 300ml", description: "Açaí, leite em pó, creme de ninho", price: 13.00, category: "Gourmet" },
-            { name: "M&M 300ml", description: "Açaí, leite em pó, nutella e M&M", price: 13.00, category: "Gourmet" },
-            { name: "Morango com Nutella 500ml", description: "Açaí, morango, nutella", price: 18.00, category: "Gourmet" },
-            { name: "Ovomaltine 500ml", description: "Açaí, ovomaltine e nutella", price: 18.00, category: "Gourmet" }
+            { id: "pacoca_300", name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
+            { id: "ninho_300", name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
+            { id: "morango_nutella_500", name: "Morango com Nutella 500ml", description: "Açaí, morango, nutella", price: 18.00, category: "Gourmet", isPopular: true }
         ];
 
         let storeConfig = { 
             statusMode: 'auto',
+            timeZone: 'America/Sao_Paulo',
+            deliveryTime: "30-40 min", 
             storeName: "Açaí Ellegance", phone: "557998168282", 
             pixKey: "57970392000139", pixName: "Gabriel Santana Morais", 
-            pixWarning: "Envie o comprovante no WhatsApp.",
-            googleScriptUrl: "https://script.google.com/macros/s/AKfycbwwLlrS62R7lol68oZjRCbDjwLSs87n54O4lSSUayDvkuWSpo3Y_QWHNda6D8I1U7Ni/exec",
             sizes: DEFAULT_SIZES,
             deliveryZones: [
                 {name: "Aracaju: Bairro Industrial", price: 4.00},
-                {name: "Aracaju: Porto D’antas", price: 3.00},
-                {name: "Aracaju: Lamarão", price: 6.00},
-                {name: "Aracaju: Japãozinho", price: 4.00},
-                {name: "Socorro: Albano", price: 0},
-                {name: "Socorro: Marcos Freire 1,2,3", price: 0},
-                {name: "Barra", price: 6.00}
+                {name: "Socorro: Marcos Freire", price: 0}
             ] 
         };
 
-        let cart = []; let quantity = 1; let isDemoMode = true; let db; 
+        let cart = []; let quantity = 1; let isDemoMode = true; let db; let auth;
         let currentFilter = 'Todos';
-        // Global Set to track selected items independently of DOM/category visibility
+        let isAdminLoggedIn = false;
+        let paymentStatus = 'none';
+        
         window.selectedItems = new Set();
 
         // --- FUNÇÕES GLOBAIS ---
         function saveCart() { try { localStorage.setItem('acai_cart_v99', JSON.stringify(cart)); } catch (e) {} }
-        function loadCart() { try { const s = localStorage.getItem('acai_cart_v99'); if(s) cart = JSON.parse(s); } catch (e) {} }
+        function loadCart() { try { const s = localStorage.getItem('acai_cart_v99'); if(s) { let t = JSON.parse(s); cart = t.map(i => ({...i, qty: i.qty || 1})); } } catch (e) {} }
         
-        function checkRecentOrder() {
-            try {
-                const recent = JSON.parse(localStorage.getItem('acai_recent_order'));
-                if(recent) {
-                    document.getElementById('recent-order-section').classList.remove('hidden');
-                    document.getElementById('recent-order-items').innerText = recent.items.substring(0, 25) + '...';
-                    document.getElementById('recent-order-date').innerText = "Pedido em " + recent.date;
-                }
-            } catch(e){}
+        function getStoreDate() {
+            const now = new Date();
+            const tz = storeConfig.timeZone || 'America/Sao_Paulo';
+            try { return new Date(now.toLocaleString("en-US", { timeZone: tz })); } catch(e) { return now; }
         }
 
         async function init() {
-            // TELA DE INÍCIO ULTRA RÁPIDA (0.1s)
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.visibility = 'hidden', 200); }
             }, 100);
 
-            const phoneInput = document.getElementById('client-phone');
-            if(phoneInput) {
-                phoneInput.addEventListener('input', function (e) {
-                    let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
-                    e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-                    const check = document.getElementById('phone-check');
-                    if(check) {
-                        if(e.target.value.length >= 14) check.classList.remove('hidden');
-                        else check.classList.add('hidden');
-                    }
-                });
-            }
-
-            // CARREGAMENTO COM VERSÃO NOVA (V99) PARA FORÇAR ATUALIZAÇÃO
             const saved = localStorage.getItem('acai_config_v99');
             if(saved) storeConfig = JSON.parse(saved);
             
             loadCart();
-            checkRecentOrder();
             window.updateClientUI(true);
 
             try {
                 const app = initializeApp(firebaseConfig);
-                const auth = getAuth(app);
+                auth = getAuth(app);
                 db = getFirestore(app);
-                await signInAnonymously(auth);
+                
+                onAuthStateChanged(auth, (user) => {
+                    if (user && user.email) {
+                        isAdminLoggedIn = true;
+                        document.getElementById('admin-login-modal').classList.add('hidden');
+                        document.getElementById('admin-interface').classList.remove('hidden');
+                        window.updateAdminUI(); 
+                        window.renderAdminStock();
+                        showToast("Admin conectado");
+                    } else if (user) {
+                        isAdminLoggedIn = false;
+                        document.getElementById('admin-interface').classList.add('hidden');
+                    } else {
+                        signInAnonymously(auth).catch(e => console.error("Erro auth anon", e));
+                    }
+                });
+
                 isDemoMode = false;
                 onSnapshot(doc(db, 'loja', 'configuracao'), (snap) => {
                     if(snap.exists()) {
                         storeConfig = { ...storeConfig, ...snap.data() };
                         if(!storeConfig.sizes) storeConfig.sizes = DEFAULT_SIZES;
                         window.updateClientUI(false);
-                        window.updateAdminUI();
-                        window.renderAdminStock();
+                        if(isAdminLoggedIn) {
+                            window.updateAdminUI();
+                            window.renderAdminStock();
+                        }
                     }
                 });
             } catch(e) {
+                console.error("Erro Firebase", e);
                 isDemoMode = true;
                 window.updateClientUI(false); 
             }
@@ -508,9 +585,9 @@
         }
 
         window.updateClientUI = (loading = false) => {
-            const now = new Date();
-            const day = now.getDay();
-            const min = now.getHours() * 60 + now.getMinutes();
+            const storeDate = getStoreDate();
+            const day = storeDate.getDay();
+            const min = storeDate.getHours() * 60 + storeDate.getMinutes();
             const closeTime = 23 * 60 + 20; 
             const isTimeOpen = (day !== 1) && ((day >= 2 && day <= 5 && min >= 1110 && min <= closeTime) || ((day === 0 || day === 6) && min >= 960 && min <= closeTime));
             
@@ -525,12 +602,12 @@
             if(dot && txt && btn) {
                 if(isOpen) {
                     dot.className = "absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full animate-pulse-soft shadow-sm";
-                    txt.innerText = "Aberto Agora"; txt.className = "text-[10px] font-bold text-green-600 uppercase tracking-wider mt-0.5";
+                    txt.innerText = "Aberto Agora"; txt.className = "text-[10px] font-bold text-green-600 uppercase tracking-wider";
                     btn.disabled = false; btn.classList.remove('opacity-50', 'grayscale');
                     document.getElementById('closed-msg').classList.add('hidden');
                 } else {
                     dot.className = "absolute bottom-0 right-0 w-3.5 h-3.5 bg-red-500 border-2 border-white rounded-full shadow-sm";
-                    txt.innerText = "Fechado"; txt.className = "text-[10px] font-bold text-red-500 uppercase tracking-wider mt-0.5";
+                    txt.innerText = "Fechado"; txt.className = "text-[10px] font-bold text-red-500 uppercase tracking-wider";
                     btn.disabled = true; btn.classList.add('opacity-50', 'grayscale');
                     document.getElementById('closed-msg').classList.remove('hidden');
                 }
@@ -538,39 +615,80 @@
 
             if(document.getElementById('pix-name-display')) document.getElementById('pix-name-display').innerText = storeConfig.pixName;
             if(document.getElementById('pix-key-display')) document.getElementById('pix-key-display').value = storeConfig.pixKey;
+            
+            const timeDisplay = document.getElementById('delivery-time-display');
+            if(timeDisplay) timeDisplay.innerText = storeConfig.deliveryTime || "30-40 min";
 
             if(!loading) window.filterMenu();
             window.updateTotal();
             window.updateAdminButtons();
+            window.updateCheckoutButton();
+        }
+
+        // --- RENDERIZAÇÃO DINÂMICA DE ABAS ---
+        function renderCategoryTabs() {
+            const tabsContainer = document.getElementById('category-tabs');
+            if(!tabsContainer) return;
+
+            // Pega categorias únicas
+            const categories = new Set();
+            (storeConfig.sizes || []).forEach(item => {
+                if(item.category) categories.add(item.category);
+            });
+
+            // Constrói HTML das abas
+            let html = `
+                <button onclick="window.filterCategory('Todos')" class="tab-btn ${currentFilter==='Todos'?'tab-active':'tab-inactive'} px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1">Todos</button>
+                <button onclick="window.filterCategory('Mais Vendidos')" class="tab-btn ${currentFilter==='Mais Vendidos'?'tab-active':'tab-inactive'} px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1">
+                    <i data-lucide="flame" class="w-3 h-3 text-orange-500"></i> Mais Vendidos
+                </button>
+            `;
+
+            categories.forEach(cat => {
+                const isActive = currentFilter === cat;
+                html += `<button onclick="window.filterCategory('${cat}')" class="tab-btn ${isActive?'tab-active':'tab-inactive'} px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap">${cat}</button>`;
+            });
+
+            tabsContainer.innerHTML = html;
+            lucide.createIcons({ root: tabsContainer });
         }
 
         window.filterMenu = () => {
+            renderCategoryTabs(); // Atualiza abas se necessário
+            
             const term = document.getElementById('search-input').value.toLowerCase();
             const grid = document.getElementById('menu-grid');
             const empty = document.getElementById('empty-search');
             
-            if(grid) grid.innerHTML = "";
+            if(!grid) return;
+            
+            grid.innerHTML = "";
             let hasItems = false;
+            const fragment = document.createDocumentFragment();
 
-            (storeConfig.sizes || DEFAULT_SIZES).forEach(item => {
+            (storeConfig.sizes || []).forEach(item => {
                 if(item.available === false) return; 
+                
                 const matchesSearch = item.name.toLowerCase().includes(term) || item.description.toLowerCase().includes(term);
-                const matchesCat = currentFilter === 'Todos' || item.category === currentFilter;
+                
+                let matchesCat = false;
+                if(currentFilter === 'Todos') matchesCat = true;
+                else if(currentFilter === 'Mais Vendidos') matchesCat = item.isPopular === true;
+                else matchesCat = item.category === currentFilter;
 
                 if(matchesSearch && matchesCat) {
                     hasItems = true;
                     const el = document.createElement('label');
-                    const isChecked = window.selectedItems.has(item.name) ? 'checked' : '';
-                    
-                    const selectionClasses = window.selectedItems.has(item.name) 
-                        ? 'ring-2 ring-purple-500 bg-purple-50 border-purple-200' 
-                        : 'border-white';
+                    const isChecked = window.selectedItems.has(item.id) ? 'checked' : '';
+                    const selectionClasses = window.selectedItems.has(item.id) ? 'ring-2 ring-purple-500 bg-purple-50 border-purple-200' : 'border-white';
 
                     el.className = `card-item relative flex flex-col p-4 bg-white rounded-2xl cursor-pointer border shadow-sm hover:shadow-lg hover:border-purple-200 select-none group transition-all ${selectionClasses}`;
                     
                     const iconColor = item.category === 'Gourmet' ? 'text-pink-500 bg-pink-50' : 'text-purple-600 bg-purple-50';
+                    const popularBadge = item.isPopular ? `<div class="absolute -top-2 -right-2 bg-orange-500 text-white text-[9px] font-bold px-2 py-1 rounded-full shadow-sm flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3"></i> TOP</div>` : '';
 
                     el.innerHTML = `
+                        ${popularBadge}
                         <div class="flex items-start gap-4 mb-3 pointer-events-none">
                             <div class="w-14 h-14 rounded-2xl ${iconColor} flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
                                 <i data-lucide="ice-cream-2" class="w-7 h-7"></i>
@@ -583,7 +701,7 @@
                         <div class="mt-auto pt-3 border-t border-slate-50 flex justify-between items-center pointer-events-none">
                             <span class="font-black text-slate-800 text-lg tracking-tight">R$ ${item.price.toFixed(2).replace('.',',')}</span>
                             <div class="relative">
-                                <input type="checkbox" name="size" value="${item.name}" data-price="${item.price}" class="peer sr-only" ${isChecked}>
+                                <input type="checkbox" name="size" value="${item.id}" data-price="${item.price}" class="peer sr-only" ${isChecked}>
                                 <div class="w-7 h-7 rounded-full border-2 border-slate-200 peer-checked:bg-gradient-brand peer-checked:border-transparent flex items-center justify-center transition-all peer-checked:shadow-md peer-checked:scale-110">
                                     <i data-lucide="plus" class="w-4 h-4 text-slate-300 peer-checked:hidden"></i>
                                     <i data-lucide="check" class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 hidden peer-checked:block"></i>
@@ -597,84 +715,51 @@
                             const chk = el.querySelector('input');
                             if(chk) {
                                 chk.checked = !chk.checked;
-                                // UPDATE GLOBAL STATE
-                                if(chk.checked) window.selectedItems.add(item.name);
-                                else window.selectedItems.delete(item.name);
-
-                                if(chk.checked) {
-                                    el.classList.remove('border-white');
-                                    el.classList.add('ring-2', 'ring-purple-500', 'bg-purple-50', 'border-purple-200');
-                                } else {
-                                    el.classList.add('border-white');
-                                    el.classList.remove('ring-2', 'ring-purple-500', 'bg-purple-50', 'border-purple-200');
-                                }
+                                if(chk.checked) window.selectedItems.add(item.id);
+                                else window.selectedItems.delete(item.id);
+                                if(chk.checked) { el.classList.remove('border-white'); el.classList.add('ring-2', 'ring-purple-500', 'bg-purple-50', 'border-purple-200'); } 
+                                else { el.classList.add('border-white'); el.classList.remove('ring-2', 'ring-purple-500', 'bg-purple-50', 'border-purple-200'); }
                             }
                         }
                         window.updateTotal();
                     };
-                    grid.appendChild(el);
+                    fragment.appendChild(el);
                 }
             });
 
+            grid.appendChild(fragment);
             if(!hasItems && empty) { grid.classList.add('hidden'); empty.classList.remove('hidden'); }
             else if(empty) { empty.classList.add('hidden'); grid.classList.remove('hidden'); }
-            lucide.createIcons();
+            lucide.createIcons({ root: grid });
         }
 
         window.updateTotal = () => {
             let total = 0;
-            // Iterate over ALL items in config to calculate total based on global state
-            const allItems = storeConfig.sizes || DEFAULT_SIZES;
-            allItems.forEach(item => {
-                if(window.selectedItems.has(item.name)) {
-                    total += item.price;
-                }
+            (storeConfig.sizes || []).forEach(item => {
+                if(window.selectedItems.has(item.id)) total += item.price;
             });
-            
             const final = total * quantity;
-            const display = document.getElementById('current-price-display');
-            if(display) display.innerText = `R$ ${final.toFixed(2).replace('.',',')}`;
-            
+            document.getElementById('current-price-display').innerText = `R$ ${final.toFixed(2).replace('.',',')}`;
             const btn = document.getElementById('add-btn');
-            if(final > 0) {
-                btn.classList.remove('grayscale', 'opacity-50');
-            } else {
-                btn.classList.add('grayscale', 'opacity-50');
-            }
+            if(final > 0) { btn.classList.remove('grayscale', 'opacity-50'); } else { btn.classList.add('grayscale', 'opacity-50'); }
         }
 
         window.addToCart = () => {
             if(window.selectedItems.size === 0) return showToast("Selecione um item!", "error");
-            
-            const obs = document.getElementById('item-observation').value;
-            const allItems = storeConfig.sizes || DEFAULT_SIZES;
-            
-            // Add items from global set
-            allItems.forEach(item => {
-                if(window.selectedItems.has(item.name)) {
-                    for(let i=0; i<quantity; i++) {
-                        cart.push({ id: Date.now() + Math.random(), size: item.name, price: item.price, obs });
-                    }
+            const obs = document.getElementById('item-observation').value.trim();
+            (storeConfig.sizes || []).forEach(item => {
+                if(window.selectedItems.has(item.id)) { 
+                    const existingItemIndex = cart.findIndex(c => c.size === item.name && c.obs === obs);
+                    if (existingItemIndex > -1) { cart[existingItemIndex].qty += quantity; } 
+                    else { cart.push({ id: Date.now() + Math.random(), size: item.name, price: item.price, obs: obs, qty: quantity }); }
                 }
             });
-
-            // Clear global set and reset UI
             window.selectedItems.clear();
             quantity = 1; document.getElementById('qty-display').innerText = "1";
             document.getElementById('item-observation').value = "";
-            
-            window.updateTotal();
-            saveCart();
-            window.renderCart();
-            window.filterMenu(); // Re-render menu to uncheck visual boxes
-            
+            window.updateTotal(); saveCart(); window.renderCart(); window.filterMenu(); 
             const badge = document.getElementById('cart-badge');
-            if(badge) {
-                badge.classList.remove('hidden', 'scale-0');
-                badge.classList.add('scale-125');
-                setTimeout(() => badge.classList.remove('scale-125'), 150);
-            }
-            
+            if(badge) { badge.classList.remove('hidden', 'scale-0'); badge.classList.add('scale-125'); setTimeout(() => badge.classList.remove('scale-125'), 150); }
             showToast("Adicionado ao carrinho!");
             window.toggleCart(true);
         }
@@ -683,45 +768,54 @@
             const list = document.getElementById('cart-list');
             const badge = document.getElementById('cart-badge');
             const totalEl = document.getElementById('cart-total');
-            
-            if(badge) {
-                badge.innerText = cart.length;
-                if(cart.length === 0) badge.classList.add('hidden');
-                else badge.classList.remove('hidden');
-            }
-            
-            if(list) {
-                list.innerHTML = "";
-                let subtotal = 0;
+            let subtotal = 0; let totalItems = 0;
 
+            if(list) {
                 if(cart.length === 0) {
                     list.innerHTML = `<div class="text-center py-10 opacity-50"><i data-lucide="shopping-cart" class="w-12 h-12 mx-auto mb-2 stroke-1 text-slate-400"></i><p class="text-sm font-bold text-slate-400">Carrinho vazio</p></div>`;
                 } else {
-                    cart.forEach(item => {
-                        subtotal += item.price;
-                        list.innerHTML += `
+                    list.innerHTML = cart.map(item => {
+                        subtotal += item.price * item.qty;
+                        totalItems += item.qty;
+                        return `
                             <div class="flex justify-between items-start bg-white p-4 rounded-xl border border-slate-100 shadow-sm animate-fade-in">
-                                <div>
-                                    <p class="font-bold text-sm text-slate-800">${item.size}</p>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded-md">${item.qty}x</span>
+                                        <p class="font-bold text-sm text-slate-800">${item.size}</p>
+                                    </div>
                                     ${item.obs ? `<p class="text-[10px] text-slate-400 mt-1 italic">"${item.obs}"</p>` : ''}
-                                    <p class="text-xs font-bold text-purple-600 mt-1">R$ ${item.price.toFixed(2).replace('.',',')}</p>
+                                    <p class="text-xs font-bold text-purple-600 mt-1">R$ ${(item.price * item.qty).toFixed(2).replace('.',',')}</p>
                                 </div>
-                                <button onclick="window.removeItem(${item.id})" class="text-slate-300 hover:text-red-500 p-1 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <div class="flex flex-col items-end gap-2">
+                                    <div class="flex items-center bg-slate-50 rounded-lg border border-slate-200 h-8">
+                                        <button onclick="window.updateCartItemQty(${item.id}, -1)" class="w-8 h-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">-</button>
+                                        <button onclick="window.updateCartItemQty(${item.id}, 1)" class="w-8 h-full flex items-center justify-center text-slate-400 hover:text-green-500 transition-colors">+</button>
+                                    </div>
+                                </div>
                             </div>
                         `;
-                    });
+                    }).join('');
                 }
-
+                if(badge) { badge.innerText = totalItems; if(totalItems === 0) badge.classList.add('hidden'); else badge.classList.remove('hidden'); }
                 let shipping = 0;
                 const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value;
                 if(deliveryType === 'Entrega') {
                     const zonePrice = document.getElementById('delivery-zone').value;
                     shipping = parseFloat(zonePrice || 0);
                 }
-
                 if(totalEl) totalEl.innerText = `R$ ${(subtotal + shipping).toFixed(2).replace('.',',')}`;
                 document.getElementById('customer-form').classList.toggle('hidden', cart.length === 0);
-                lucide.createIcons();
+                lucide.createIcons({ root: list });
+            }
+        }
+
+        window.updateCartItemQty = (id, delta) => {
+            const index = cart.findIndex(c => c.id === id);
+            if (index > -1) {
+                cart[index].qty += delta;
+                if (cart[index].qty <= 0) cart.splice(index, 1);
+                saveCart(); window.renderCart();
             }
         }
 
@@ -729,14 +823,12 @@
             const name = document.getElementById('client-name').value.trim();
             const phone = document.getElementById('client-phone').value.trim();
             const payMethod = document.getElementById('payment-method').value;
-            const pixConfirmed = document.getElementById('pix-confirmed')?.checked; // Verifica se marcou
-            
             if(!name || phone.length < 13 || !payMethod) return showToast("Preencha todos os dados!", "error");
+            if(payMethod === 'Pix' && paymentStatus !== 'approved') return showToast("Confirme o pagamento Pix!", "error");
 
             const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
             const zoneSelect = document.getElementById('delivery-zone');
             const address = document.getElementById('client-address').value;
-            
             let location = "Retirada no Local";
             let shipping = 0;
 
@@ -747,89 +839,52 @@
                 location = `Entrega: ${zoneName}\n🏠 ${address}`;
             }
 
-            const subtotal = cart.reduce((acc, i) => acc + i.price, 0);
+            const subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
             const total = subtotal + shipping;
-
-            // Adiciona confirmação visual no texto
             let paymentText = payMethod;
-            if (payMethod === 'Pix' && pixConfirmed) {
-                paymentText += " (✅ Pago)";
-            }
+            if (payMethod === 'Pix') paymentText += " (✅ PAGO NO APP)";
 
             const orderData = { 
                 nome: name, telefone: phone, total: `R$ ${total.toFixed(2).replace('.', ',')}`, 
                 pagamento: paymentText, entrega: location, 
-                itens: cart.map(i => i.size).join(", "), 
+                itens: cart.map(i => `${i.qty}x ${i.size}`).join(", "), 
                 taxa: `R$ ${shipping.toFixed(2).replace('.', ',')}` 
             };
 
-            // TENTATIVA ROBUSTA DE ENVIO PARA O GOOGLE SHEETS
             if(storeConfig.googleScriptUrl) {
                 fetch(storeConfig.googleScriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'text/plain'
-                    },
-                    body: JSON.stringify(orderData)
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(orderData)
                 }).catch(err => console.error("Erro envio:", err));
             }
 
             let msg = `🥤 *PEDIDO NOVO - AÇAÍ ELLEGANCE*\n\n`;
             msg += `👤 *Cliente:* ${name}\n📱 *Tel:* ${phone}\n💳 *Pagamento:* ${paymentText}\n📍 *${location}*\n\n`;
             msg += `*ITENS:* \n`;
-            cart.forEach(i => msg += `• ${i.size} ${i.obs ? `(${i.obs})` : ''}\n`);
+            cart.forEach(i => msg += `• ${i.qty}x ${i.size} ${i.obs ? `(${i.obs})` : ''}\n`);
             msg += `\n🧾 *Subtotal:* R$ ${subtotal.toFixed(2).replace('.',',')}`;
             if(shipping > 0) msg += `\n🛵 *Taxa:* R$ ${shipping.toFixed(2).replace('.',',')}`;
             msg += `\n💰 *TOTAL: R$ ${total.toFixed(2).replace('.',',')}*`;
 
-            localStorage.setItem('acai_recent_order', JSON.stringify({
-                date: new Date().toLocaleDateString('pt-BR'),
-                items: cart.map(i => i.size).join(', ')
-            }));
-
-            cart = []; 
-            saveCart();
+            localStorage.setItem('acai_recent_order', JSON.stringify({ date: new Date().toLocaleDateString('pt-BR'), items: cart.map(i => `${i.qty}x ${i.size}`).join(', ') }));
+            cart = []; saveCart();
             window.open(`https://api.whatsapp.com/send?phone=${storeConfig.phone.replace(/\D/g,'')}&text=${encodeURIComponent(msg)}`, '_blank');
             setTimeout(() => window.location.reload(), 2000);
         }
 
         window.changeQty = (d) => {
             let q = parseInt(document.getElementById('qty-display').innerText);
-            q = Math.max(1, q + d);
-            quantity = q;
+            q = Math.max(1, q + d); quantity = q;
             document.getElementById('qty-display').innerText = q;
             window.updateTotal();
         }
         window.toggleCart = (show) => {
             const panel = document.getElementById('cart-panel');
             const overlay = document.getElementById('cart-overlay');
-            if(show) {
-                window.renderCart();
-                overlay.classList.remove('invisible', 'opacity-0');
-                panel.classList.remove('translate-x-full');
-            } else {
-                overlay.classList.add('opacity-0');
-                panel.classList.add('translate-x-full');
-                setTimeout(() => overlay.classList.add('invisible'), 300);
-            }
+            if(show) { window.renderCart(); overlay.classList.remove('invisible', 'opacity-0'); panel.classList.remove('translate-x-full'); } 
+            else { overlay.classList.add('opacity-0'); panel.classList.add('translate-x-full'); setTimeout(() => overlay.classList.add('invisible'), 300); }
         }
-        window.filterCategory = (cat) => {
-            currentFilter = cat;
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('tab-active');
-                b.classList.add('tab-inactive');
-                if(b.getAttribute('data-cat') === cat) {
-                    b.classList.remove('tab-inactive');
-                    b.classList.add('tab-active');
-                }
-            });
-            window.filterMenu();
-        }
-        window.resetSearch = () => {
-            document.getElementById('search-input').value = "";
-            window.filterCategory('Todos');
-        }
+        window.filterCategory = (cat) => { currentFilter = cat; window.filterMenu(); }
+        window.resetSearch = () => { document.getElementById('search-input').value = ""; window.filterCategory('Todos'); }
         window.toggleAddress = (show) => {
             const block = document.getElementById('address-block');
             if(show) {
@@ -837,68 +892,69 @@
                 const sel = document.getElementById('delivery-zone');
                 if(sel.options.length <= 0) {
                     sel.innerHTML = '<option value="" disabled selected>Selecione o Bairro...</option>';
-                    storeConfig.deliveryZones.forEach(z => {
-                        sel.innerHTML += `<option value="${z.price}" data-name="${z.name}">${z.name} (+R$ ${z.price.toFixed(2)})</option>`;
-                    });
+                    storeConfig.deliveryZones.forEach(z => { sel.innerHTML += `<option value="${z.price}" data-name="${z.name}">${z.name} (+R$ ${z.price.toFixed(2)})</option>`; });
                 }
-            } else {
-                block.classList.add('hidden');
-            }
+            } else { block.classList.add('hidden'); }
             window.renderCart();
         }
         window.togglePaymentUI = () => {
             const method = document.getElementById('payment-method').value;
             const pixBox = document.getElementById('pix-container');
-            if(method === 'Pix') pixBox.classList.remove('hidden');
-            else pixBox.classList.add('hidden');
+            const statusBadge = document.getElementById('payment-status-badge');
+            paymentStatus = (method === 'Pix') ? 'pending' : 'none';
+            document.getElementById('pix-action-area').classList.remove('hidden');
+            document.getElementById('pix-success-msg').classList.add('hidden');
+            if(method === 'Pix') { pixBox.classList.remove('hidden'); statusBadge.classList.remove('hidden', 'status-paid'); statusBadge.classList.add('status-pending'); statusBadge.innerHTML = '<i data-lucide="clock" class="w-3 h-3"></i> <span>Aguardando</span>'; } 
+            else { pixBox.classList.add('hidden'); statusBadge.classList.add('hidden'); }
+            window.updateCheckoutButton(); lucide.createIcons();
+        }
+        window.confirmPix = () => {
+            const btn = document.querySelector('#pix-action-area button');
+            btn.innerHTML = '<div class="spinner border-white/50 border-t-white"></div>';
+            setTimeout(() => {
+                paymentStatus = 'approved';
+                document.getElementById('pix-action-area').classList.add('hidden');
+                document.getElementById('pix-success-msg').classList.remove('hidden');
+                const statusBadge = document.getElementById('payment-status-badge');
+                statusBadge.classList.remove('status-pending'); statusBadge.classList.add('status-paid'); statusBadge.innerHTML = '<i data-lucide="check-circle" class="w-3 h-3"></i> <span>Aprovado</span>';
+                showToast("Pagamento Confirmado!"); window.updateCheckoutButton(); lucide.createIcons();
+            }, 1000);
+        }
+        window.updateCheckoutButton = () => {
+            const btn = document.getElementById('checkout-btn');
+            const txt = document.getElementById('checkout-text');
+            const method = document.getElementById('payment-method').value;
+            if(!method) { btn.className = "w-full bg-slate-200 text-slate-400 py-4 rounded-xl font-bold text-sm uppercase tracking-wider shadow-none flex items-center justify-center gap-2 transition-all cursor-not-allowed"; btn.disabled = true; txt.innerText = "Escolha Pagamento"; } 
+            else if (method === 'Pix' && paymentStatus !== 'approved') { btn.className = "w-full bg-yellow-100 text-yellow-600 py-4 rounded-xl font-bold text-sm uppercase tracking-wider shadow-none flex items-center justify-center gap-2 transition-all cursor-not-allowed border border-yellow-200"; btn.disabled = true; txt.innerText = "Aguardando Confirmação..."; } 
+            else { btn.className = "w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-bold text-sm uppercase tracking-wider shadow-lg shadow-green-500/30 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"; btn.disabled = false; txt.innerText = "Finalizar no WhatsApp"; }
+            lucide.createIcons();
         }
         window.copyPix = () => {
             const key = document.getElementById('pix-key-display');
-            if(key) {
-                key.select();
-                try {
-                    if (navigator.clipboard) {
-                        navigator.clipboard.writeText(key.value).then(() => showToast("Copiado!"));
-                    } else {
-                        document.execCommand('copy');
-                        showToast("Copiado!");
-                    }
-                } catch(e) { showToast("Erro ao copiar"); }
-            }
+            if(key) { key.select(); try { if (navigator.clipboard) { navigator.clipboard.writeText(key.value).then(() => showToast("Copiado!")); } else { document.execCommand('copy'); showToast("Copiado!"); } } catch(e) { showToast("Erro ao copiar"); } }
         }
-        window.removeItem = (id) => {
-            cart = cart.filter(c => c.id !== id);
-            saveCart(); window.renderCart();
-        }
-        window.clearHistory = () => {
-            localStorage.removeItem('acai_recent_order');
-            document.getElementById('recent-order-section').classList.add('hidden');
-        }
+        window.removeItem = (id) => window.updateCartItemQty(id, -999);
+        window.clearHistory = () => { localStorage.removeItem('acai_recent_order'); document.getElementById('recent-order-section').classList.add('hidden'); }
         window.repeatOrder = () => showToast("Faça seu pedido novamente abaixo!");
+        function showToast(msg, type='success') { const t = document.getElementById('toast'); const m = document.getElementById('toast-msg'); if(m) m.innerText = msg; if(t) { t.classList.remove('-translate-y-10', 'opacity-0'); t.classList.add('translate-y-0', 'opacity-100'); setTimeout(() => { t.classList.remove('translate-y-0', 'opacity-100'); t.classList.add('-translate-y-10', 'opacity-0'); }, 2500); } }
 
-        function showToast(msg, type='success') {
-            const t = document.getElementById('toast');
-            const m = document.getElementById('toast-msg');
-            if(m) m.innerText = msg;
-            if(t) {
-                t.classList.remove('-translate-y-10', 'opacity-0');
-                t.classList.add('translate-y-0', 'opacity-100');
-                setTimeout(() => {
-                    t.classList.remove('translate-y-0', 'opacity-100');
-                    t.classList.add('-translate-y-10', 'opacity-0');
-                }, 2500);
-            }
-        }
-
-        // --- ADMIN ---
-        window.openAdminLogin = () => document.getElementById('admin-login-modal').classList.remove('hidden');
-        window.verifyAdmin = () => {
-            if(document.getElementById('admin-pass-input').value === 'admin123') {
-                document.getElementById('admin-login-modal').classList.add('hidden');
+        // --- FUNÇÕES DE ADMINISTRAÇÃO (CRUD) ---
+        window.openAdminLogin = () => {
+            if(isAdminLoggedIn) {
                 document.getElementById('admin-interface').classList.remove('hidden');
                 window.updateAdminUI(); window.renderAdminStock();
-            } else showToast("Senha incorreta", "error");
+            } else { document.getElementById('admin-login-modal').classList.remove('hidden'); }
+        };
+        window.handleAdminClick = window.openAdminLogin;
+        window.performAdminLogin = () => {
+            const email = document.getElementById('admin-email-input').value;
+            const pass = document.getElementById('admin-pass-input').value;
+            if(!email || !pass) return showToast("Preencha todos os campos", "error");
+            const btn = document.getElementById('btn-admin-login'); const originalText = btn.innerHTML;
+            btn.innerHTML = '<div class="spinner"></div>'; btn.disabled = true;
+            signInWithEmailAndPassword(auth, email, pass).then(() => { btn.innerHTML = originalText; btn.disabled = false; }).catch(error => { console.error(error); showToast("Login inválido!", "error"); btn.innerHTML = originalText; btn.disabled = false; });
         }
+        window.adminLogout = () => { signOut(auth).then(() => { showToast("Admin desconectado"); }); }
         window.closeAdmin = () => document.getElementById('admin-interface').classList.add('hidden');
         
         window.toggleStock = (idx) => {
@@ -906,33 +962,124 @@
             items[idx].available = !(items[idx].available !== false);
             storeConfig.sizes = items;
             saveConfig();
-            window.renderAdminStock();
-            window.updateClientUI();
+            window.renderAdminStock(); window.updateClientUI();
         }
+        
+        // --- NOVO: CRUD DE PRODUTOS ---
+        window.openProductEditor = (id = null) => {
+            const modal = document.getElementById('admin-item-modal');
+            const title = document.getElementById('modal-title');
+            const btnDelete = document.getElementById('btn-delete-item');
+            
+            // Sugestões de categoria
+            const catList = document.getElementById('cat-suggestions');
+            const categories = new Set(storeConfig.sizes.map(i => i.category));
+            catList.innerHTML = Array.from(categories).map(c => `<option value="${c}">`).join('');
+
+            if(id) {
+                const item = storeConfig.sizes.find(i => i.id === id);
+                if(!item) return;
+                title.innerText = "Editar Produto";
+                document.getElementById('edit-item-id').value = id;
+                document.getElementById('edit-item-name').value = item.name;
+                document.getElementById('edit-item-desc').value = item.description || "";
+                document.getElementById('edit-item-price').value = item.price;
+                document.getElementById('edit-item-cat').value = item.category;
+                document.getElementById('edit-item-popular').checked = item.isPopular || false;
+                btnDelete.classList.remove('hidden');
+            } else {
+                title.innerText = "Novo Produto";
+                document.getElementById('edit-item-id').value = "";
+                document.getElementById('edit-item-name').value = "";
+                document.getElementById('edit-item-desc').value = "";
+                document.getElementById('edit-item-price').value = "";
+                document.getElementById('edit-item-cat').value = "";
+                document.getElementById('edit-item-popular').checked = false;
+                btnDelete.classList.add('hidden');
+            }
+            modal.classList.remove('hidden');
+        }
+
+        window.saveProduct = () => {
+            const id = document.getElementById('edit-item-id').value;
+            const name = document.getElementById('edit-item-name').value;
+            const desc = document.getElementById('edit-item-desc').value;
+            const price = parseFloat(document.getElementById('edit-item-price').value);
+            const cat = document.getElementById('edit-item-cat').value;
+            const isPopular = document.getElementById('edit-item-popular').checked;
+
+            if(!name || isNaN(price) || !cat) return showToast("Preencha campos obrigatórios", "error");
+
+            const newItem = {
+                id: id || 'item_' + Date.now(),
+                name: name,
+                description: desc,
+                price: price,
+                category: cat,
+                isPopular: isPopular,
+                available: true
+            };
+
+            if(id) {
+                // Editar existente
+                const idx = storeConfig.sizes.findIndex(i => i.id === id);
+                if(idx > -1) storeConfig.sizes[idx] = { ...storeConfig.sizes[idx], ...newItem };
+            } else {
+                // Criar novo
+                if(!storeConfig.sizes) storeConfig.sizes = [];
+                storeConfig.sizes.push(newItem);
+            }
+
+            saveConfig().then(() => {
+                document.getElementById('admin-item-modal').classList.add('hidden');
+                window.renderAdminStock();
+                window.updateClientUI();
+            });
+        }
+
+        window.deleteProduct = () => {
+            const id = document.getElementById('edit-item-id').value;
+            if(!id) return;
+            if(!confirm("Tem certeza que deseja excluir este produto?")) return;
+
+            storeConfig.sizes = storeConfig.sizes.filter(i => i.id !== id);
+            saveConfig().then(() => {
+                document.getElementById('admin-item-modal').classList.add('hidden');
+                window.renderAdminStock();
+                window.updateClientUI();
+                showToast("Produto excluído");
+            });
+        }
+
         window.renderAdminStock = () => {
             const list = document.getElementById('admin-stock-list');
             if(list) {
-                list.innerHTML = "";
-                storeConfig.sizes.forEach((item, idx) => {
+                const stockHtml = (storeConfig.sizes || []).map((item, idx) => {
                     const active = item.available !== false;
-                    list.innerHTML += `
-                        <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border text-xs">
-                            <span class="${active?'font-bold':'line-through text-red-400'}">${item.name}</span>
-                            <button onclick="window.toggleStock(${idx})" class="${active?'bg-green-100 text-green-700':'bg-red-100 text-red-700'} px-3 py-1 rounded font-bold">${active?'ATIVO':'OFF'}</button>
+                    return `
+                        <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border text-xs group hover:border-purple-200 transition-colors">
+                            <div class="flex flex-col cursor-pointer flex-1" onclick="window.openProductEditor('${item.id}')">
+                                <span class="font-bold text-slate-700 ${!active?'line-through text-red-400':''}">${item.name}</span>
+                                <span class="text-[10px] text-slate-400">R$ ${item.price.toFixed(2)} • ${item.category}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="window.openProductEditor('${item.id}')" class="p-2 text-slate-400 hover:text-purple-600"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                                <button onclick="window.toggleStock(${idx})" class="${active?'bg-green-100 text-green-700':'bg-red-100 text-red-700'} px-2 py-1 rounded font-bold text-[10px] w-14">${active?'ATIVO':'OFF'}</button>
+                            </div>
                         </div>
                     `;
-                });
+                }).join('');
+                list.innerHTML = stockHtml;
+                lucide.createIcons({ root: list });
             }
         }
+
         window.setStatus = (s) => { storeConfig.statusMode = s; saveConfig(); window.updateClientUI(); window.updateAdminButtons(); }
         window.updateAdminButtons = () => {
             const s = storeConfig.statusMode;
             ['open','auto','closed'].forEach(m => {
                 const btn = document.getElementById(`btn-status-${m}`);
-                if(btn) {
-                    if(s===m) btn.classList.add('bg-slate-800', 'text-white');
-                    else btn.classList.remove('bg-slate-800', 'text-white');
-                }
+                if(btn) { if(s===m) btn.classList.add('bg-slate-800', 'text-white'); else btn.classList.remove('bg-slate-800', 'text-white'); }
             });
         }
         window.saveGeneralConfig = () => {
@@ -940,6 +1087,7 @@
             storeConfig.phone = document.getElementById('adm-whatsapp').value;
             storeConfig.pixKey = document.getElementById('adm-pix-key').value;
             storeConfig.pixName = document.getElementById('adm-pix-name').value;
+            storeConfig.deliveryTime = document.getElementById('adm-delivery-time').value;
             saveConfig();
         }
         window.updateAdminUI = () => {
@@ -947,20 +1095,14 @@
             document.getElementById('adm-whatsapp').value = storeConfig.phone;
             document.getElementById('adm-pix-key').value = storeConfig.pixKey;
             document.getElementById('adm-pix-name').value = storeConfig.pixName;
+            document.getElementById('adm-delivery-time').value = storeConfig.deliveryTime || "30-40 min";
             window.updateAdminButtons();
         }
+        
         async function saveConfig() {
-            if(isDemoMode) {
-                localStorage.setItem('acai_config_v99', JSON.stringify(storeConfig));
-                showToast("Salvo (Demo Mode)");
-            } else {
-                try {
-                    await updateDoc(doc(db, 'loja', 'configuracao'), storeConfig);
-                    showToast("Salvo no Firebase!");
-                } catch(e) {
-                    showToast("Erro ao salvar online");
-                }
-            }
+            if(!isAdminLoggedIn && !isDemoMode) { return showToast("Apenas Admin pode salvar!", "error"); }
+            if(isDemoMode) { localStorage.setItem('acai_config_v99', JSON.stringify(storeConfig)); showToast("Salvo (Demo Mode)"); } 
+            else { try { await updateDoc(doc(db, 'loja', 'configuracao'), storeConfig); showToast("Salvo no Firebase!"); } catch(e) { console.error(e); showToast("Erro ao salvar (Sem permissão?)"); } }
         }
 
         window.addEventListener('load', init);
