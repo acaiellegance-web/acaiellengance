@@ -133,7 +133,9 @@
     <div id="splash" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white transition-opacity duration-500">
         <div class="relative mb-6">
             <div class="absolute inset-0 bg-brand-500/20 blur-xl rounded-full animate-pulse"></div>
-            <img src="logoacai.jpeg" class="w-32 h-32 object-cover rounded-full shadow-2xl relative z-10 border-4 border-white animate-bounce-short">
+            <div class="w-32 h-32 rounded-full bg-brand-100 flex items-center justify-center border-4 border-white shadow-2xl relative z-10 animate-bounce-short overflow-hidden">
+                <img src="logoacai.jpeg" onerror="this.style.display='none'; this.parentElement.innerHTML='<i data-lucide=\'ice-cream-2\' class=\'w-16 h-16 text-brand-500\'></i>'" class="w-full h-full object-cover">
+            </div>
         </div>
         <h1 class="font-display font-bold text-3xl text-slate-900 tracking-tight">Açaí Ellegance</h1>
         <p class="text-slate-400 text-xs font-bold mt-3 tracking-widest uppercase bg-slate-100 px-3 py-1 rounded-full">Carregando Sabores</p>
@@ -146,7 +148,9 @@
             <div class="px-5 h-[72px] flex items-center justify-between max-w-lg mx-auto">
                 <div class="flex items-center gap-3 cursor-pointer group" onclick="window.handleAdminClick()">
                     <div class="relative transition-transform group-active:scale-95">
-                        <img src="logoacai.jpeg" class="w-11 h-11 rounded-full border-2 border-white shadow-md object-cover">
+                        <div class="w-11 h-11 rounded-full bg-brand-100 border-2 border-white shadow-md flex items-center justify-center overflow-hidden">
+                             <img src="logoacai.jpeg" onerror="this.style.display='none'; this.parentElement.innerHTML='<i data-lucide=\'ice-cream-2\' class=\'w-6 h-6 text-brand-600\'></i>'" class="w-full h-full object-cover">
+                        </div>
                         <div id="status-indicator" class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-slate-300 border-2 border-white rounded-full transition-colors duration-500"></div>
                     </div>
                     <div>
@@ -177,7 +181,8 @@
         <main class="px-5 pt-6 w-full max-w-lg space-y-8 flex-1">
             
             <div class="relative w-full h-48 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-purple-900/20 group cursor-pointer active:scale-[0.98] transition-transform" onclick="filterCategory('Gourmet')">
-                <img src="logoacai.jpeg" class="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-1000 ease-out">
+                 <div class="absolute inset-0 bg-gradient-to-br from-purple-800 to-purple-600"></div>
+                <img src="logoacai.jpeg" class="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-1000 ease-out" onerror="this.style.opacity='0'">
                 <div class="absolute inset-0 bg-gradient-to-r from-brand-900 via-brand-900/50 to-transparent"></div>
                 <div class="absolute inset-0 p-8 flex flex-col justify-center text-white">
                     <div class="bg-white/20 backdrop-blur-md px-3 py-1 rounded-lg w-fit mb-3 border border-white/20 shadow-sm">
@@ -319,7 +324,7 @@
                 <div class="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-brand-600 shadow-inner">
                     <i data-lucide="lock" class="w-8 h-8"></i>
                 </div>
-                <h3 class="font-display font-bold text-2xl text-slate-900">Admin Acess</h3>
+                <h3 class="font-display font-bold text-2xl text-slate-900">Admin Access</h3>
             </div>
             <div class="space-y-4">
                 <input type="email" id="adm-email" placeholder="E-mail" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-brand-500 outline-none">
@@ -340,12 +345,20 @@
         
         <div class="p-6 space-y-6 max-w-lg mx-auto pb-24">
             <div class="flex p-1 bg-slate-100 rounded-xl mb-4">
-                <button onclick="switchAdminTab('pedidos')" id="tab-pedidos" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-800 transition-all">Pedidos</button>
-                <button onclick="switchAdminTab('config')" id="tab-config" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all">Estoque/Config</button>
+                <button onclick="switchAdminTab('estoque')" id="tab-estoque" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-800 transition-all">Estoque</button>
+                <button onclick="switchAdminTab('config')" id="tab-config" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all">Configurações</button>
             </div>
 
-            <div id="view-pedidos" class="space-y-4">
-                <div id="admin-orders-list" class="space-y-3"></div>
+            <div id="view-estoque" class="space-y-4">
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600"><i data-lucide="package" class="w-5 h-5"></i></div>
+                        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">Controlo de Estoque</h3>
+                    </div>
+                    <div id="stock-list" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1 no-scrollbar">
+                        <!-- Itens do estoque renderizados aqui -->
+                    </div>
+                </div>
             </div>
 
             <div id="view-config" class="hidden space-y-6">
@@ -362,14 +375,22 @@
                     </div>
                 </div>
 
-                <!-- CONTROLO DE ESTOQUE (RESTAURADO) -->
+                <!-- GERENCIAR LOCAIS (NOVO) -->
                 <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600"><i data-lucide="package" class="w-5 h-5"></i></div>
-                        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">Controlo de Estoque</h3>
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide mb-4 flex items-center gap-2">
+                        <i data-lucide="map-pin" class="w-4 h-4 text-brand-500"></i> Locais de Entrega
+                    </h3>
+                    
+                    <div class="flex gap-2 mb-4">
+                        <input id="new-zone-name" placeholder="Nome do Bairro" class="flex-1 p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none border border-transparent focus:border-brand-200 transition-all">
+                        <input id="new-zone-price" type="number" placeholder="R$" class="w-20 p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none border border-transparent focus:border-brand-200 transition-all">
+                        <button onclick="addZone()" class="bg-green-500 text-white p-3 rounded-xl hover:bg-green-600 active:scale-95 transition-all shadow-sm">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                    <div id="stock-list" class="space-y-2 max-h-80 overflow-y-auto pr-1 no-scrollbar">
-                        <!-- Itens do estoque renderizados aqui -->
+
+                    <div id="admin-zones-list" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar">
+                        <!-- Rendered via JS -->
                     </div>
                 </div>
 
@@ -395,11 +416,12 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, addDoc, collection, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-        const firebaseConfig = {
+        // HYBRID CONFIGURATION: Uses Preview sandbox if available, otherwise uses your User config
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyBakH1kufhFKj-ibAkQNTXhs-WLfxUob28",
             authDomain: "acai-ellegance-app.firebaseapp.com",
             projectId: "acai-ellegance-app",
@@ -407,6 +429,9 @@
             messagingSenderId: "190829563894",
             appId: "1:190829563894:web:8494b3663cdd381e5281d7"
         };
+        
+        // Define appId for proper collection pathing in preview mode
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         const DEFAULT_ITEMS = [
             { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
@@ -438,6 +463,7 @@
                 googleScriptUrl: "https://script.google.com/macros/s/AKfycbxxZN8J-SSftroUFlwsunzw7reWAn-kxkwJ0BG0wXvSdHq8ctCMATGsjU_gTDH4njzU/exec",
                 zones: [
                     {name: "Albano Franco", price: 0},
+                     {name: "Cidade nova", price: 5.00},
                     {name: "Marcos Freire 1,2,3", price: 0},
                     {name: "João Alves", price: 0},
                     {name: "Fernando Collor", price: 0},
@@ -446,9 +472,10 @@
                     {name: "Porto D’antas", price: 3.00},
                     {name: "Lamarão", price: 6.00},
                     {name: "Japaozinho", price: 4.00},
+                    {name: "Sede de socorro", price: 4.00},
                     {name: "Cidade nova", price: 5.00},
                     {name: "Barra", price: 6.00},
-                    {name: "Sede de socorro", price: 4.00}
+                    
                 ]
             },
             selectedItems: new Set(),
@@ -461,12 +488,29 @@
 
         let db, auth;
 
+        const getCollectionRef = (colName) => {
+            if (typeof __firebase_config !== 'undefined') {
+                 return collection(db, 'artifacts', appId, 'public', 'data', colName);
+            }
+            return collection(db, colName);
+        }
+
+        const getDocRef = (colName, docId) => {
+            if (typeof __firebase_config !== 'undefined') {
+                 return doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
+            }
+            return doc(db, colName, docId);
+        }
+
         window.init = async () => {
             const savedCart = localStorage.getItem('acai_cart_v3');
             if(savedCart) state.cart = JSON.parse(savedCart);
             setTimeout(() => {
-                document.getElementById('splash').style.opacity = '0';
-                setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
+                const splash = document.getElementById('splash');
+                if(splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.style.display = 'none', 500);
+                }
             }, 1000);
             setupPhoneMask();
             renderMenu();
@@ -477,24 +521,37 @@
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
+                
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                     await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                     if (!auth.currentUser) {
+                        try { await signInAnonymously(auth); } catch(e) {}
+                     }
+                }
+
                 onAuthStateChanged(auth, (user) => {
-                    state.isAdmin = !!(user && user.email);
-                    if(state.isAdmin) {
+                    if(user && user.email) {
+                        state.isAdmin = true;
                         showAdminPanel();
-                        loadAdminOrders();
-                    } else {
-                        signInAnonymously(auth).catch(() => {});
+                    } else if (state.isAdmin && !user) {
+                        state.isAdmin = false;
                     }
                 });
-                onSnapshot(doc(db, 'loja', 'configuracao'), (snap) => {
+                
+                onSnapshot(getDocRef('loja', 'configuracao'), (snap) => {
                     if(snap.exists()) {
                         state.config = { ...state.config, ...snap.data() };
                         renderMenu();
                         updateUI();
                         if(state.isAdmin) syncAdminFields();
                     }
+                }, (error) => {
+                    console.log("Using default config or offline mode");
                 });
-            } catch(e) { console.log("Modo Offline"); }
+
+            } catch(e) { console.log("Modo Offline/Erro Firebase", e); }
+            
             setInterval(updateUI, 60000);
         };
 
@@ -503,53 +560,8 @@
             window.open(`https://api.whatsapp.com/send?phone=${state.config.phone.replace(/\D/g,'')}&text=${encodeURIComponent(msg)}`, '_blank');
         };
 
-        window.loadAdminOrders = () => {
-            const q = query(collection(db, "pedidos"), orderBy("date", "desc"), limit(20));
-            onSnapshot(q, (snapshot) => {
-                const list = document.getElementById("admin-orders-list");
-                list.innerHTML = "";
-                if(snapshot.empty) {
-                    list.innerHTML = '<div class="text-center py-10 text-slate-400 text-xs">Sem pedidos recentes.</div>';
-                    return;
-                }
-                snapshot.forEach((doc) => {
-                    const order = doc.data();
-                    const status = order.status || 'new';
-                    const isPixPending = order.paymentMethod === 'Pix' && status === 'new';
-                    let badge = status === 'canceled' ? '<span class="badge-canceled px-2 py-0.5 rounded text-[10px] font-bold">Cancelado</span>' : (isPixPending ? '<span class="badge-pending px-2 py-0.5 rounded text-[10px] font-bold">Pix Pendente</span>' : '<span class="badge-paid px-2 py-0.5 rounded text-[10px] font-bold">Aprovado</span>');
-
-                    list.innerHTML += `
-                        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <h4 class="font-bold text-slate-800 text-sm">${order.clientName}</h4>
-                                    <p class="text-[10px] text-slate-400">${new Date(order.date).toLocaleString()}</p>
-                                </div>
-                                ${badge}
-                            </div>
-                            <div class="text-xs text-slate-600 mb-3 bg-slate-50 p-2 rounded-lg">${order.itemsSummary}</div>
-                            <div class="flex justify-between items-center border-t border-slate-50 pt-2">
-                                <span class="font-bold text-slate-800">${order.total}</span>
-                                <div class="flex gap-2">
-                                    ${isPixPending ? `<button onclick="updateOrderStatus('${doc.id}', 'paid')" class="px-3 py-1.5 bg-green-500 text-white rounded-lg text-xs font-bold shadow-sm">Confirmar Pix</button>` : ''}
-                                    ${status !== 'canceled' ? `<button onclick="updateOrderStatus('${doc.id}', 'canceled')" class="p-1.5 text-red-400 active:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
-                                </div>
-                            </div>
-                        </div>`;
-                });
-                window.refreshIcons();
-            });
-        };
-
-        window.updateOrderStatus = async (orderId, newStatus) => {
-            try {
-                await updateDoc(doc(db, "pedidos", orderId), { status: newStatus });
-                toast("Pedido Atualizado");
-            } catch(e) { toast("Erro!", "error"); }
-        };
-
         window.switchAdminTab = (tab) => {
-            ['pedidos', 'config'].forEach(v => {
+            ['estoque', 'config'].forEach(v => {
                 document.getElementById(`view-${v}`).classList.add('hidden');
                 document.getElementById(`tab-${v}`).className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all";
             });
@@ -709,13 +721,12 @@
                 btnRet.className = `${base} border-slate-100 text-slate-400`;
                 details.classList.remove('hidden');
                 const sel = document.getElementById('delivery-zone');
-                if(sel.options.length === 0) {
-                    sel.innerHTML = '<option value="" disabled selected>Onde entregamos?</option>';
-                    state.config.zones.forEach(z => {
-                        const txt = z.price === 0 ? "Grátis" : `+R$ ${z.price.toFixed(2)}`;
-                        sel.innerHTML += `<option value="${z.price}" data-name="${z.name}">${z.name} (${txt})</option>`;
-                    });
-                }
+                // Use dynamic zones from state
+                sel.innerHTML = '<option value="" disabled selected>Onde entregamos?</option>';
+                state.config.zones.forEach(z => {
+                    const txt = z.price === 0 ? "Grátis" : `+R$ ${z.price.toFixed(2)}`;
+                    sel.innerHTML += `<option value="${z.price}" data-name="${z.name}">${z.name} (${txt})</option>`;
+                });
             }
             renderCart();
         };
@@ -762,37 +773,93 @@
             const name = document.getElementById('client-name').value;
             const phone = document.getElementById('client-phone').value;
             const method = document.getElementById('payment-method').value;
-            const total = document.getElementById('cart-total').innerText;
+            const totalFinal = document.getElementById('cart-total').innerText;
             
-            let loc = "Retirada";
+            let zoneName = "";
+            let address = "";
             let shipText = "Grátis";
+            let shipValue = 0;
+            let deliveryDetailsStorage = "Retirada";
+
             if(state.deliveryType === 'Entrega') {
-                const zoneName = document.getElementById('delivery-zone').selectedOptions[0].getAttribute('data-name');
-                const zonePrice = parseFloat(document.getElementById('delivery-zone').value || 0);
-                loc = `${zoneName} - ${document.getElementById('client-address').value}`;
-                shipText = zonePrice === 0 ? "Grátis" : `R$ ${zonePrice.toFixed(2)}`;
+                const zoneOption = document.getElementById('delivery-zone').selectedOptions[0];
+                zoneName = zoneOption.getAttribute('data-name');
+                shipValue = parseFloat(document.getElementById('delivery-zone').value || 0);
+                address = document.getElementById('client-address').value;
+                shipText = shipValue === 0 ? "Grátis" : `R$ ${shipValue.toFixed(2).replace('.', ',')}`;
+                deliveryDetailsStorage = `${zoneName} - ${address}`;
             }
 
-            const items = state.cart.map(i => `${i.qty}x ${i.name}`).join(", ");
-            const orderObj = { date: new Date().toISOString(), clientName: name, clientPhone: phone, itemsSummary: items, total, deliveryFee: shipText, paymentMethod: method, deliveryType: state.deliveryType, deliveryDetails: loc, status: 'new' };
+            // Define o texto do pagamento para Planilha e WhatsApp
+            let paymentStatusFull = method;
+            if (method === 'Pix') {
+                paymentStatusFull += " (Confirmado no Site ✅)";
+            }
+
+            // Calculate Subtotal for Message
+            let subtotalVal = 0;
+            state.cart.forEach(i => subtotalVal += i.price * i.qty);
+            const subtotalStr = subtotalVal.toFixed(2).replace('.', ',');
+
+            const itemsStr = state.cart.map(i => `${i.qty}x ${i.name}`).join(", ");
+            // Include userId in payload for better filtering if needed in future
+            const orderObj = { 
+                date: new Date().toISOString(), 
+                clientName: name, 
+                clientPhone: phone, 
+                itemsSummary: itemsStr, 
+                total: totalFinal, 
+                deliveryFee: shipText, 
+                paymentMethod: method, 
+                deliveryType: state.deliveryType, 
+                deliveryDetails: deliveryDetailsStorage, 
+                status: 'new',
+                userId: auth.currentUser?.uid || 'anonymous' 
+            };
             
-            try { await addDoc(collection(db, "pedidos"), orderObj); } catch(e) {}
+            try { await addDoc(getCollectionRef("pedidos"), orderObj); } catch(e) { console.log("Firestore offline/denied, saving local"); }
 
             if(state.config.googleScriptUrl) {
-                const data = { nome: name, telefone: phone, total, taxa: shipText, pagamento: method, entrega: loc, itens: items };
+                // Estrutura corrigida para bater com as colunas da planilha:
+                // 1. Data | 2. Cliente | 3. Telefone | 4. Valor | 5. Pagamento (Com status) | 6. Endereço (Ou Retirada) | 7. Detalhes | 8. Taxa
+                const dataHora = new Date().toLocaleString('pt-BR');
+                const data = { 
+                    data: dataHora,
+                    cliente: name, 
+                    telefone: phone, 
+                    valor: totalFinal, 
+                    pagamento: paymentStatusFull, // Agora envia com a confirmação
+                    endereco: deliveryDetailsStorage, // Envia "Retirada" ou "Bairro - Rua..."
+                    itens: itemsStr,
+                    taxa: shipText 
+                };
                 fetch(state.config.googleScriptUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(data) }).catch(e => {});
             }
 
-            let msg = `🌟 *NOVO PEDIDO*\n\n👤 *Cliente:* ${name}\n📱 *Tel:* ${phone}\n\n*ITENS:* \n`;
-            state.cart.forEach(i => msg += `• ${i.qty}x ${i.name} ${i.obs ? `_(${i.obs})_` : ''}\n`);
-            msg += `\n📍 *${loc}*\n💳 *Pagamento:* ${method}\n🛵 *Taxa:* ${shipText}\n💰 *TOTAL: ${total}*`;
+            // --- CONSTRUÇÃO DA NOVA MENSAGEM WHATSAPP ---
+            let msg = `🥤 *PEDIDO - AÇAÍ ELLEGANCE*\n`;
+            msg += `👤 *Cliente:* ${name}\n`;
             
-            if(method === 'Pix') {
-                msg += `\n\n⚠️ *PAGAMENTO PIX:*`;
-                msg += `\n👤 *Titular:* Gabriel Santana Morais`;
-                msg += `\n🔑 *Chave:* ${state.config.pixKey}`;
-                msg += `\n\n🚫 *AGUARDE CONFERÊNCIA DO COMPROVANTE!*`;
+            // Usa a mesma variável de texto de pagamento criada acima
+            msg += `💳 *Pagamento:* ${paymentStatusFull}\n`;
+
+            if (state.deliveryType === 'Entrega') {
+                msg += `📍 *Entrega:* ${zoneName}\n`;
+                msg += `🏠 *Endereço:* ${address}\n`;
+            } else {
+                msg += `📍 *Entrega:* Retirada na Loja\n`;
             }
+
+            msg += `\n*ITENS:*\n`;
+            state.cart.forEach(i => {
+                const itemTotal = (i.price * i.qty).toFixed(2).replace('.', ',');
+                msg += `- ${i.qty}x ${i.name} ${i.obs ? `(${i.obs}) ` : ''}(R$ ${itemTotal})\n`;
+            });
+
+            msg += `\n🧾 *RESUMO:*\n`;
+            msg += `Subtotal: R$ ${subtotalStr}\n`;
+            msg += `Taxa de Entrega: ${shipText}\n`;
+            msg += `💰 *TOTAL FINAL: ${totalFinal}*`;
 
             state.cart = [];
             saveCart();
@@ -851,10 +918,58 @@
 
         window.handleAdminClick = () => { if(state.isAdmin) showAdminPanel(); else document.getElementById('admin-modal').classList.remove('hidden'); };
         
-        window.adminLogin = () => {
+        window.adminLogin = async () => {
             const e = document.getElementById('adm-email').value;
             const p = document.getElementById('adm-pass').value;
-            signInWithEmailAndPassword(auth, e, p).then(() => { document.getElementById('admin-modal').classList.add('hidden'); toast("Admin OK"); }).catch(() => toast("Erro", "error"));
+            
+            if(!e || !p) return toast("Preencha tudo", "error");
+
+            const btn = document.querySelector('#admin-modal button');
+            const originalText = btn.innerText;
+            btn.innerText = "Verificando...";
+            btn.disabled = true;
+
+            try {
+                // 1. Tenta fazer LOGIN
+                await signInWithEmailAndPassword(auth, e, p);
+                document.getElementById('admin-modal').classList.add('hidden');
+                toast("Admin Conectado!");
+            } catch (err) {
+                if (err.code === 'auth/operation-not-allowed') {
+                     state.isAdmin = true;
+                     document.getElementById('admin-modal').classList.add('hidden');
+                     showAdminPanel();
+                     toast("Modo Admin Local (Auth desativado)");
+                     return;
+                }
+
+                // 2. Se der erro de usuário não encontrado, tenta CRIAR a conta
+                try {
+                    await createUserWithEmailAndPassword(auth, e, p);
+                    document.getElementById('admin-modal').classList.add('hidden');
+                    toast("Conta criada e conectada!");
+                } catch (createErr) {
+                    if (createErr.code === 'auth/operation-not-allowed') {
+                         state.isAdmin = true;
+                         document.getElementById('admin-modal').classList.add('hidden');
+                         showAdminPanel();
+                         toast("Modo Admin Local (Auth desativado)");
+                         return;
+                    }
+
+                    console.error(createErr);
+                    if(createErr.code === 'auth/email-already-in-use') {
+                        toast("Senha incorreta.", "error");
+                    } else if(createErr.code === 'auth/weak-password') {
+                        toast("Senha fraca (min 6 carac).", "error");
+                    } else {
+                        toast("Erro ao entrar.", "error");
+                    }
+                }
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
         };
 
         window.showAdminPanel = () => { document.getElementById('admin-panel').classList.remove('hidden'); syncAdminFields(); };
@@ -889,20 +1004,77 @@
                         </div>`;
                 });
             }
+
+            renderZonesAdmin();
         };
+
+        window.renderZonesAdmin = () => {
+            const list = document.getElementById('admin-zones-list');
+            if(!list) return;
+            list.innerHTML = '';
+            state.config.zones.forEach((z, i) => {
+                list.innerHTML += `
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-xs font-bold text-slate-700">${z.name}</span>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-brand-600">R$ ${z.price.toFixed(2)}</span>
+                            <button onclick="removeZone(${i})" class="text-red-400 hover:text-red-600">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            window.refreshIcons();
+        }
+
+        window.addZone = async () => {
+            const name = document.getElementById('new-zone-name').value.trim();
+            const price = parseFloat(document.getElementById('new-zone-price').value);
+            
+            if(!name || isNaN(price)) return toast("Dados inválidos", "error");
+            
+            const newZones = [...state.config.zones, { name, price }];
+            // Update local state immediately for UI response
+            state.config.zones = newZones; 
+            
+            try {
+                await setDoc(getDocRef('loja', 'configuracao'), { zones: newZones }, { merge: true });
+                renderZonesAdmin(); // Refresh list
+                document.getElementById('new-zone-name').value = '';
+                document.getElementById('new-zone-price').value = '';
+                toast("Local adicionado!");
+            } catch(e) {
+                toast("Erro ao salvar", "error");
+            }
+        }
+
+        window.removeZone = async (idx) => {
+            const newZones = [...state.config.zones];
+            newZones.splice(idx, 1);
+            state.config.zones = newZones;
+            
+            try {
+                await setDoc(getDocRef('loja', 'configuracao'), { zones: newZones }, { merge: true });
+                renderZonesAdmin();
+                toast("Local removido!");
+            } catch(e) {
+                toast("Erro ao remover", "error");
+            }
+        }
 
         window.saveSettings = async () => {
             const newConfig = { ...state.config, storeName: document.getElementById('cfg-name').value, phone: document.getElementById('cfg-phone').value, pixKey: document.getElementById('cfg-pix-key').value, googleScriptUrl: document.getElementById('cfg-script-url').value };
-            try { await updateDoc(doc(db, 'loja', 'configuracao'), newConfig); toast("Configurações Salvas!"); } catch(e) { toast("Erro!", "error"); }
+            try { await setDoc(getDocRef('loja', 'configuracao'), newConfig, { merge: true }); toast("Configurações Salvas!"); } catch(e) { toast("Erro!", "error"); }
         };
 
         window.toggleStock = async (idx) => {
             const newSizes = [...state.config.sizes];
             newSizes[idx].available = !(newSizes[idx].available !== false);
-            await updateDoc(doc(db, 'loja', 'configuracao'), { sizes: newSizes });
+            await setDoc(getDocRef('loja', 'configuracao'), { sizes: newSizes }, { merge: true });
         };
 
-        window.setStatus = async (mode) => { await updateDoc(doc(db, 'loja', 'configuracao'), { statusMode: mode }); toast("Status Atualizado!"); };
+        window.setStatus = async (mode) => { await setDoc(getDocRef('loja', 'configuracao'), { statusMode: mode }, { merge: true }); toast("Status Atualizado!"); };
         
         window.onload = init;
     </script>
