@@ -910,9 +910,11 @@
             window.refreshIcons();
         };
 
-        window.sendOrder = async () => {
+        window.sendOrder = () => { // Removed async
             const btn = document.getElementById('btn-checkout');
             btn.innerHTML = '<div class="spinner"></div>';
+            
+            // ... gather variables ...
             const name = document.getElementById('client-name').value;
             const phone = document.getElementById('client-phone').value;
             const method = document.getElementById('payment-method').value;
@@ -935,14 +937,15 @@
             }
 
             let paymentStatusFull = method;
-            // Texto simplificado conforme solicitado
-            
+            if (method === 'Pix') {
+                paymentStatusFull += " (Confirmado no Site ✅)";
+            }
+
             let subtotalVal = 0;
             state.cart.forEach(i => subtotalVal += i.price * i.qty);
             const subtotalStr = subtotalVal.toFixed(2).replace('.', ',');
 
             const itemsStr = state.cart.map(i => `${i.qty}x ${i.name}`).join(", ");
-            
             const orderObj = { 
                 date: new Date().toISOString(), 
                 clientName: name, 
@@ -956,13 +959,18 @@
                 status: 'new',
                 userId: auth.currentUser?.uid || 'anonymous' 
             };
-            
-            try { await addDoc(getCollectionRef("pedidos"), orderObj); } catch(e) { console.log("Firestore offline/denied, saving local"); }
 
+            // FIRESTORE (Background)
+            addDoc(getCollectionRef("pedidos"), orderObj)
+                .then(() => console.log("Pedido salvo"))
+                .catch(e => console.log("Erro salvar backup online", e));
+
+            // LOCAL STORAGE
             const localOrders = JSON.parse(localStorage.getItem('acai_orders_local') || '[]');
             localOrders.push(orderObj);
             localStorage.setItem('acai_orders_local', JSON.stringify(localOrders));
 
+            // GOOGLE SHEET (Background)
             if(state.config.googleScriptUrl) {
                 const dataHora = new Date().toLocaleString('pt-BR');
                 const data = { 
@@ -1000,10 +1008,16 @@
             msg += `Taxa de Entrega: ${shipText}\n`;
             msg += `💰 *TOTAL FINAL: ${totalFinal}*`;
 
+            // WHATSAPP REDIRECT (Immediate)
+            const phoneNum = state.config.phone ? state.config.phone.replace(/\D/g,'') : "557998168282";
+            window.open(`https://api.whatsapp.com/send?phone=${phoneNum}&text=${encodeURIComponent(msg)}`, '_blank');
+
+            // CLEANUP
             state.cart = [];
-            saveCart(); // Clears cart in storage
-            window.open(`https://api.whatsapp.com/send?phone=${state.config.phone.replace(/\D/g,'')}&text=${encodeURIComponent(msg)}`, '_blank');
-            setTimeout(() => window.location.reload(), 1500);
+            saveCart();
+            
+            // Reload page shortly after to reset UI
+            setTimeout(() => window.location.reload(), 2000); 
         };
 
         // --- FUNÇÕES ADMIN ---
