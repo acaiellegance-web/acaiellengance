@@ -51,7 +51,7 @@
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'float': 'float 4s ease-in-out infinite',
                         'pulse-green': 'pulse-green 2s infinite',
-                        'shimmer': 'shimmer 3s linear infinite', // Nova animação de brilho
+                        'shimmer': 'shimmer 3s linear infinite',
                     },
                     keyframes: {
                         slideUp: {
@@ -175,9 +175,9 @@
             
             <div class="px-5 pb-3 pt-1 overflow-x-auto no-scrollbar w-full max-w-lg mx-auto">
                 <div class="flex gap-2 w-max">
-                    <button onclick="filterCategory('Todos')" class="cat-btn active px-6 py-2.5 rounded-full text-xs font-black bg-brand-900 text-white shadow-lg whitespace-nowrap active:scale-95 transition-all" data-cat="Todos">Todos</button>
-                    <button onclick="filterCategory('Tradicional')" class="cat-btn px-6 py-2.5 rounded-full text-xs font-black bg-white text-slate-500 border border-slate-200 whitespace-nowrap active:scale-95 transition-all" data-cat="Tradicional">Tradicional</button>
-                    <button onclick="filterCategory('Gourmet')" class="cat-btn px-6 py-2.5 rounded-full text-xs font-black bg-white text-slate-500 border border-slate-200 whitespace-nowrap active:scale-95 transition-all" data-cat="Gourmet">Gourmet</button>
+                    <button onclick="window.filterCategory('Todos')" class="cat-btn active px-6 py-2.5 rounded-full text-xs font-black bg-brand-900 text-white shadow-lg whitespace-nowrap active:scale-95 transition-all" data-cat="Todos">Todos</button>
+                    <button onclick="window.filterCategory('Tradicional')" class="cat-btn px-6 py-2.5 rounded-full text-xs font-black bg-white text-slate-500 border border-slate-200 whitespace-nowrap active:scale-95 transition-all" data-cat="Tradicional">Tradicional</button>
+                    <button onclick="window.filterCategory('Gourmet')" class="cat-btn px-6 py-2.5 rounded-full text-xs font-black bg-white text-slate-500 border border-slate-200 whitespace-nowrap active:scale-95 transition-all" data-cat="Gourmet">Gourmet</button>
                 </div>
             </div>
         </header>
@@ -185,7 +185,7 @@
         <!-- CONTEÚDO -->
         <main class="px-5 pt-6 w-full max-w-lg space-y-8 flex-1">
             
-            <div class="relative w-full h-48 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-purple-900/20 group cursor-pointer active:scale-[0.98] transition-transform" onclick="filterCategory('Gourmet')">
+            <div class="relative w-full h-48 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-purple-900/20 group cursor-pointer active:scale-[0.98] transition-transform" onclick="window.filterCategory('Gourmet')">
                  <div class="absolute inset-0 bg-gradient-to-br from-purple-800 to-purple-600"></div>
                 <img src="logoacai.jpeg" class="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-1000 ease-out" onerror="this.style.opacity='0'">
                 <div class="absolute inset-0 bg-gradient-to-r from-brand-900 via-brand-900/50 to-transparent"></div>
@@ -202,7 +202,7 @@
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i data-lucide="search" class="w-5 h-5 text-slate-400 group-focus-within:text-brand-600 transition-colors"></i>
                 </div>
-                <input type="text" id="search-input" onkeyup="filterMenu()" placeholder="O que você deseja hoje?" class="w-full pl-12 pr-4 py-4 bg-white rounded-2xl border border-slate-100 shadow-soft text-sm font-semibold placeholder:text-slate-400 focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 outline-none transition-all">
+                <input type="text" id="search-input" onkeyup="window.renderMenu()" placeholder="O que você deseja hoje?" class="w-full pl-12 pr-4 py-4 bg-white rounded-2xl border border-slate-100 shadow-soft text-sm font-semibold placeholder:text-slate-400 focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 outline-none transition-all">
             </div>
 
             <div id="products-grid" class="grid grid-cols-1 gap-4 pb-10"></div>
@@ -211,7 +211,7 @@
                 <label class="flex items-center gap-2 text-xs font-black text-slate-400 uppercase mb-3 tracking-wide">
                     <i data-lucide="message-square" class="w-3.5 h-3.5 text-brand-500"></i> Alguma observação?
                 </label>
-                <textarea id="obs-input" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:bg-white focus:ring-4 focus:ring-brand-500/10 outline-none resize-none placeholder:text-slate-400 text-slate-700 transition-all" placeholder="Ex: Caprichar no leite condensado..." oninput="saveFormData()"></textarea>
+                <textarea id="obs-input" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:bg-white focus:ring-4 focus:ring-brand-500/10 outline-none resize-none placeholder:text-slate-400 text-slate-700 transition-all" placeholder="Ex: Caprichar no leite condensado..." oninput="window.saveFormData()"></textarea>
             </div>
 
         </main>
@@ -219,9 +219,7 @@
         <!-- MARCA D'ÁGUA PREMIUM -->
         <div class="fixed bottom-[125px] left-5 z-30 pointer-events-none select-none animate-float" style="animation-delay: 0.5s;">
             <div class="relative flex items-center gap-2.5 px-3 py-2 bg-white/80 backdrop-blur-xl rounded-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-brand-500/5 overflow-hidden">
-                <!-- Efeito Brilho -->
                 <div class="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent z-10"></div>
-                
                 <div class="bg-gradient-to-br from-brand-500 to-purple-600 text-white p-1.5 rounded-lg shadow-sm shadow-brand-500/30 relative z-20">
                     <i data-lucide="monitor-smartphone" class="w-3 h-3"></i>
                 </div>
@@ -241,11 +239,11 @@
         <div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-white via-white to-transparent pt-10 pointer-events-none safe-pb">
             <div class="max-w-lg mx-auto flex items-center gap-3 pointer-events-auto">
                 <div class="bg-white h-16 px-2 rounded-2xl shadow-xl border border-slate-100 flex items-center min-w-[120px]">
-                    <button onclick="updateQty(-1)" class="w-12 h-full flex items-center justify-center text-slate-400 active:text-brand-600 active:scale-75 transition-all text-2xl font-bold rounded-xl">-</button>
+                    <button onclick="window.updateQty(-1)" class="w-12 h-full flex items-center justify-center text-slate-400 active:text-brand-600 active:scale-75 transition-all text-2xl font-bold rounded-xl">-</button>
                     <span id="qty-display" class="flex-1 text-center font-display font-black text-xl text-slate-800">1</span>
-                    <button onclick="updateQty(1)" class="w-12 h-full flex items-center justify-center text-slate-400 active:text-brand-600 active:scale-75 transition-all text-2xl font-bold rounded-xl">+</button>
+                    <button onclick="window.updateQty(1)" class="w-12 h-full flex items-center justify-center text-slate-400 active:text-brand-600 active:scale-75 transition-all text-2xl font-bold rounded-xl">+</button>
                 </div>
-                <button onclick="addToCart()" id="btn-add" class="flex-1 h-16 bg-slate-900 text-white rounded-2xl shadow-xl flex items-center justify-between px-6 active:scale-95 transition-all disabled:opacity-50 disabled:grayscale group">
+                <button onclick="window.addToCart()" id="btn-add" class="flex-1 h-16 bg-slate-900 text-white rounded-2xl shadow-xl flex items-center justify-between px-6 active:scale-95 transition-all disabled:opacity-50 disabled:grayscale group">
                     <span class="text-xs font-black uppercase tracking-widest transition-all">Adicionar</span>
                     <span id="price-display" class="font-display font-bold text-lg bg-white/10 px-2 py-1 rounded-lg">R$ 0,00</span>
                 </button>
@@ -262,7 +260,7 @@
                 <h2 class="font-display font-black text-2xl text-slate-900 tracking-tight">Seu Carrinho</h2>
                 <p class="text-xs text-slate-400 font-medium">Confira os sabores escolhidos</p>
             </div>
-            <button onclick="toggleCart(false)" class="p-3 bg-slate-50 active:bg-slate-100 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6 text-slate-500"></i></button>
+            <button onclick="window.toggleCart(false)" class="p-3 bg-slate-50 active:bg-slate-100 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6 text-slate-500"></i></button>
         </div>
         
         <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50 no-scrollbar">
@@ -272,7 +270,7 @@
                 <div class="space-y-4">
                     <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-brand-500"></i> Seus Dados</h3>
                     <div class="space-y-3">
-                        <input id="client-name" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:border-brand-500/20 focus:bg-white outline-none transition-all" placeholder="Nome Completo" oninput="saveFormData()">
+                        <input id="client-name" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:border-brand-500/20 focus:bg-white outline-none transition-all" placeholder="Nome Completo" oninput="window.saveFormData()">
                         <input id="client-phone" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:border-brand-500/20 focus:bg-white outline-none transition-all" placeholder="Telefone (WhatsApp)" maxlength="15">
                     </div>
                 </div>
@@ -280,18 +278,18 @@
                 <div class="space-y-4">
                     <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-brand-500"></i> Entrega</h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="setDelivery('Retirada')" id="btn-retirada" class="p-4 border-2 border-slate-100 rounded-2xl text-xs font-black text-slate-400 active:bg-slate-50 transition-all uppercase tracking-wide">Retirada</button>
-                        <button onclick="setDelivery('Entrega')" id="btn-entrega" class="p-4 border-2 border-slate-100 rounded-2xl text-xs font-black text-slate-400 active:bg-slate-50 transition-all uppercase tracking-wide">Entrega</button>
+                        <button onclick="window.setDelivery('Retirada')" id="btn-retirada" class="p-4 border-2 border-slate-100 rounded-2xl text-xs font-black text-slate-400 active:bg-slate-50 transition-all uppercase tracking-wide">Retirada</button>
+                        <button onclick="window.setDelivery('Entrega')" id="btn-entrega" class="p-4 border-2 border-slate-100 rounded-2xl text-xs font-black text-slate-400 active:bg-slate-50 transition-all uppercase tracking-wide">Entrega</button>
                     </div>
                     <div id="delivery-details" class="hidden space-y-3 animate-slide-up">
-                        <select id="delivery-zone" class="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold outline-none focus:border-brand-500 transition-colors" onchange="renderCart(); saveFormData()"></select>
-                        <textarea id="client-address" rows="2" class="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-medium outline-none resize-none focus:border-brand-500 transition-colors" placeholder="Endereço completo (Rua, Nº, Bairro, Ref)" oninput="saveFormData()"></textarea>
+                        <select id="delivery-zone" class="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold outline-none focus:border-brand-500 transition-colors" onchange="window.renderCart(); window.saveFormData()"></select>
+                        <textarea id="client-address" rows="2" class="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-medium outline-none resize-none focus:border-brand-500 transition-colors" placeholder="Endereço completo (Rua, Nº, Bairro, Ref)" oninput="window.saveFormData()"></textarea>
                     </div>
                 </div>
 
                 <div class="space-y-4">
                     <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><i data-lucide="credit-card" class="w-4 h-4 text-brand-500"></i> Pagamento</h3>
-                    <select id="payment-method" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:bg-white focus:border-brand-500/20 outline-none transition-all" onchange="handlePaymentChange(); saveFormData()">
+                    <select id="payment-method" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:bg-white focus:border-brand-500/20 outline-none transition-all" onchange="window.handlePaymentChange(); window.saveFormData()">
                         <option value="" disabled selected>Forma de pagamento...</option>
                         <option value="Pix">Pix (Copia e Cola)</option>
                         <option value="Dinheiro">Dinheiro</option>
@@ -303,11 +301,9 @@
                         <p class="text-[10px] font-black text-brand-900 uppercase mb-3 tracking-widest">Chave Pix</p>
                         <div class="flex gap-2 mb-4">
                             <input id="pix-key" readonly class="flex-1 text-[10px] text-center p-3 rounded-xl bg-white border border-brand-100 text-slate-500 outline-none font-mono">
-                            <button onclick="copyPix()" class="p-3 bg-brand-600 text-white rounded-xl active:bg-brand-700 transition-colors shadow-lg"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                            <button onclick="window.copyPix()" class="p-3 bg-brand-600 text-white rounded-xl active:bg-brand-700 transition-colors shadow-lg"><i data-lucide="copy" class="w-4 h-4"></i></button>
                         </div>
-                        <button onclick="confirmPix()" id="btn-pix-confirm" class="w-full py-4 bg-brand-600 text-white rounded-2xl text-xs font-bold active:scale-95 transition-all shadow-lg">
-                            <span>Já enviei o comprovante</span>
-                        </button>
+                        <p class="text-[10px] text-slate-500 font-medium">Copie a chave e envie o comprovante no WhatsApp ao finalizar.</p>
                     </div>
                 </div>
             </div>
@@ -318,7 +314,8 @@
                 <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Total Geral</span>
                 <span id="cart-total" class="text-3xl font-display font-black text-slate-900 tracking-tight">R$ 0,00</span>
             </div>
-            <button onclick="sendOrder()" id="btn-checkout" class="w-full py-5 rounded-2xl bg-gradient-to-r from-whatsapp-500 to-whatsapp-600 text-white font-black text-sm shadow-xl flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale" disabled>
+            <!-- BOTÃO FINALIZAR NO WHATSAPP (AQUI!) -->
+            <button onclick="window.sendOrder()" id="btn-checkout" class="w-full py-5 rounded-2xl bg-gradient-to-r from-whatsapp-500 to-whatsapp-600 text-white font-black text-sm shadow-xl flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale" disabled>
                 <div class="relative z-10 flex items-center gap-2">
                     <i data-lucide="message-circle" class="w-6 h-6 fill-white/20"></i>
                     <span>Finalizar no WhatsApp</span>
@@ -340,7 +337,7 @@
             <div class="space-y-4">
                 <input type="email" id="adm-email" placeholder="E-mail" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-brand-500 outline-none">
                 <input type="password" id="adm-pass" placeholder="Password" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-brand-500 outline-none">
-                <button onclick="adminLogin()" class="w-full py-4 bg-brand-900 text-white rounded-2xl font-bold text-sm shadow-lg">Entrar</button>
+                <button onclick="window.adminLogin()" class="w-full py-4 bg-brand-900 text-white rounded-2xl font-bold text-sm shadow-lg">Entrar</button>
             </div>
         </div>
     </div>
@@ -351,17 +348,17 @@
                 <h2 class="font-display font-bold text-xl text-slate-900">Dashboard</h2>
                 <p class="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-md inline-block">● Online</p>
             </div>
-            <button onclick="adminLogout()" class="text-xs font-bold text-red-600 bg-red-50 px-4 py-2 rounded-xl border border-red-100">Sair</button>
+            <button onclick="window.adminLogout()" class="text-xs font-bold text-red-600 bg-red-50 px-4 py-2 rounded-xl border border-red-100">Sair</button>
         </div>
         
         <div class="p-6 space-y-6 max-w-lg mx-auto pb-24">
             <div class="flex p-1 bg-slate-100 rounded-xl mb-4">
-                <button onclick="switchAdminTab('estoque')" id="tab-estoque" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-800 transition-all">Estoque</button>
-                <button onclick="switchAdminTab('config')" id="tab-config" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all">Configurações</button>
+                <button onclick="window.switchAdminTab('estoque')" id="tab-estoque" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-800 transition-all">Estoque</button>
+                <button onclick="window.switchAdminTab('config')" id="tab-config" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all">Configurações</button>
             </div>
 
             <div id="view-estoque" class="space-y-4">
-                <!-- ADICIONAR PRODUTO (NOVO) -->
+                <!-- ADICIONAR PRODUTO -->
                 <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 mb-4">
                     <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide mb-4 flex items-center gap-2">
                         <i data-lucide="plus-circle" class="w-4 h-4 text-brand-500"></i> Novo Produto
@@ -375,7 +372,7 @@
                                 <option value="Tradicional">Tradicional</option>
                                 <option value="Gourmet">Gourmet</option>
                             </select>
-                            <button onclick="addProduct()" class="bg-brand-600 text-white p-3 rounded-xl hover:bg-brand-700 active:scale-95 transition-all shadow-sm">
+                            <button onclick="window.addProduct()" class="bg-brand-600 text-white p-3 rounded-xl hover:bg-brand-700 active:scale-95 transition-all shadow-sm">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                             </button>
                         </div>
@@ -401,12 +398,12 @@
                         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">Status Loja</h3>
                     </div>
                     <div class="flex gap-3 mb-4">
-                        <button onclick="setStatus('open')" id="st-open" class="flex-1 py-4 rounded-2xl border-2 text-xs font-black transition-all">ABRIR</button>
-                        <button onclick="setStatus('auto')" id="st-auto" class="flex-1 py-4 rounded-2xl border-2 text-xs font-black transition-all">AUTO</button>
-                        <button onclick="setStatus('closed')" id="st-closed" class="flex-1 py-4 rounded-2xl border-2 text-xs font-black transition-all">FECHAR</button>
+                        <button onclick="window.setStatus('open')" id="st-open" class="flex-1 py-4 rounded-2xl border-2 text-xs font-black transition-all">ABRIR</button>
+                        <button onclick="window.setStatus('auto')" id="st-auto" class="flex-1 py-4 rounded-2xl border-2 text-xs font-black transition-all">AUTO</button>
+                        <button onclick="window.setStatus('closed')" id="st-closed" class="flex-1 py-4 rounded-2xl border-2 text-xs font-black transition-all">FECHAR</button>
                     </div>
                     
-                    <!-- HORÁRIOS (NOVO) -->
+                    <!-- HORÁRIOS -->
                     <div class="pt-4 border-t border-slate-100">
                         <h4 class="text-xs font-bold text-slate-400 uppercase mb-3">Horários (Modo Auto)</h4>
                         <div class="flex gap-4">
@@ -431,7 +428,7 @@
                     <div class="flex gap-2 mb-4">
                         <input id="new-zone-name" placeholder="Nome do Bairro" class="flex-1 p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none border border-transparent focus:border-brand-200 transition-all">
                         <input id="new-zone-price" type="number" placeholder="R$" class="w-20 p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none border border-transparent focus:border-brand-200 transition-all">
-                        <button onclick="addZone()" class="bg-green-500 text-white p-3 rounded-xl hover:bg-green-600 active:scale-95 transition-all shadow-sm">
+                        <button onclick="window.addZone()" class="bg-green-500 text-white p-3 rounded-xl hover:bg-green-600 active:scale-95 transition-all shadow-sm">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -450,7 +447,7 @@
                     <input id="cfg-phone" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-medium outline-none" placeholder="WhatsApp">
                     <input id="cfg-pix-key" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-medium outline-none" placeholder="Chave Pix">
                     <input id="cfg-script-url" class="w-full p-4 bg-slate-50 rounded-2xl text-xs font-mono" placeholder="Google Script URL">
-                    <button onclick="saveSettings()" class="w-full py-4 bg-brand-900 text-white rounded-2xl font-bold text-sm active:bg-brand-800 transition-all">Salvar Tudo</button>
+                    <button onclick="window.saveSettings()" class="w-full py-4 bg-brand-900 text-white rounded-2xl font-bold text-sm active:bg-brand-800 transition-all">Salvar Tudo</button>
                 </div>
             </div>
         </div>
@@ -467,7 +464,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, setDoc, updateDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-        // HYBRID CONFIGURATION: Uses Preview sandbox if available, otherwise uses your User config
+        // CONFIGURAÇÃO FIREBASE (Híbrida para Preview e Deploy)
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyBakH1kufhFKj-ibAkQNTXhs-WLfxUob28",
             authDomain: "acai-ellegance-app.firebaseapp.com",
@@ -476,10 +473,9 @@
             messagingSenderId: "190829563894",
             appId: "1:190829563894:web:8494b3663cdd381e5281d7"
         };
-        
-        // Define appId for proper collection pathing in preview mode
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
+        // DADOS PADRÃO
         const DEFAULT_ITEMS = [
             { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
             { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
@@ -508,7 +504,7 @@
                 sizes: DEFAULT_ITEMS,
                 pixKey: "57970392000139",
                 pixName: "Gabriel Santana Morais",
-                googleScriptUrl: "https://script.google.com/macros/s/AKfycbxxZN8J-SSftroUFlwsunzw7reWAn-kxkwJ0BG0wXvSdHq8ctCMATGsjU_gTDH4njzU/exec",
+                googleScriptUrl: "https://script.google.com/macros/s/AKfycbwtHwhszybzs3OzYOUCY-cHaAi-bCSuvyuViM1mHmEkSYkfHvQvpFmhQLCXXV_ASeAA/exec",
                 zones: [
                     {name: "Albano Franco", price: 0},
                      {name: "Cidade nova", price: 5.00},
@@ -523,7 +519,6 @@
                     {name: "Sede de socorro", price: 4.00},
                     {name: "Cidade nova", price: 5.00},
                     {name: "Barra", price: 6.00},
-                    
                 ]
             },
             selectedItems: new Set(),
@@ -536,93 +531,238 @@
 
         let db, auth;
 
-        const getCollectionRef = (colName) => {
-            if (typeof __firebase_config !== 'undefined') {
-                 return collection(db, 'artifacts', appId, 'public', 'data', colName);
-            }
-            return collection(db, colName);
-        }
-
-        const getDocRef = (colName, docId) => {
-            if (typeof __firebase_config !== 'undefined') {
-                 return doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
-            }
-            return doc(db, colName, docId);
-        }
-
-        window.init = async () => {
-            const savedCart = localStorage.getItem('acai_cart_v3');
-            if(savedCart) state.cart = JSON.parse(savedCart);
-            setTimeout(() => {
-                const splash = document.getElementById('splash');
-                if(splash) {
-                    splash.style.opacity = '0';
-                    setTimeout(() => splash.style.display = 'none', 500);
-                }
-            }, 1000);
-            setupPhoneMask();
-            renderMenu();
-            renderCart();
-            updateUI();
-            restoreFormData();
-
-            try {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                     await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                     if (!auth.currentUser) {
-                        try { await signInAnonymously(auth); } catch(e) {}
-                     }
-                }
-
-                onAuthStateChanged(auth, (user) => {
-                    if(user && user.email) {
-                        state.isAdmin = true;
-                        showAdminPanel();
-                    } else if (state.isAdmin && !user) {
-                        state.isAdmin = false;
-                    }
-                });
-                
-                onSnapshot(getDocRef('loja', 'configuracao'), (snap) => {
-                    if(snap.exists()) {
-                        state.config = { ...state.config, ...snap.data() };
-                        renderMenu();
-                        updateUI();
-                        if(state.isAdmin) syncAdminFields();
-                    }
-                }, (error) => {
-                    console.log("Using default config or offline mode");
-                });
-
-            } catch(e) { console.log("Modo Offline/Erro Firebase", e); }
-            
-            setInterval(updateUI, 60000);
+        // --- FUNÇÕES UTILITÁRIAS GLOBAIS ---
+        window.toast = (m, t='success') => {
+            const el = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = m;
+            el.classList.remove('-translate-y-20', 'opacity-0');
+            el.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => { el.classList.remove('translate-y-0', 'opacity-100'); el.classList.add('-translate-y-20', 'opacity-0'); }, 2500);
         };
 
+        window.refreshIcons = () => { if (typeof lucide !== 'undefined') lucide.createIcons(); };
+
+        // --- DEFINIÇÃO DE FUNÇÕES INTERATIVAS (HOISTING) ---
+        window.handleAdminClick = () => { if(state.isAdmin) window.showAdminPanel(); else document.getElementById('admin-modal').classList.remove('hidden'); };
+        
         window.openChat = () => {
             const msg = "Olá! Gostaria de tirar uma dúvida.";
             window.open(`https://api.whatsapp.com/send?phone=${state.config.phone.replace(/\D/g,'')}&text=${encodeURIComponent(msg)}`, '_blank');
         };
 
-        window.switchAdminTab = (tab) => {
-            ['estoque', 'config'].forEach(v => {
-                document.getElementById(`view-${v}`).classList.add('hidden');
-                document.getElementById(`tab-${v}`).className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all";
-            });
-            document.getElementById(`view-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-${tab}`).className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-800 transition-all";
+        window.toggleCart = (show) => {
+            const drawer = document.getElementById('cart-drawer');
+            const back = document.getElementById('cart-backdrop');
+            if(show) { 
+                window.renderCart(); 
+                back.classList.remove('invisible', 'opacity-0'); 
+                drawer.classList.remove('translate-x-full'); 
+            } else { 
+                back.classList.add('opacity-0'); 
+                drawer.classList.add('translate-x-full'); 
+                setTimeout(() => back.classList.add('invisible'), 300); 
+            }
         };
+
+        window.filterCategory = (cat) => {
+            state.filter = cat;
+            document.querySelectorAll('.cat-btn').forEach(b => {
+                b.className = b.dataset.cat === cat ? "cat-btn active px-6 py-2.5 rounded-full text-xs font-black bg-brand-900 text-white shadow-lg whitespace-nowrap active:scale-95" : "cat-btn px-6 py-2.5 rounded-full text-xs font-black bg-white text-slate-500 border border-slate-200 whitespace-nowrap active:scale-95";
+            });
+            window.renderMenu();
+        };
+        
+        window.filterMenu = window.filterCategory; 
+
+        window.toggleSelection = (name, el) => {
+            if(state.selectedItems.has(name)) state.selectedItems.delete(name);
+            else state.selectedItems.add(name);
+            window.renderMenu();
+            window.updateTotalBar();
+        };
+
+        window.updateQty = (d) => { 
+            state.qty = Math.max(1, state.qty + d); 
+            const el = document.getElementById('qty-display');
+            if(el) el.innerText = state.qty; 
+            window.updateTotalBar(); 
+        };
+
+        window.updateTotalBar = () => {
+            let total = 0;
+            state.config.sizes.forEach(i => { if(state.selectedItems.has(i.name)) total += i.price; });
+            const final = total * state.qty;
+            const priceDisplay = document.getElementById('price-display');
+            if(priceDisplay) priceDisplay.innerText = `R$ ${final.toFixed(2).replace('.',',')}`;
+            const btn = document.getElementById('btn-add');
+            if(btn) {
+                if(final > 0) {
+                    btn.disabled = false;
+                    btn.classList.replace('bg-slate-900', 'bg-brand-900');
+                } else {
+                    btn.disabled = true;
+                    btn.classList.replace('bg-brand-900', 'bg-slate-900');
+                }
+            }
+        };
+
+        window.addToCart = () => {
+            if(state.selectedItems.size === 0) return window.toast("Selecione!", "error");
+            const obsInput = document.getElementById('obs-input');
+            const obs = obsInput ? obsInput.value.trim() : "";
+            
+            state.config.sizes.forEach(i => {
+                if(state.selectedItems.has(i.name)) {
+                    const idx = state.cart.findIndex(c => c.name === i.name && c.obs === obs);
+                    if(idx > -1) state.cart[idx].qty += state.qty;
+                    else state.cart.push({ id: Date.now()+Math.random(), name: i.name, price: i.price, obs, qty: state.qty });
+                }
+            });
+            state.selectedItems.clear();
+            state.qty = 1;
+            const qtyDisplay = document.getElementById('qty-display');
+            if(qtyDisplay) qtyDisplay.innerText = "1";
+            if(obsInput) obsInput.value = "";
+            
+            window.renderMenu();
+            window.updateTotalBar();
+            saveCart();
+            window.renderCart();
+            window.toast("Adicionado!");
+            setTimeout(() => window.toggleCart(true), 300);
+        };
+
+        // --- RENDER CART (CORRIGIDO E INSERIDO AQUI) ---
+        window.renderCart = () => {
+            const list = document.getElementById('cart-items');
+            if(!list) return;
+            list.innerHTML = "";
+            let subtotal = 0;
+            let count = 0;
+            
+            if(state.cart.length === 0) {
+                list.innerHTML = `<div class="flex flex-col items-center justify-center py-10 opacity-50"><i data-lucide="shopping-cart" class="w-12 h-12 text-slate-300 mb-2"></i><p class="text-sm font-bold text-slate-400">Vazio</p></div>`;
+                document.getElementById('checkout-form').classList.add('hidden');
+            } else {
+                document.getElementById('checkout-form').classList.remove('hidden');
+                state.cart.forEach(item => {
+                    subtotal += item.price * item.qty;
+                    count += item.qty;
+                    list.innerHTML += `
+                        <div class="flex justify-between items-start bg-white p-4 rounded-2xl border border-slate-100 shadow-sm animate-slide-up">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-brand-50 text-brand-600 text-[10px] font-black px-2 py-0.5 rounded-lg">${item.qty}x</span>
+                                    <span class="font-bold text-sm text-slate-800">${item.name}</span>
+                                </div>
+                                <p class="text-xs font-bold text-brand-600 mt-1.5">R$ ${(item.price * item.qty).toFixed(2).replace('.',',')}</p>
+                            </div>
+                            <div class="flex items-center bg-slate-50 rounded-xl h-9 border border-slate-200">
+                                <button onclick="window.modCartItem(${item.id}, -1)" class="w-9 active:text-red-500 font-bold">-</button>
+                                <button onclick="window.modCartItem(${item.id}, 1)" class="w-9 active:text-green-500 font-bold">+</button>
+                            </div>
+                        </div>`;
+                });
+            }
+            
+            let shipping = 0;
+            if(state.deliveryType === 'Entrega') {
+                const zone = document.getElementById('delivery-zone');
+                if(zone) shipping = parseFloat(zone.value || 0);
+            }
+            
+            const totalEl = document.getElementById('cart-total');
+            if(totalEl) totalEl.innerText = `R$ ${(subtotal + shipping).toFixed(2).replace('.',',')}`;
+            
+            const badge = document.getElementById('cart-count');
+            if(badge) {
+                badge.innerText = count;
+                badge.className = `absolute -top-1 -right-1 bg-brand-600 text-white text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white transform transition-transform shadow-sm ${count > 0 ? 'scale-100' : 'scale-0'}`;
+            }
+            
+            window.validateCheckout();
+            window.refreshIcons();
+        };
+
+        window.modCartItem = (id, d) => {
+            const idx = state.cart.findIndex(c => c.id === id);
+            if(idx > -1) {
+                state.cart[idx].qty += d;
+                if(state.cart[idx].qty <= 0) state.cart.splice(idx, 1);
+                saveCart(); 
+                window.renderCart();
+            }
+        };
+
+        window.setDelivery = (type) => {
+            state.deliveryType = type;
+            const btnRet = document.getElementById('btn-retirada');
+            const btnEnt = document.getElementById('btn-entrega');
+            const details = document.getElementById('delivery-details');
+            const base = "p-4 border-2 rounded-2xl text-xs font-black uppercase tracking-wide transition-all";
+            
+            if(type === 'Retirada') {
+                if(btnRet) btnRet.className = `${base} border-brand-600 bg-brand-50 text-brand-700`;
+                if(btnEnt) btnEnt.className = `${base} border-slate-100 text-slate-400`;
+                if(details) details.classList.add('hidden');
+            } else {
+                if(btnEnt) btnEnt.className = `${base} border-brand-600 bg-brand-50 text-brand-700`;
+                if(btnRet) btnRet.className = `${base} border-slate-100 text-slate-400`;
+                if(details) details.classList.remove('hidden');
+                
+                const sel = document.getElementById('delivery-zone');
+                if(sel) {
+                    sel.innerHTML = '<option value="" disabled selected>Onde entregamos?</option>';
+                    state.config.zones.forEach(z => {
+                        const txt = z.price === 0 ? "Grátis" : `+R$ ${z.price.toFixed(2)}`;
+                        sel.innerHTML += `<option value="${z.price}" data-name="${z.name}">${z.name} (${txt})</option>`;
+                    });
+                }
+            }
+            window.renderCart();
+            window.saveFormData();
+        };
+
+        window.handlePaymentChange = () => {
+            const method = document.getElementById('payment-method').value;
+            const pixArea = document.getElementById('pix-area');
+            
+            // Alteração: Define verificado assim que escolhe o método
+            state.paymentVerified = !!method;
+            
+            if(method === 'Pix') {
+                if(pixArea) {
+                    pixArea.classList.remove('hidden');
+                    const keyEl = document.getElementById('pix-key');
+                    if(keyEl) keyEl.value = state.config.pixKey;
+                }
+            } else {
+                if(pixArea) pixArea.classList.add('hidden');
+            }
+            window.validateCheckout();
+        };
+
+        // Função confirmPix removida
+
+        window.copyPix = () => { 
+            const k = document.getElementById('pix-key'); 
+            if(k) {
+                k.select(); 
+                document.execCommand('copy'); 
+                window.toast("Chave Copiada!"); 
+            }
+        };
+
+        // --- FUNÇÕES DE RENDERIZAÇÃO E LÓGICA INTERNA ---
 
         window.renderMenu = () => {
             const grid = document.getElementById('products-grid');
+            if(!grid) return;
             grid.innerHTML = "";
             let found = false;
-            const term = document.getElementById('search-input').value.toLowerCase();
+            const searchInput = document.getElementById('search-input');
+            const term = searchInput ? searchInput.value.toLowerCase() : "";
+            
             state.config.sizes.forEach((item, idx) => {
                 if(item.available === false) return;
                 const matches = item.name.toLowerCase().includes(term) || item.description.toLowerCase().includes(term);
@@ -632,7 +772,7 @@
                     const div = document.createElement('div');
                     div.style.animationDelay = `${idx * 0.05}s`;
                     div.className = `product-card bg-white p-4 rounded-[24px] border border-slate-100 flex items-center gap-4 cursor-pointer select-none relative overflow-hidden ${isSel ? 'selected' : ''}`;
-                    div.onclick = () => toggleSelection(item.name, div);
+                    div.onclick = () => window.toggleSelection(item.name, div);
                     const isGourmet = item.category === 'Gourmet';
                     div.innerHTML = `
                         <div class="relative w-[72px] h-[72px] rounded-2xl ${isGourmet ? 'text-pink-500 bg-pink-50' : 'text-brand-600 bg-brand-50'} flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
@@ -660,160 +800,43 @@
             window.refreshIcons();
         };
 
-        window.toggleSelection = (name, el) => {
-            if(state.selectedItems.has(name)) state.selectedItems.delete(name);
-            else state.selectedItems.add(name);
-            renderMenu();
-            updateTotalBar();
-        };
-
-        window.updateTotalBar = () => {
-            let total = 0;
-            state.config.sizes.forEach(i => { if(state.selectedItems.has(i.name)) total += i.price; });
-            const final = total * state.qty;
-            document.getElementById('price-display').innerText = `R$ ${final.toFixed(2).replace('.',',')}`;
-            const btn = document.getElementById('btn-add');
-            if(final > 0) {
-                btn.disabled = false;
-                btn.classList.replace('bg-slate-900', 'bg-brand-900');
-            } else {
-                btn.disabled = true;
-                btn.classList.replace('bg-brand-900', 'bg-slate-900');
+        window.updateUI = () => {
+            const h = new Date().getHours();
+            const start = state.config.openingHours?.start || 16;
+            const end = state.config.openingHours?.end || 23;
+            const isOpen = (state.config.statusMode === 'open') || (state.config.statusMode === 'auto' && h >= start && h < end);
+            
+            const stDot = document.getElementById('status-indicator');
+            const stTxt = document.getElementById('status-text');
+            const stDotH = document.getElementById('status-dot');
+            if (stDot) stDot.className = `absolute bottom-0 right-0 w-3.5 h-3.5 border-2 border-white rounded-full ${isOpen ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`;
+            if (stDotH) stDotH.className = `w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-green-500' : 'bg-red-500'}`;
+            if (stTxt) {
+                stTxt.innerText = isOpen ? "Aberto Agora" : "Fechado";
+                stTxt.className = `text-[10px] font-bold uppercase tracking-wider ${isOpen ? 'text-green-600' : 'text-red-500'}`;
             }
         };
 
-        window.addToCart = () => {
-            if(state.selectedItems.size === 0) return toast("Selecione!", "error");
-            const obs = document.getElementById('obs-input').value.trim();
-            state.config.sizes.forEach(i => {
-                if(state.selectedItems.has(i.name)) {
-                    const idx = state.cart.findIndex(c => c.name === i.name && c.obs === obs);
-                    if(idx > -1) state.cart[idx].qty += state.qty;
-                    else state.cart.push({ id: Date.now()+Math.random(), name: i.name, price: i.price, obs, qty: state.qty });
-                }
+        window.setupPhoneMask = () => {
+            const input = document.getElementById('client-phone');
+            if(!input) return;
+            input.addEventListener('input', (e) => {
+                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+                e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+                window.saveFormData(); 
+                window.validateCheckout();
             });
-            state.selectedItems.clear();
-            state.qty = 1;
-            document.getElementById('qty-display').innerText = "1";
-            document.getElementById('obs-input').value = "";
-            renderMenu();
-            updateTotalBar();
-            saveCart();
-            renderCart();
-            toast("Adicionado!");
-            setTimeout(() => toggleCart(true), 300);
-        };
-
-        function saveCart() { localStorage.setItem('acai_cart_v3', JSON.stringify(state.cart)); }
-
-        window.renderCart = () => {
-            const list = document.getElementById('cart-items');
-            list.innerHTML = "";
-            let subtotal = 0;
-            let count = 0;
-            if(state.cart.length === 0) {
-                list.innerHTML = `<div class="flex flex-col items-center justify-center py-10 opacity-50"><i data-lucide="shopping-cart" class="w-12 h-12 text-slate-300 mb-2"></i><p class="text-sm font-bold text-slate-400">Vazio</p></div>`;
-                document.getElementById('checkout-form').classList.add('hidden');
-            } else {
-                document.getElementById('checkout-form').classList.remove('hidden');
-                state.cart.forEach(item => {
-                    subtotal += item.price * item.qty;
-                    count += item.qty;
-                    list.innerHTML += `
-                        <div class="flex justify-between items-start bg-white p-4 rounded-2xl border border-slate-100 shadow-sm animate-slide-up">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="bg-brand-50 text-brand-600 text-[10px] font-black px-2 py-0.5 rounded-lg">${item.qty}x</span>
-                                    <span class="font-bold text-sm text-slate-800">${item.name}</span>
-                                </div>
-                                <p class="text-xs font-bold text-brand-600 mt-1.5">R$ ${(item.price * item.qty).toFixed(2).replace('.',',')}</p>
-                            </div>
-                            <div class="flex items-center bg-slate-50 rounded-xl h-9 border border-slate-200">
-                                <button onclick="modCartItem(${item.id}, -1)" class="w-9 active:text-red-500 font-bold">-</button>
-                                <button onclick="modCartItem(${item.id}, 1)" class="w-9 active:text-green-500 font-bold">+</button>
-                            </div>
-                        </div>`;
-                });
-            }
-            let shipping = 0;
-            if(state.deliveryType === 'Entrega') shipping = parseFloat(document.getElementById('delivery-zone').value || 0);
-            document.getElementById('cart-total').innerText = `R$ ${(subtotal + shipping).toFixed(2).replace('.',',')}`;
-            const badge = document.getElementById('cart-count');
-            badge.innerText = count;
-            badge.className = `absolute -top-1 -right-1 bg-brand-600 text-white text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white transform transition-transform shadow-sm ${count > 0 ? 'scale-100' : 'scale-0'}`;
-            validateCheckout();
-            window.refreshIcons();
-        };
-
-        window.modCartItem = (id, d) => {
-            const idx = state.cart.findIndex(c => c.id === id);
-            if(idx > -1) {
-                state.cart[idx].qty += d;
-                if(state.cart[idx].qty <= 0) state.cart.splice(idx, 1);
-                saveCart();
-                renderCart();
-            }
-        };
-
-        window.setDelivery = (type) => {
-            state.deliveryType = type;
-            const btnRet = document.getElementById('btn-retirada');
-            const btnEnt = document.getElementById('btn-entrega');
-            const details = document.getElementById('delivery-details');
-            const base = "p-4 border-2 rounded-2xl text-xs font-black uppercase tracking-wide transition-all";
-            if(type === 'Retirada') {
-                btnRet.className = `${base} border-brand-600 bg-brand-50 text-brand-700`;
-                btnEnt.className = `${base} border-slate-100 text-slate-400`;
-                details.classList.add('hidden');
-            } else {
-                btnEnt.className = `${base} border-brand-600 bg-brand-50 text-brand-700`;
-                btnRet.className = `${base} border-slate-100 text-slate-400`;
-                details.classList.remove('hidden');
-                const sel = document.getElementById('delivery-zone');
-                sel.innerHTML = '<option value="" disabled selected>Onde entregamos?</option>';
-                state.config.zones.forEach(z => {
-                    const txt = z.price === 0 ? "Grátis" : `+R$ ${z.price.toFixed(2)}`;
-                    sel.innerHTML += `<option value="${z.price}" data-name="${z.name}">${z.name} (${txt})</option>`;
-                });
-            }
-            renderCart();
-            saveFormData();
-        };
-
-        window.handlePaymentChange = () => {
-            const method = document.getElementById('payment-method').value;
-            const pixArea = document.getElementById('pix-area');
-            state.paymentVerified = (method !== 'Pix');
-            if(method === 'Pix') {
-                pixArea.classList.remove('hidden');
-                document.getElementById('pix-key').value = state.config.pixKey;
-            } else {
-                pixArea.classList.add('hidden');
-            }
-            validateCheckout();
-        };
-
-        window.confirmPix = () => {
-            const btn = document.getElementById('btn-pix-confirm');
-            btn.innerHTML = '<div class="spinner"></div>';
-            setTimeout(() => {
-                state.paymentVerified = true;
-                btn.className = "w-full py-4 bg-green-500 text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-2";
-                btn.innerHTML = '<i data-lucide="check"></i> Confirmado';
-                window.refreshIcons();
-                validateCheckout();
-            }, 600);
         };
 
         window.saveFormData = () => {
             const data = {
-                name: document.getElementById('client-name').value,
-                phone: document.getElementById('client-phone').value,
-                address: document.getElementById('client-address').value,
-                payment: document.getElementById('payment-method').value,
+                name: document.getElementById('client-name')?.value,
+                phone: document.getElementById('client-phone')?.value,
+                address: document.getElementById('client-address')?.value,
+                payment: document.getElementById('payment-method')?.value,
                 deliveryType: state.deliveryType,
-                zoneVal: document.getElementById('delivery-zone').value,
-                obs: document.getElementById('obs-input').value
+                zoneVal: document.getElementById('delivery-zone')?.value,
+                obs: document.getElementById('obs-input')?.value
             };
             localStorage.setItem('acai_form_data', JSON.stringify(data));
         };
@@ -830,29 +853,33 @@
                     if(document.getElementById('obs-input')) document.getElementById('obs-input').value = data.obs || '';
                     
                     if (data.deliveryType) {
-                        setDelivery(data.deliveryType);
+                        window.setDelivery(data.deliveryType);
                         if (data.deliveryType === 'Entrega' && data.zoneVal) {
                             setTimeout(() => {
                                 const zoneSelect = document.getElementById('delivery-zone');
                                 if(zoneSelect) {
                                     zoneSelect.value = data.zoneVal;
-                                    renderCart(); // Update totals with shipping
+                                    window.renderCart(); 
                                 }
                             }, 100);
                         }
                     }
-                    handlePaymentChange();
-                    validateCheckout();
+                    window.handlePaymentChange();
+                    window.validateCheckout();
                 } catch(e) { console.log("Erro ao restaurar form", e); }
             }
         };
 
         window.validateCheckout = () => {
             const btn = document.getElementById('btn-checkout');
+            if(!btn) return;
             const name = document.getElementById('client-name').value;
             const phone = document.getElementById('client-phone').value;
             const method = document.getElementById('payment-method').value;
+            
+            // Validação agora apenas verifica se há método selecionado
             let ok = name && phone.length > 10 && method && state.paymentVerified;
+            
             if(state.deliveryType === 'Entrega' && (!document.getElementById('delivery-zone').value || !document.getElementById('client-address').value)) ok = false;
             btn.disabled = !ok;
             window.refreshIcons();
@@ -873,27 +900,24 @@
             let deliveryDetailsStorage = "Retirada";
 
             if(state.deliveryType === 'Entrega') {
-                const zoneOption = document.getElementById('delivery-zone').selectedOptions[0];
-                zoneName = zoneOption.getAttribute('data-name');
-                shipValue = parseFloat(document.getElementById('delivery-zone').value || 0);
+                const zoneSelect = document.getElementById('delivery-zone');
+                const zoneOption = zoneSelect.selectedOptions[0];
+                zoneName = zoneOption ? zoneOption.getAttribute('data-name') : "";
+                shipValue = parseFloat(zoneSelect.value || 0);
                 address = document.getElementById('client-address').value;
                 shipText = shipValue === 0 ? "Grátis" : `R$ ${shipValue.toFixed(2).replace('.', ',')}`;
                 deliveryDetailsStorage = `${zoneName} - ${address}`;
             }
 
-            // Define o texto do pagamento para Planilha e WhatsApp
             let paymentStatusFull = method;
-            if (method === 'Pix') {
-                paymentStatusFull += " (Confirmado no Site ✅)";
-            }
-
-            // Calculate Subtotal for Message
+            // Texto simplificado conforme solicitado
+            
             let subtotalVal = 0;
             state.cart.forEach(i => subtotalVal += i.price * i.qty);
             const subtotalStr = subtotalVal.toFixed(2).replace('.', ',');
 
             const itemsStr = state.cart.map(i => `${i.qty}x ${i.name}`).join(", ");
-            // Include userId in payload for better filtering if needed in future
+            
             const orderObj = { 
                 date: new Date().toISOString(), 
                 clientName: name, 
@@ -910,28 +934,27 @@
             
             try { await addDoc(getCollectionRef("pedidos"), orderObj); } catch(e) { console.log("Firestore offline/denied, saving local"); }
 
+            const localOrders = JSON.parse(localStorage.getItem('acai_orders_local') || '[]');
+            localOrders.push(orderObj);
+            localStorage.setItem('acai_orders_local', JSON.stringify(localOrders));
+
             if(state.config.googleScriptUrl) {
-                // Estrutura corrigida para bater com as colunas da planilha:
-                // 1. Data | 2. Cliente | 3. Telefone | 4. Valor | 5. Pagamento (Com status) | 6. Endereço (Ou Retirada) | 7. Detalhes | 8. Taxa
                 const dataHora = new Date().toLocaleString('pt-BR');
                 const data = { 
                     data: dataHora,
                     cliente: name, 
                     telefone: phone, 
                     valor: totalFinal, 
-                    pagamento: paymentStatusFull, // Agora envia com a confirmação
-                    endereco: deliveryDetailsStorage, // Envia "Retirada" ou "Bairro - Rua..."
+                    pagamento: paymentStatusFull,
+                    endereco: deliveryDetailsStorage,
                     itens: itemsStr,
                     taxa: shipText 
                 };
                 fetch(state.config.googleScriptUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(data) }).catch(e => {});
             }
 
-            // --- CONSTRUÇÃO DA NOVA MENSAGEM WHATSAPP ---
             let msg = `🥤 *PEDIDO - AÇAÍ ELLEGANCE*\n`;
             msg += `👤 *Cliente:* ${name}\n`;
-            
-            // Usa a mesma variável de texto de pagamento criada acima
             msg += `💳 *Pagamento:* ${paymentStatusFull}\n`;
 
             if (state.deliveryType === 'Entrega') {
@@ -953,113 +976,49 @@
             msg += `💰 *TOTAL FINAL: ${totalFinal}*`;
 
             state.cart = [];
-            saveCart();
+            saveCart(); // Clears cart in storage
             window.open(`https://api.whatsapp.com/send?phone=${state.config.phone.replace(/\D/g,'')}&text=${encodeURIComponent(msg)}`, '_blank');
             setTimeout(() => window.location.reload(), 1500);
         };
 
-        window.filterCategory = (cat) => {
-            state.filter = cat;
-            document.querySelectorAll('.cat-btn').forEach(b => {
-                b.className = b.dataset.cat === cat ? "cat-btn active px-6 py-2.5 rounded-full text-xs font-black bg-brand-900 text-white shadow-lg whitespace-nowrap active:scale-95" : "cat-btn px-6 py-2.5 rounded-full text-xs font-black bg-white text-slate-500 border border-slate-200 whitespace-nowrap active:scale-95";
-            });
-            renderMenu();
-        };
+        // --- FUNÇÕES ADMIN ---
 
-        window.filterMenu = renderMenu;
-        window.updateQty = (d) => { state.qty = Math.max(1, state.qty + d); document.getElementById('qty-display').innerText = state.qty; updateTotalBar(); };
-        window.toggleCart = (show) => {
-            const drawer = document.getElementById('cart-drawer');
-            const back = document.getElementById('cart-backdrop');
-            if(show) { renderCart(); back.classList.remove('invisible', 'opacity-0'); drawer.classList.remove('translate-x-full'); }
-            else { back.classList.add('opacity-0'); drawer.classList.add('translate-x-full'); setTimeout(() => back.classList.add('invisible'), 300); }
-        };
-        window.copyPix = () => { const k = document.getElementById('pix-key'); k.select(); document.execCommand('copy'); toast("Chave Copiada!"); };
-        window.toast = (m, t='success') => {
-            const el = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = m;
-            el.classList.remove('-translate-y-20', 'opacity-0');
-            el.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => { el.classList.remove('translate-y-0', 'opacity-100'); el.classList.add('-translate-y-20', 'opacity-0'); }, 2500);
-        };
-        window.refreshIcons = () => { if (typeof lucide !== 'undefined') lucide.createIcons(); };
-        
-        window.updateUI = () => {
-            const h = new Date().getHours();
-            const start = state.config.openingHours?.start || 16;
-            const end = state.config.openingHours?.end || 23;
-            
-            const isOpen = (state.config.statusMode === 'open') || (state.config.statusMode === 'auto' && h >= start && h < end);
-            const stDot = document.getElementById('status-indicator');
-            const stTxt = document.getElementById('status-text');
-            const stDotH = document.getElementById('status-dot');
-            if (stDot) stDot.className = `absolute bottom-0 right-0 w-3.5 h-3.5 border-2 border-white rounded-full ${isOpen ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`;
-            if (stDotH) stDotH.className = `w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-green-500' : 'bg-red-500'}`;
-            if (stTxt) {
-                stTxt.innerText = isOpen ? "Aberto Agora" : "Fechado";
-                stTxt.className = `text-[10px] font-bold uppercase tracking-wider ${isOpen ? 'text-green-600' : 'text-red-500'}`;
-            }
-        };
-
-        window.setupPhoneMask = () => {
-            const input = document.getElementById('client-phone');
-            input.addEventListener('input', (e) => {
-                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
-                e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-                saveFormData(); // Save on each keystroke
-                validateCheckout();
-            });
-        };
-
-        window.handleAdminClick = () => { if(state.isAdmin) showAdminPanel(); else document.getElementById('admin-modal').classList.remove('hidden'); };
-        
         window.adminLogin = async () => {
             const e = document.getElementById('adm-email').value;
             const p = document.getElementById('adm-pass').value;
-            
-            if(!e || !p) return toast("Preencha tudo", "error");
-
+            if(!e || !p) return window.toast("Preencha tudo", "error");
             const btn = document.querySelector('#admin-modal button');
             const originalText = btn.innerText;
             btn.innerText = "Verificando...";
             btn.disabled = true;
 
             try {
-                // 1. Tenta fazer LOGIN
                 await signInWithEmailAndPassword(auth, e, p);
                 document.getElementById('admin-modal').classList.add('hidden');
-                toast("Admin Conectado!");
+                window.toast("Admin Conectado!");
             } catch (err) {
                 if (err.code === 'auth/operation-not-allowed') {
                      state.isAdmin = true;
                      document.getElementById('admin-modal').classList.add('hidden');
-                     showAdminPanel();
-                     toast("Modo Admin Local (Auth desativado)");
+                     window.showAdminPanel();
+                     window.toast("Modo Admin Local");
                      return;
                 }
-
-                // 2. Se der erro de usuário não encontrado, tenta CRIAR a conta
                 try {
                     await createUserWithEmailAndPassword(auth, e, p);
                     document.getElementById('admin-modal').classList.add('hidden');
-                    toast("Conta criada e conectada!");
+                    window.toast("Conta criada!");
                 } catch (createErr) {
                     if (createErr.code === 'auth/operation-not-allowed') {
                          state.isAdmin = true;
                          document.getElementById('admin-modal').classList.add('hidden');
-                         showAdminPanel();
-                         toast("Modo Admin Local (Auth desativado)");
+                         window.showAdminPanel();
+                         window.toast("Modo Admin Local");
                          return;
                     }
-
                     console.error(createErr);
-                    if(createErr.code === 'auth/email-already-in-use') {
-                        toast("Senha incorreta.", "error");
-                    } else if(createErr.code === 'auth/weak-password') {
-                        toast("Senha fraca (min 6 carac).", "error");
-                    } else {
-                        toast("Erro ao entrar.", "error");
-                    }
+                    if(createErr.code === 'auth/email-already-in-use') window.toast("Senha incorreta.", "error");
+                    else window.toast("Erro ao entrar.", "error");
                 }
             } finally {
                 btn.innerText = originalText;
@@ -1067,37 +1026,28 @@
             }
         };
 
-        window.showAdminPanel = () => { document.getElementById('admin-panel').classList.remove('hidden'); syncAdminFields(); };
-        
-        window.adminLogout = () => { signOut(auth); document.getElementById('admin-panel').classList.add('hidden'); toast("Saindo..."); };
+        window.showAdminPanel = () => { document.getElementById('admin-panel').classList.remove('hidden'); window.syncAdminFields(); };
+        window.adminLogout = () => { signOut(auth); document.getElementById('admin-panel').classList.add('hidden'); window.toast("Saindo..."); };
         
         window.syncAdminFields = () => {
             document.getElementById('cfg-name').value = state.config.storeName;
             document.getElementById('cfg-phone').value = state.config.phone;
             document.getElementById('cfg-pix-key').value = state.config.pixKey;
             document.getElementById('cfg-script-url').value = state.config.googleScriptUrl || "";
-            
             if(document.getElementById('cfg-hour-start')) document.getElementById('cfg-hour-start').value = state.config.openingHours?.start || 16;
             if(document.getElementById('cfg-hour-end')) document.getElementById('cfg-hour-end').value = state.config.openingHours?.end || 23;
-
             ['open','auto','closed'].forEach(m => {
                 const btn = document.getElementById(`st-${m}`);
-                if (btn) {
-                    const active = state.config.statusMode === m;
-                    btn.className = `flex-1 py-4 rounded-2xl border-2 text-xs font-black ${active ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-100 text-slate-400'}`;
-                }
+                if (btn) btn.className = `flex-1 py-4 rounded-2xl border-2 text-xs font-black ${state.config.statusMode === m ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-100 text-slate-400'}`;
             });
-
-            renderStockAdmin();
-            renderZonesAdmin();
+            window.renderStockAdmin();
+            window.renderZonesAdmin();
         };
 
         window.renderStockAdmin = () => {
             const list = document.getElementById('stock-list');
             if (list) {
                 list.innerHTML = "";
-                
-                // Helper para renderizar o HTML de cada item
                 const renderItemHTML = (item, idx) => {
                     const isOff = item.available === false;
                     return `
@@ -1107,62 +1057,32 @@
                                 <span class="text-[10px] text-slate-400">R$ ${item.price.toFixed(2)}</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button onclick="toggleStock(${idx})" class="px-3 py-1.5 rounded-lg border font-bold text-[10px] ${isOff ? 'bg-green-50 text-green-600 border-green-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}">
+                                <button onclick="toggleStock(${item.originalIndex})" class="px-3 py-1.5 rounded-lg border font-bold text-[10px] ${isOff ? 'bg-green-50 text-green-600 border-green-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}">
                                     ${isOff ? 'ATIVAR' : 'PAUSAR'}
                                 </button>
-                                <button onclick="removeProduct(${idx})" class="p-1.5 text-red-400 hover:text-red-600 bg-red-50 rounded-lg">
+                                <button onclick="removeProduct(${item.originalIndex})" class="p-1.5 text-red-400 hover:text-red-600 bg-red-50 rounded-lg">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                             </div>
                         </div>`;
                 };
-
-                // Mapeia os itens preservando o índice original (importante para editar/remover)
                 const itemsWithIndex = state.config.sizes.map((item, index) => ({...item, originalIndex: index}));
-                
-                // Filtra por categoria
                 const tradicionais = itemsWithIndex.filter(i => i.category === 'Tradicional');
                 const gourmets = itemsWithIndex.filter(i => i.category === 'Gourmet');
-                // Pega qualquer outro que não se encaixe (caso crie novas categorias no futuro)
                 const outros = itemsWithIndex.filter(i => i.category !== 'Tradicional' && i.category !== 'Gourmet');
 
-                // Renderiza Seção Tradicional
                 if (tradicionais.length > 0) {
-                    list.innerHTML += `
-                        <div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2">
-                            <h4 class="text-xs font-black text-brand-600 uppercase tracking-widest flex items-center gap-2">
-                                <i data-lucide="ice-cream-2" class="w-3 h-3"></i> Tradicional
-                            </h4>
-                        </div>`;
-                    tradicionais.forEach(item => {
-                        list.innerHTML += renderItemHTML(item, item.originalIndex);
-                    });
+                    list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2"><h4 class="text-xs font-black text-brand-600 uppercase tracking-widest flex items-center gap-2"><i data-lucide="ice-cream-2" class="w-3 h-3"></i> Tradicional</h4></div>`;
+                    tradicionais.forEach(item => list.innerHTML += renderItemHTML(item, item.originalIndex));
                 }
-
-                // Renderiza Seção Gourmet
                 if (gourmets.length > 0) {
-                    list.innerHTML += `
-                        <div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2">
-                            <h4 class="text-xs font-black text-pink-500 uppercase tracking-widest flex items-center gap-2">
-                                <i data-lucide="sparkles" class="w-3 h-3"></i> Gourmet
-                            </h4>
-                        </div>`;
-                    gourmets.forEach(item => {
-                        list.innerHTML += renderItemHTML(item, item.originalIndex);
-                    });
+                    list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-pink-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="sparkles" class="w-3 h-3"></i> Gourmet</h4></div>`;
+                    gourmets.forEach(item => list.innerHTML += renderItemHTML(item, item.originalIndex));
                 }
-
-                // Renderiza Outros (se houver)
                 if (outros.length > 0) {
-                    list.innerHTML += `
-                        <div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2">
-                            <h4 class="text-xs font-black text-slate-500 uppercase tracking-widest">Outros</h4>
-                        </div>`;
-                    outros.forEach(item => {
-                        list.innerHTML += renderItemHTML(item, item.originalIndex);
-                    });
+                    list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-slate-500 uppercase tracking-widest">Outros</h4></div>`;
+                    outros.forEach(item => list.innerHTML += renderItemHTML(item, item.originalIndex));
                 }
-
                 window.refreshIcons();
             }
         };
@@ -1173,20 +1093,19 @@
             const price = parseFloat(document.getElementById('new-prod-price').value);
             const cat = document.getElementById('new-prod-cat').value;
 
-            if(!name || isNaN(price)) return toast("Dados inválidos", "error");
+            if(!name || isNaN(price)) return window.toast("Dados inválidos", "error");
 
             const newSizes = [...state.config.sizes, { name, description: desc, price, category: cat, available: true }];
-            state.config.sizes = newSizes; // Optimistic update
+            state.config.sizes = newSizes; 
 
             try {
                 await setDoc(getDocRef('loja', 'configuracao'), { sizes: newSizes }, { merge: true });
-                renderStockAdmin();
-                // Clear inputs
+                window.renderStockAdmin();
                 document.getElementById('new-prod-name').value = '';
                 document.getElementById('new-prod-desc').value = '';
                 document.getElementById('new-prod-price').value = '';
-                toast("Produto Adicionado!");
-            } catch(e) { toast("Erro ao salvar", "error"); }
+                window.toast("Produto Adicionado!");
+            } catch(e) { window.toast("Erro ao salvar", "error"); }
         };
 
         window.removeProduct = async (idx) => {
@@ -1197,9 +1116,9 @@
 
             try {
                 await setDoc(getDocRef('loja', 'configuracao'), { sizes: newSizes }, { merge: true });
-                renderStockAdmin();
-                toast("Produto Removido!");
-            } catch(e) { toast("Erro ao remover", "error"); }
+                window.renderStockAdmin();
+                window.toast("Produto Removido!");
+            } catch(e) { window.toast("Erro ao remover", "error"); }
         };
 
         window.renderZonesAdmin = () => {
@@ -1212,7 +1131,7 @@
                         <span class="text-xs font-bold text-slate-700">${z.name}</span>
                         <div class="flex items-center gap-3">
                             <span class="text-xs font-bold text-brand-600">R$ ${z.price.toFixed(2)}</span>
-                            <button onclick="removeZone(${i})" class="text-red-400 hover:text-red-600">
+                            <button onclick="window.removeZone(${i})" class="text-red-400 hover:text-red-600">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>
@@ -1225,36 +1144,27 @@
         window.addZone = async () => {
             const name = document.getElementById('new-zone-name').value.trim();
             const price = parseFloat(document.getElementById('new-zone-price').value);
-            
-            if(!name || isNaN(price)) return toast("Dados inválidos", "error");
-            
+            if(!name || isNaN(price)) return window.toast("Dados inválidos", "error");
             const newZones = [...state.config.zones, { name, price }];
-            // Update local state immediately for UI response
             state.config.zones = newZones; 
-            
             try {
                 await setDoc(getDocRef('loja', 'configuracao'), { zones: newZones }, { merge: true });
-                renderZonesAdmin(); // Refresh list
+                window.renderZonesAdmin(); 
                 document.getElementById('new-zone-name').value = '';
                 document.getElementById('new-zone-price').value = '';
-                toast("Local adicionado!");
-            } catch(e) {
-                toast("Erro ao salvar", "error");
-            }
+                window.toast("Local adicionado!");
+            } catch(e) { window.toast("Erro ao salvar", "error"); }
         }
 
         window.removeZone = async (idx) => {
             const newZones = [...state.config.zones];
             newZones.splice(idx, 1);
             state.config.zones = newZones;
-            
             try {
                 await setDoc(getDocRef('loja', 'configuracao'), { zones: newZones }, { merge: true });
-                renderZonesAdmin();
-                toast("Local removido!");
-            } catch(e) {
-                toast("Erro ao remover", "error");
-            }
+                window.renderZonesAdmin();
+                window.toast("Local removido!");
+            } catch(e) { window.toast("Erro ao remover", "error"); }
         }
 
         window.saveSettings = async () => {
@@ -1269,7 +1179,7 @@
                     end: parseInt(document.getElementById('cfg-hour-end').value) || 23
                 }
             };
-            try { await setDoc(getDocRef('loja', 'configuracao'), newConfig, { merge: true }); toast("Configurações Salvas!"); } catch(e) { toast("Erro!", "error"); }
+            try { await setDoc(getDocRef('loja', 'configuracao'), newConfig, { merge: true }); window.toast("Configurações Salvas!"); } catch(e) { window.toast("Erro!", "error"); }
         };
 
         window.toggleStock = async (idx) => {
@@ -1278,9 +1188,76 @@
             await setDoc(getDocRef('loja', 'configuracao'), { sizes: newSizes }, { merge: true });
         };
 
-        window.setStatus = async (mode) => { await setDoc(getDocRef('loja', 'configuracao'), { statusMode: mode }, { merge: true }); toast("Status Atualizado!"); };
-        
-        window.onload = init;
+        window.setStatus = async (mode) => { await setDoc(getDocRef('loja', 'configuracao'), { statusMode: mode }, { merge: true }); window.toast("Status Atualizado!"); };
+
+        function saveCart() { localStorage.setItem('acai_cart_v3', JSON.stringify(state.cart)); }
+
+        window.init = async () => {
+            const hideSplash = () => {
+                const splash = document.getElementById('splash');
+                if(splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.style.display = 'none', 500);
+                }
+            };
+            setTimeout(hideSplash, 3000);
+
+            try {
+                const savedCart = localStorage.getItem('acai_cart_v3');
+                if(savedCart) state.cart = JSON.parse(savedCart);
+
+                window.setupPhoneMask();
+                window.renderMenu();
+                window.renderCart();
+                window.updateUI();
+                window.restoreFormData();
+                hideSplash();
+
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+                    
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        if (!auth.currentUser) {
+                            try { await signInAnonymously(auth); } catch(e) {}
+                        }
+                    }
+
+                    onAuthStateChanged(auth, (user) => {
+                        if(user && user.email) {
+                            state.isAdmin = true;
+                            window.showAdminPanel();
+                        } else if (state.isAdmin && !user) {
+                            state.isAdmin = false;
+                        }
+                    });
+                    
+                    onSnapshot(getDocRef('loja', 'configuracao'), (snap) => {
+                        if(snap.exists()) {
+                            state.config = { ...state.config, ...snap.data() };
+                            window.renderMenu();
+                            window.updateUI();
+                            if(state.isAdmin) window.syncAdminFields();
+                        }
+                    }, (error) => {
+                        console.log("Using default config or offline mode");
+                    });
+                } catch(fbError) {
+                    console.warn("Firebase Init Failed (Offline Mode Active)", fbError);
+                }
+
+            } catch(e) {
+                console.error("Critical Init Error", e);
+                hideSplash();
+            }
+            
+            setInterval(window.updateUI, 60000);
+        };
+
+        window.onload = window.init;
     </script>
 </body>
 </html>
