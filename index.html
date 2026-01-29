@@ -530,6 +530,22 @@
         };
 
         let db, auth;
+        
+        // --- FIREBASE HELPER FUNCTIONS (MOVED TO TOP) ---
+        // These need to be defined before they are used in window functions
+        const getCollectionRef = (colName) => {
+            if (typeof __firebase_config !== 'undefined') {
+                 return collection(db, 'artifacts', appId, 'public', 'data', colName);
+            }
+            return collection(db, colName);
+        }
+
+        const getDocRef = (colName, docId) => {
+            if (typeof __firebase_config !== 'undefined') {
+                 return doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
+            }
+            return doc(db, colName, docId);
+        }
 
         // --- FUNÇÕES UTILITÁRIAS GLOBAIS ---
         window.toast = (m, t='success') => {
@@ -632,7 +648,17 @@
             setTimeout(() => window.toggleCart(true), 300);
         };
 
-        // --- RENDER CART (CORRIGIDO E INSERIDO AQUI) ---
+        window.modCartItem = (id, d) => {
+            const idx = state.cart.findIndex(c => c.id === id);
+            if(idx > -1) {
+                state.cart[idx].qty += d;
+                if(state.cart[idx].qty <= 0) state.cart.splice(idx, 1);
+                saveCart(); 
+                window.renderCart();
+            }
+        };
+
+        // --- RENDER CART (Inserido CORRETAMENTE AQUI) ---
         window.renderCart = () => {
             const list = document.getElementById('cart-items');
             if(!list) return;
@@ -684,16 +710,6 @@
             window.refreshIcons();
         };
 
-        window.modCartItem = (id, d) => {
-            const idx = state.cart.findIndex(c => c.id === id);
-            if(idx > -1) {
-                state.cart[idx].qty += d;
-                if(state.cart[idx].qty <= 0) state.cart.splice(idx, 1);
-                saveCart(); 
-                window.renderCart();
-            }
-        };
-
         window.setDelivery = (type) => {
             state.deliveryType = type;
             const btnRet = document.getElementById('btn-retirada');
@@ -726,9 +742,8 @@
         window.handlePaymentChange = () => {
             const method = document.getElementById('payment-method').value;
             const pixArea = document.getElementById('pix-area');
-            
-            // Alteração: Define verificado assim que escolhe o método
-            state.paymentVerified = !!method;
+            // AGORA: Pix valida automaticamente!
+            state.paymentVerified = !!method; 
             
             if(method === 'Pix') {
                 if(pixArea) {
@@ -742,8 +757,18 @@
             window.validateCheckout();
         };
 
-        // Função confirmPix removida
-
+        window.confirmPix = () => {
+            const btn = document.getElementById('btn-pix-confirm');
+            btn.innerHTML = '<div class="spinner"></div>';
+            setTimeout(() => {
+                state.paymentVerified = true;
+                btn.className = "w-full py-4 bg-green-500 text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-2";
+                btn.innerHTML = '<i data-lucide="check"></i> Confirmado';
+                window.refreshIcons();
+                window.validateCheckout();
+            }, 600);
+        };
+        
         window.copyPix = () => { 
             const k = document.getElementById('pix-key'); 
             if(k) {
@@ -1029,6 +1054,25 @@
         window.showAdminPanel = () => { document.getElementById('admin-panel').classList.remove('hidden'); window.syncAdminFields(); };
         window.adminLogout = () => { signOut(auth); document.getElementById('admin-panel').classList.add('hidden'); window.toast("Saindo..."); };
         
+        // --- FUNÇÃO SWITCH ADMIN TAB (REESCRITA PARA SER SEGURA) ---
+        window.switchAdminTab = (tab) => {
+            // Remove 'hidden' do tab selecionado, adiciona nos outros
+            const tabs = ['estoque', 'config'];
+            tabs.forEach(t => {
+                const view = document.getElementById(`view-${t}`);
+                const btn = document.getElementById(`tab-${t}`);
+                
+                if(t === tab) {
+                    if(view) view.classList.remove('hidden');
+                    if(btn) btn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-800 transition-all";
+                } else {
+                    if(view) view.classList.add('hidden');
+                    if(btn) btn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all";
+                }
+            });
+            window.refreshIcons();
+        };
+
         window.syncAdminFields = () => {
             document.getElementById('cfg-name').value = state.config.storeName;
             document.getElementById('cfg-phone').value = state.config.phone;
@@ -1057,10 +1101,10 @@
                                 <span class="text-[10px] text-slate-400">R$ ${item.price.toFixed(2)}</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button onclick="toggleStock(${item.originalIndex})" class="px-3 py-1.5 rounded-lg border font-bold text-[10px] ${isOff ? 'bg-green-50 text-green-600 border-green-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}">
+                                <button onclick="window.toggleStock(${item.originalIndex})" class="px-3 py-1.5 rounded-lg border font-bold text-[10px] ${isOff ? 'bg-green-50 text-green-600 border-green-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}">
                                     ${isOff ? 'ATIVAR' : 'PAUSAR'}
                                 </button>
-                                <button onclick="removeProduct(${item.originalIndex})" class="p-1.5 text-red-400 hover:text-red-600 bg-red-50 rounded-lg">
+                                <button onclick="window.removeProduct(${item.originalIndex})" class="p-1.5 text-red-400 hover:text-red-600 bg-red-50 rounded-lg">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                             </div>
