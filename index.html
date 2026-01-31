@@ -1010,7 +1010,7 @@
 
             // WHATSAPP REDIRECT (Immediate)
             const phoneNum = state.config.phone ? state.config.phone.replace(/\D/g,'') : "557998168282";
-            window.open(`https://api.whatsapp.com/send?phone=${phoneNum}&text=${encodeURIComponent(msg)}`, '_blank');
+            window.location.href = `https://api.whatsapp.com/send?phone=${phoneNum}&text=${encodeURIComponent(msg)}`;
 
             // CLEANUP
             state.cart = [];
