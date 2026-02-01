@@ -231,7 +231,7 @@
         </div>
 
         <!-- WHATSAPP FLUTUANTE -->
-        <button onclick="window.openChat()" class="fixed bottom-32 right-6 z-40 w-14 h-14 bg-whatsapp-500 text-white rounded-full shadow-whatsapp flex items-center justify-center animate-pulse-green active:scale-90 transition-all">
+        <button id="whatsapp-float" onclick="window.openChat()" class="fixed bottom-32 right-6 z-40 w-14 h-14 bg-whatsapp-500 text-white rounded-full shadow-whatsapp flex items-center justify-center animate-pulse-green active:scale-90 transition-all">
             <i data-lucide="message-circle" class="w-8 h-8 fill-white/10"></i>
         </button>
 
@@ -318,9 +318,12 @@
             <button onclick="window.sendOrder()" id="btn-checkout" class="w-full py-5 rounded-2xl bg-gradient-to-r from-whatsapp-500 to-whatsapp-600 text-white font-black text-sm shadow-xl flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale" disabled>
                 <div class="relative z-10 flex items-center gap-2">
                     <i data-lucide="message-circle" class="w-6 h-6 fill-white/20"></i>
-                    <span>Finalizar no WhatsApp</span>
+                    <span id="checkout-label">Finalizar no WhatsApp</span>
                 </div>
             </button>
+            <p id="closed-hint" class="hidden mt-3 text-center text-[11px] font-bold text-red-500">
+                Loja fechada no momento. Volte quando estiver aberta.
+            </p>
         </div>
     </div>
 
@@ -384,9 +387,7 @@
                         <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600"><i data-lucide="package" class="w-5 h-5"></i></div>
                         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">Controle de Estoque</h3>
                     </div>
-                    <div id="stock-list" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1 no-scrollbar">
-                        <!-- Itens do estoque renderizados aqui -->
-                    </div>
+                    <div id="stock-list" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1 no-scrollbar"></div>
                 </div>
             </div>
 
@@ -433,9 +434,7 @@
                         </button>
                     </div>
 
-                    <div id="admin-zones-list" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar">
-                        <!-- Rendered via JS -->
-                    </div>
+                    <div id="admin-zones-list" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar"></div>
                 </div>
 
                 <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-4">
@@ -464,7 +463,6 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, setDoc, updateDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-        // CONFIGURAÇÃO FIREBASE (Híbrida para Preview e Deploy)
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyBakH1kufhFKj-ibAkQNTXhs-WLfxUob28",
             authDomain: "acai-ellegance-app.firebaseapp.com",
@@ -475,7 +473,6 @@
         };
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        // DADOS PADRÃO
         const DEFAULT_ITEMS = [
             { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
             { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
@@ -491,7 +488,7 @@
             { name: "Creme de Ninho 300ml", description: "Açaí, leite em pó, creme de ninho", price: 13.00, category: "Gourmet" },
             { name: "M&M 300ml", description: "Açaí, leite em pó, nutella e M&M", price: 13.00, category: "Gourmet" },
             { name: "Morango com Nutella 500ml", description: "Açaí, morango, nutella", price: 18.00, category: "Gourmet" },
-            { name: "Ovomaltine 500ml", description: "Açaí, ovomaltine e nutella", price: 18.00, category: "Gourmet" }
+            { name: "Ovomaltine 500ml", description: "Açai, ovomaltine e nutella", price: 18.00, category: "Gourmet" }
         ];
 
         let state = {
@@ -507,7 +504,7 @@
                 googleScriptUrl: "https://script.google.com/macros/s/AKfycbwtHwhszybzs3OzYOUCY-cHaAi-bCSuvyuViM1mHmEkSYkfHvQvpFmhQLCXXV_ASeAA/exec",
                 zones: [
                     {name: "Albano Franco", price: 0},
-                     {name: "Cidade nova", price: 5.00},
+                    {name: "Cidade nova", price: 5.00},
                     {name: "Marcos Freire 1,2,3", price: 0},
                     {name: "João Alves", price: 0},
                     {name: "Fernando Collor", price: 0},
@@ -530,24 +527,16 @@
         };
 
         let db, auth;
-        
-        // --- FIREBASE HELPER FUNCTIONS (MOVED TO TOP) ---
-        // These need to be defined before they are used in window functions
+
         const getCollectionRef = (colName) => {
-            if (typeof __firebase_config !== 'undefined') {
-                 return collection(db, 'artifacts', appId, 'public', 'data', colName);
-            }
+            if (typeof __firebase_config !== 'undefined') return collection(db, 'artifacts', appId, 'public', 'data', colName);
             return collection(db, colName);
         }
-
         const getDocRef = (colName, docId) => {
-            if (typeof __firebase_config !== 'undefined') {
-                 return doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
-            }
-            return doc(db, colName, docId);
+            if (typeof __firebase_config !== 'undefined') return doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
+            return doc(db, colName);
         }
 
-        // --- FUNÇÕES UTILITÁRIAS GLOBAIS ---
         window.toast = (m, t='success') => {
             const el = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = m;
@@ -558,10 +547,54 @@
 
         window.refreshIcons = () => { if (typeof lucide !== 'undefined') lucide.createIcons(); };
 
-        // --- DEFINIÇÃO DE FUNÇÕES INTERATIVAS (HOISTING) ---
+        // ✅ NOVO: Checa se a loja está aberta (statusMode + horário)
+        window.isStoreOpen = () => {
+            const now = new Date();
+            const h = now.getHours();
+            const start = state.config.openingHours?.start ?? 16;
+            const end = state.config.openingHours?.end ?? 23;
+
+            if (state.config.statusMode === 'open') return true;
+            if (state.config.statusMode === 'closed') return false;
+
+            // auto
+            return h >= start && h < end;
+        };
+
+        // ✅ NOVO: Aplica regras de bloqueio quando fechado
+        window.applyStoreRules = () => {
+            const open = window.isStoreOpen();
+
+            const btnCheckout = document.getElementById('btn-checkout');
+            const checkoutLabel = document.getElementById('checkout-label');
+            const closedHint = document.getElementById('closed-hint');
+            const waFloat = document.getElementById('whatsapp-float');
+
+            // WhatsApp flutuante
+            if (waFloat) {
+                waFloat.style.opacity = open ? "1" : "0.35";
+                waFloat.style.pointerEvents = open ? "auto" : "none";
+                waFloat.classList.toggle('grayscale', !open);
+            }
+
+            // Botão checkout (além da validação normal, fechado sempre bloqueia)
+            if (btnCheckout) {
+                if (!open) {
+                    btnCheckout.disabled = true;
+                    if (checkoutLabel) checkoutLabel.innerText = "Loja Fechada";
+                    if (closedHint) closedHint.classList.remove('hidden');
+                } else {
+                    if (checkoutLabel) checkoutLabel.innerText = "Finalizar no WhatsApp";
+                    if (closedHint) closedHint.classList.add('hidden');
+                }
+            }
+        };
+
         window.handleAdminClick = () => { if(state.isAdmin) window.showAdminPanel(); else document.getElementById('admin-modal').classList.remove('hidden'); };
-        
+
+        // ✅ ALTERADO: não abre chat se estiver fechado
         window.openChat = () => {
+            if (!window.isStoreOpen()) return window.toast("Loja fechada. Volte no horário!", "error");
             const msg = "Olá! Gostaria de tirar uma dúvida.";
             window.open(`https://api.whatsapp.com/send?phone=${state.config.phone.replace(/\D/g,'')}&text=${encodeURIComponent(msg)}`, '_blank');
         };
@@ -587,8 +620,7 @@
             });
             window.renderMenu();
         };
-        
-        window.filterMenu = window.filterCategory; 
+        window.filterMenu = window.filterCategory;
 
         window.toggleSelection = (name, el) => {
             if(state.selectedItems.has(name)) state.selectedItems.delete(name);
@@ -658,7 +690,6 @@
             }
         };
 
-        // --- RENDER CART (Inserido CORRETAMENTE AQUI) ---
         window.renderCart = () => {
             const list = document.getElementById('cart-items');
             if(!list) return;
@@ -708,6 +739,7 @@
             
             window.validateCheckout();
             window.refreshIcons();
+            window.applyStoreRules(); // ✅ garante regra aplicada ao abrir carrinho
         };
 
         window.setDelivery = (type) => {
@@ -742,7 +774,6 @@
         window.handlePaymentChange = () => {
             const method = document.getElementById('payment-method').value;
             const pixArea = document.getElementById('pix-area');
-            // AGORA: Pix valida automaticamente!
             state.paymentVerified = !!method; 
             
             if(method === 'Pix') {
@@ -757,18 +788,6 @@
             window.validateCheckout();
         };
 
-        window.confirmPix = () => {
-            const btn = document.getElementById('btn-pix-confirm');
-            btn.innerHTML = '<div class="spinner"></div>';
-            setTimeout(() => {
-                state.paymentVerified = true;
-                btn.className = "w-full py-4 bg-green-500 text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-2";
-                btn.innerHTML = '<i data-lucide="check"></i> Confirmado';
-                window.refreshIcons();
-                window.validateCheckout();
-            }, 600);
-        };
-        
         window.copyPix = () => { 
             const k = document.getElementById('pix-key'); 
             if(k) {
@@ -777,8 +796,6 @@
                 window.toast("Chave Copiada!"); 
             }
         };
-
-        // --- FUNÇÕES DE RENDERIZAÇÃO E LÓGICA INTERNA ---
 
         window.renderMenu = () => {
             const grid = document.getElementById('products-grid');
@@ -826,11 +843,7 @@
         };
 
         window.updateUI = () => {
-            const h = new Date().getHours();
-            const start = state.config.openingHours?.start || 16;
-            const end = state.config.openingHours?.end || 23;
-            const isOpen = (state.config.statusMode === 'open') || (state.config.statusMode === 'auto' && h >= start && h < end);
-            
+            const isOpen = window.isStoreOpen();
             const stDot = document.getElementById('status-indicator');
             const stTxt = document.getElementById('status-text');
             const stDotH = document.getElementById('status-dot');
@@ -840,6 +853,7 @@
                 stTxt.innerText = isOpen ? "Aberto Agora" : "Fechado";
                 stTxt.className = `text-[10px] font-bold uppercase tracking-wider ${isOpen ? 'text-green-600' : 'text-red-500'}`;
             }
+            window.applyStoreRules(); // ✅ aplica bloqueio sempre que status muda
         };
 
         window.setupPhoneMask = () => {
@@ -895,26 +909,34 @@
             }
         };
 
+        // ✅ ALTERADO: só valida checkout se estiver aberto também
         window.validateCheckout = () => {
             const btn = document.getElementById('btn-checkout');
             if(!btn) return;
-            const name = document.getElementById('client-name').value;
-            const phone = document.getElementById('client-phone').value;
-            const method = document.getElementById('payment-method').value;
+
+            const open = window.isStoreOpen();
+
+            const name = document.getElementById('client-name')?.value || "";
+            const phone = document.getElementById('client-phone')?.value || "";
+            const method = document.getElementById('payment-method')?.value || "";
             
-            // Validação agora apenas verifica se há método selecionado
-            let ok = name && phone.length > 10 && method && state.paymentVerified;
+            let ok = open && name && phone.length > 10 && method && state.paymentVerified;
             
-            if(state.deliveryType === 'Entrega' && (!document.getElementById('delivery-zone').value || !document.getElementById('client-address').value)) ok = false;
+            if(state.deliveryType === 'Entrega' && (!document.getElementById('delivery-zone')?.value || !document.getElementById('client-address')?.value)) ok = false;
+
             btn.disabled = !ok;
+
             window.refreshIcons();
+            window.applyStoreRules(); // ✅ garante label e bloqueio quando fechado
         };
 
-        window.sendOrder = () => { // Removed async
+        // ✅ ALTERADO: trava envio se estiver fechado
+        window.sendOrder = () => {
+            if (!window.isStoreOpen()) return window.toast("Loja fechada. Não é possível enviar agora.", "error");
+
             const btn = document.getElementById('btn-checkout');
             btn.innerHTML = '<div class="spinner"></div>';
             
-            // ... gather variables ...
             const name = document.getElementById('client-name').value;
             const phone = document.getElementById('client-phone').value;
             const method = document.getElementById('payment-method').value;
@@ -937,9 +959,7 @@
             }
 
             let paymentStatusFull = method;
-            if (method === 'Pix') {
-                paymentStatusFull += " (Confirmado no Site ✅)";
-            }
+            if (method === 'Pix') paymentStatusFull += " (Confirmado no Site ✅)";
 
             let subtotalVal = 0;
             state.cart.forEach(i => subtotalVal += i.price * i.qty);
@@ -957,20 +977,15 @@
                 deliveryType: state.deliveryType, 
                 deliveryDetails: deliveryDetailsStorage, 
                 status: 'new',
-                userId: auth.currentUser?.uid || 'anonymous' 
+                userId: auth?.currentUser?.uid || 'anonymous' 
             };
 
-            // FIRESTORE (Background)
-            addDoc(getCollectionRef("pedidos"), orderObj)
-                .then(() => console.log("Pedido salvo"))
-                .catch(e => console.log("Erro salvar backup online", e));
+            addDoc(getCollectionRef("pedidos"), orderObj).catch(e => console.log("Erro salvar backup online", e));
 
-            // LOCAL STORAGE
             const localOrders = JSON.parse(localStorage.getItem('acai_orders_local') || '[]');
             localOrders.push(orderObj);
             localStorage.setItem('acai_orders_local', JSON.stringify(localOrders));
 
-            // GOOGLE SHEET (Background)
             if(state.config.googleScriptUrl) {
                 const dataHora = new Date().toLocaleString('pt-BR');
                 const data = { 
@@ -1008,20 +1023,15 @@
             msg += `Taxa de Entrega: ${shipText}\n`;
             msg += `💰 *TOTAL FINAL: ${totalFinal}*`;
 
-            // WHATSAPP REDIRECT (Immediate)
             const phoneNum = state.config.phone ? state.config.phone.replace(/\D/g,'') : "557998168282";
             window.location.href = `https://api.whatsapp.com/send?phone=${phoneNum}&text=${encodeURIComponent(msg)}`;
 
-            // CLEANUP
             state.cart = [];
             saveCart();
-            
-            // Reload page shortly after to reset UI
             setTimeout(() => window.location.reload(), 2000); 
         };
 
-        // --- FUNÇÕES ADMIN ---
-
+        // --- FUNÇÕES ADMIN (mantidas) ---
         window.adminLogin = async () => {
             const e = document.getElementById('adm-email').value;
             const p = document.getElementById('adm-pass').value;
@@ -1068,9 +1078,7 @@
         window.showAdminPanel = () => { document.getElementById('admin-panel').classList.remove('hidden'); window.syncAdminFields(); };
         window.adminLogout = () => { signOut(auth); document.getElementById('admin-panel').classList.add('hidden'); window.toast("Saindo..."); };
         
-        // --- FUNÇÃO SWITCH ADMIN TAB (REESCRITA PARA SER SEGURA) ---
         window.switchAdminTab = (tab) => {
-            // Remove 'hidden' do tab selecionado, adiciona nos outros
             const tabs = ['estoque', 'config'];
             tabs.forEach(t => {
                 const view = document.getElementById(`view-${t}`);
@@ -1106,7 +1114,7 @@
             const list = document.getElementById('stock-list');
             if (list) {
                 list.innerHTML = "";
-                const renderItemHTML = (item, idx) => {
+                const renderItemHTML = (item) => {
                     const isOff = item.available === false;
                     return `
                         <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl text-xs border border-slate-100 mb-2">
@@ -1131,15 +1139,15 @@
 
                 if (tradicionais.length > 0) {
                     list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2"><h4 class="text-xs font-black text-brand-600 uppercase tracking-widest flex items-center gap-2"><i data-lucide="ice-cream-2" class="w-3 h-3"></i> Tradicional</h4></div>`;
-                    tradicionais.forEach(item => list.innerHTML += renderItemHTML(item, item.originalIndex));
+                    tradicionais.forEach(item => list.innerHTML += renderItemHTML(item));
                 }
                 if (gourmets.length > 0) {
                     list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-pink-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="sparkles" class="w-3 h-3"></i> Gourmet</h4></div>`;
-                    gourmets.forEach(item => list.innerHTML += renderItemHTML(item, item.originalIndex));
+                    gourmets.forEach(item => list.innerHTML += renderItemHTML(item));
                 }
                 if (outros.length > 0) {
                     list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-slate-500 uppercase tracking-widest">Outros</h4></div>`;
-                    outros.forEach(item => list.innerHTML += renderItemHTML(item, item.originalIndex));
+                    outros.forEach(item => list.innerHTML += renderItemHTML(item));
                 }
                 window.refreshIcons();
             }
@@ -1237,7 +1245,13 @@
                     end: parseInt(document.getElementById('cfg-hour-end').value) || 23
                 }
             };
-            try { await setDoc(getDocRef('loja', 'configuracao'), newConfig, { merge: true }); window.toast("Configurações Salvas!"); } catch(e) { window.toast("Erro!", "error"); }
+            try { 
+                await setDoc(getDocRef('loja', 'configuracao'), newConfig, { merge: true }); 
+                window.toast("Configurações Salvas!"); 
+                state.config = newConfig;
+                window.updateUI();
+                window.validateCheckout();
+            } catch(e) { window.toast("Erro!", "error"); }
         };
 
         window.toggleStock = async (idx) => {
@@ -1246,7 +1260,13 @@
             await setDoc(getDocRef('loja', 'configuracao'), { sizes: newSizes }, { merge: true });
         };
 
-        window.setStatus = async (mode) => { await setDoc(getDocRef('loja', 'configuracao'), { statusMode: mode }, { merge: true }); window.toast("Status Atualizado!"); };
+        window.setStatus = async (mode) => { 
+            await setDoc(getDocRef('loja', 'configuracao'), { statusMode: mode }, { merge: true }); 
+            state.config.statusMode = mode;
+            window.toast("Status Atualizado!"); 
+            window.updateUI();
+            window.validateCheckout();
+        };
 
         function saveCart() { localStorage.setItem('acai_cart_v3', JSON.stringify(state.cart)); }
 
@@ -1298,11 +1318,10 @@
                             state.config = { ...state.config, ...snap.data() };
                             window.renderMenu();
                             window.updateUI();
+                            window.validateCheckout();
                             if(state.isAdmin) window.syncAdminFields();
                         }
-                    }, (error) => {
-                        console.log("Using default config or offline mode");
-                    });
+                    }, () => console.log("Using default config or offline mode"));
                 } catch(fbError) {
                     console.warn("Firebase Init Failed (Offline Mode Active)", fbError);
                 }
@@ -1312,7 +1331,7 @@
                 hideSplash();
             }
             
-            setInterval(window.updateUI, 60000);
+            setInterval(() => { window.updateUI(); window.validateCheckout(); }, 60000);
         };
 
         window.onload = window.init;
