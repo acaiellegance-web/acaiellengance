@@ -129,68 +129,63 @@
     .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
     .safe-pt { padding-top: env(safe-area-inset-top); }
 
-    /* ============================
-       ✅ MARCA D'ÁGUA (FERREIRA WEB DESIGN)
-       ============================ */
-    .watermark {
+    /* ✅✅✅ MARCA D'ÁGUA (BONITA / VISÍVEL / PROFISSIONAL) */
+    .watermark-footer{
       position: fixed;
-      inset: 0;
-      z-index: 25;              /* acima do app, abaixo do carrinho (60+) e admin (80+) */
-      pointer-events: none;     /* não atrapalha clique */
-      display: grid;
-      place-items: center;
-      opacity: 1;
+      left: 0;
+      right: 0;
+      bottom: calc(10px + env(safe-area-inset-bottom));
+      z-index: 24;            /* abaixo do carrinho (60+) e admin (80+) */
+      pointer-events: none;   /* não bloqueia cliques */
+      display: flex;
+      justify-content: center;
     }
+    .watermark-footer .wm-pill{
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      border-radius: 999px;
 
-    .watermark .wm-box {
-      transform: rotate(-18deg);
-      text-align: center;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(124,58,237,0.22);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+
+      box-shadow: 0 14px 40px rgba(76,29,149,0.12);
+      opacity: 0.60;
+    }
+    .watermark-footer .wm-dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #7c3aed;
+      box-shadow: 0 0 0 6px rgba(124,58,237,0.14);
+    }
+    .watermark-footer .wm-text{
       font-family: "Outfit", sans-serif;
-      font-weight: 900;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-
-      opacity: 0.22;
-      padding: 28px 34px;
-      border-radius: 28px;
-      background: rgba(255,255,255,0.35);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 2px solid rgba(124,58,237,0.20);
-      box-shadow: 0 18px 70px rgba(76,29,149,0.18);
-    }
-
-    .watermark .wm-title {
-      font-size: 30px;
-      line-height: 1.05;
-      background: linear-gradient(90deg, #4c1d95, #7c3aed, #8b5cf6);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .watermark .wm-sub {
-      margin-top: 10px;
-      font-size: 12px;
-      letter-spacing: 0.22em;
-      color: rgba(15,23,42,0.55);
       font-weight: 800;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: rgba(15,23,42,0.75);
+      text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+      white-space: nowrap;
     }
-
-    @media (max-width: 420px) {
-      .watermark .wm-title { font-size: 26px; }
-      .watermark .wm-box { padding: 22px 24px; }
+    @media (max-width: 420px){
+      .watermark-footer .wm-pill{ padding: 8px 14px; opacity: 0.55; }
+      .watermark-footer .wm-text{ font-size: 10px; }
     }
   </style>
 </head>
 
 <body class="antialiased text-slate-800 bg-slate-50 overflow-x-hidden">
 
-  <!-- ✅ MARCA D'ÁGUA -->
-  <div class="watermark">
-    <div class="wm-box">
-      <div class="wm-title">Ferreira Web Design</div>
-      <div class="wm-sub">DESENVOLVIMENTO • SITES • CARDÁPIO</div>
+  <!-- ✅✅✅ MARCA D'ÁGUA -->
+  <div class="watermark-footer" aria-hidden="true">
+    <div class="wm-pill">
+      <span class="wm-dot"></span>
+      <span class="wm-text">Ferreira Web Design</span>
     </div>
   </div>
 
@@ -962,7 +957,7 @@
       const phone = document.getElementById('client-phone')?.value || "";
       const method = document.getElementById('payment-method')?.value || "";
 
-      // ✅ exige carrinho com itens
+      // ✅ agora exige carrinho com itens
       let ok = isOpen && state.cart.length > 0 && name && phone.length > 10 && method && state.paymentVerified;
 
       if (state.deliveryType === 'Entrega') {
@@ -985,7 +980,7 @@
     };
 
     window.sendOrder = () => {
-      // ✅ NÃO ENVIA SE CARRINHO VAZIO
+      // ✅✅✅ NÃO ENVIA SE CARRINHO VAZIO
       if (!state.cart || state.cart.length === 0) {
         window.toast("Seu carrinho está vazio!", "error");
         window.validateCheckout();
@@ -1104,9 +1099,224 @@
       setTimeout(() => window.location.reload(), 2000);
     };
 
-    // ⚠️ OBS: o restante do seu script (admin CRUD, etc.) continua igual.
-    // (Se você quiser, eu também posso colocar o admin para abrir automaticamente ao logar,
-    // mas não mexi nisso aqui pra não quebrar seu fluxo.)
+    // ✅ ADMIN: login continua como estava (Firebase)
+    window.adminLogin = async () => {
+      const e = document.getElementById('adm-email').value;
+      const p = document.getElementById('adm-pass').value;
+      if (!e || !p) return window.toast("Preencha tudo", "error");
+      const btn = document.querySelector('#admin-modal button[onclick*="adminLogin"]');
+      const originalText = btn.innerText;
+      btn.innerText = "Verificando...";
+      btn.disabled = true;
+
+      try {
+        await signInWithEmailAndPassword(auth, e, p);
+        document.getElementById('admin-modal').classList.add('hidden');
+        window.toast("Admin Conectado!");
+      } catch (err) {
+        try {
+          await createUserWithEmailAndPassword(auth, e, p);
+          document.getElementById('admin-modal').classList.add('hidden');
+          window.toast("Conta criada!");
+        } catch (createErr) {
+          console.error(createErr);
+          if (createErr.code === 'auth/email-already-in-use') window.toast("Senha incorreta.", "error");
+          else window.toast("Erro ao entrar.", "error");
+        }
+      } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+      }
+    };
+
+    // ✅ ADMIN: abrir/fechar seguro
+    window.showAdminPanel = () => {
+      state.isAdmin = true;
+      document.getElementById('admin-panel').classList.remove('hidden');
+      window.syncAdminFields();
+      window.switchAdminTab('estoque');
+      window.toast("Admin aberto!");
+    };
+
+    window.adminLogout = () => {
+      try { if (auth) signOut(auth).catch(()=>{}); } catch(e) {}
+      state.isAdmin = false;
+      document.getElementById('admin-panel')?.classList.add('hidden');
+      window.toast("Saiu do admin");
+    };
+
+    window.switchAdminTab = (tab) => {
+      const tabs = ['estoque', 'config'];
+      tabs.forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          view?.classList.remove('hidden');
+          if (btn) btn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-800 transition-all";
+        } else {
+          view?.classList.add('hidden');
+          if (btn) btn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all";
+        }
+      });
+      window.refreshIcons();
+    };
+
+    window.syncAdminFields = () => {
+      document.getElementById('cfg-name').value = state.config.storeName;
+      document.getElementById('cfg-phone').value = state.config.phone;
+      document.getElementById('cfg-pix-key').value = state.config.pixKey;
+      document.getElementById('cfg-script-url').value = state.config.googleScriptUrl || "";
+      if (document.getElementById('cfg-hour-start')) document.getElementById('cfg-hour-start').value = state.config.openingHours?.start ?? 16;
+      if (document.getElementById('cfg-hour-end')) document.getElementById('cfg-hour-end').value = state.config.openingHours?.end ?? 23;
+
+      ['open','auto','closed'].forEach(m => {
+        const btn = document.getElementById(`st-${m}`);
+        if (btn) btn.className = `flex-1 py-4 rounded-2xl border-2 text-xs font-black ${state.config.statusMode === m ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-100 text-slate-400'}`;
+      });
+
+      window.renderStockAdmin();
+      window.renderZonesAdmin();
+    };
+
+    window.renderStockAdmin = () => {
+      const list = document.getElementById('stock-list');
+      if (!list) return;
+      list.innerHTML = "";
+
+      const renderItemHTML = (item) => {
+        const isOff = item.available === false;
+        return `
+          <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl text-xs border border-slate-100 mb-2">
+            <div>
+              <span class="${isOff ? 'line-through opacity-50' : 'font-bold'} block text-slate-700">${item.name}</span>
+              <span class="text-[10px] text-slate-400">R$ ${item.price.toFixed(2)}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="window.toggleStock(${item.originalIndex})" class="px-3 py-1.5 rounded-lg border font-bold text-[10px] ${isOff ? 'bg-green-50 text-green-600 border-green-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}">
+                ${isOff ? 'ATIVAR' : 'PAUSAR'}
+              </button>
+              <button onclick="window.removeProduct(${item.originalIndex})" class="p-1.5 text-red-400 hover:text-red-600 bg-red-50 rounded-lg">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>`;
+      };
+
+      const itemsWithIndex = state.config.sizes.map((item, index) => ({ ...item, originalIndex: index }));
+      const tradicionais = itemsWithIndex.filter(i => i.category === 'Tradicional');
+      const gourmets = itemsWithIndex.filter(i => i.category === 'Gourmet');
+      const outros = itemsWithIndex.filter(i => i.category !== 'Tradicional' && i.category !== 'Gourmet');
+
+      if (tradicionais.length > 0) {
+        list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2"><h4 class="text-xs font-black text-brand-600 uppercase tracking-widest flex items-center gap-2"><i data-lucide="ice-cream-2" class="w-3 h-3"></i> Tradicional</h4></div>`;
+        tradicionais.forEach(item => list.innerHTML += renderItemHTML(item));
+      }
+      if (gourmets.length > 0) {
+        list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-pink-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="sparkles" class="w-3 h-3"></i> Gourmet</h4></div>`;
+        gourmets.forEach(item => list.innerHTML += renderItemHTML(item));
+      }
+      if (outros.length > 0) {
+        list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-slate-500 uppercase tracking-widest">Outros</h4></div>`;
+        outros.forEach(item => list.innerHTML += renderItemHTML(item));
+      }
+
+      window.refreshIcons();
+    };
+
+    // ✅ ADMIN CRUD (agora salva SEMPRE no localStorage e tenta Firestore)
+    window.addProduct = async () => {
+      const name = document.getElementById('new-prod-name').value.trim();
+      const desc = document.getElementById('new-prod-desc').value.trim();
+      const price = parseFloat(document.getElementById('new-prod-price').value);
+      const cat = document.getElementById('new-prod-cat').value;
+
+      if (!name || isNaN(price)) return window.toast("Dados inválidos", "error");
+
+      const newSizes = [...state.config.sizes, { name, description: desc, price, category: cat, available: true }];
+      await window.saveConfigSafe({ sizes: newSizes }, true);
+
+      document.getElementById('new-prod-name').value = '';
+      document.getElementById('new-prod-desc').value = '';
+      document.getElementById('new-prod-price').value = '';
+      window.toast("Produto Adicionado!");
+    };
+
+    window.removeProduct = async (idx) => {
+      if (!confirm("Tem certeza que deseja remover este produto?")) return;
+      const newSizes = [...state.config.sizes];
+      newSizes.splice(idx, 1);
+      await window.saveConfigSafe({ sizes: newSizes }, true);
+      window.toast("Produto Removido!");
+    };
+
+    window.toggleStock = async (idx) => {
+      const newSizes = [...state.config.sizes];
+      newSizes[idx].available = !(newSizes[idx].available !== false);
+      await window.saveConfigSafe({ sizes: newSizes }, true);
+      window.toast("Estoque atualizado!");
+    };
+
+    window.renderZonesAdmin = () => {
+      const list = document.getElementById('admin-zones-list');
+      if (!list) return;
+      list.innerHTML = '';
+      state.config.zones.forEach((z, i) => {
+        list.innerHTML += `
+          <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+            <span class="text-xs font-bold text-slate-700">${z.name}</span>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-brand-600">R$ ${z.price.toFixed(2)}</span>
+              <button onclick="window.removeZone(${i})" class="text-red-400 hover:text-red-600">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      window.refreshIcons();
+    };
+
+    window.addZone = async () => {
+      const name = document.getElementById('new-zone-name').value.trim();
+      const price = parseFloat(document.getElementById('new-zone-price').value);
+      if (!name || isNaN(price)) return window.toast("Dados inválidos", "error");
+      const newZones = [...state.config.zones, { name, price }];
+      await window.saveConfigSafe({ zones: newZones }, true);
+
+      document.getElementById('new-zone-name').value = '';
+      document.getElementById('new-zone-price').value = '';
+      window.toast("Local adicionado!");
+    };
+
+    window.removeZone = async (idx) => {
+      const newZones = [...state.config.zones];
+      newZones.splice(idx, 1);
+      await window.saveConfigSafe({ zones: newZones }, true);
+      window.toast("Local removido!");
+    };
+
+    window.saveSettings = async () => {
+      const newConfig = {
+        ...state.config,
+        storeName: document.getElementById('cfg-name').value,
+        phone: document.getElementById('cfg-phone').value,
+        pixKey: document.getElementById('cfg-pix-key').value,
+        googleScriptUrl: document.getElementById('cfg-script-url').value,
+        openingHours: {
+          start: parseInt(document.getElementById('cfg-hour-start').value) || 16,
+          end: parseInt(document.getElementById('cfg-hour-end').value) || 23
+        }
+      };
+      await window.saveConfigSafe(newConfig, false);
+      window.toast("Configurações Salvas!");
+      window.updateUI();
+    };
+
+    window.setStatus = async (mode) => {
+      await window.saveConfigSafe({ statusMode: mode }, true);
+      window.toast("Status Atualizado!");
+      window.updateUI();
+    };
 
     function saveCart() { localStorage.setItem('acai_cart_v3', JSON.stringify(state.cart)); }
 
@@ -1121,7 +1331,7 @@
       setTimeout(hideSplash, 3000);
 
       try {
-        window.loadLocalConfig();
+        window.loadLocalConfig(); // ✅ carrega config local do admin
 
         const savedCart = localStorage.getItem('acai_cart_v3');
         if (savedCart) state.cart = JSON.parse(savedCart);
@@ -1157,10 +1367,10 @@
           onSnapshot(getDocRef('loja', 'configuracao'), (snap) => {
             if (snap.exists()) {
               state.config = { ...state.config, ...snap.data() };
-              localStorage.setItem("acai_config_local", JSON.stringify(state.config));
+              localStorage.setItem("acai_config_local", JSON.stringify(state.config)); // ✅ espelha no local
               window.renderMenu();
               window.updateUI();
-              if (state.isAdmin) window.syncAdminFields?.();
+              if (state.isAdmin) window.syncAdminFields();
             }
           }, () => {
             console.log("Using local config (offline / blocked).");
