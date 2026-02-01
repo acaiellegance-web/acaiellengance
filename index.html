@@ -298,10 +298,11 @@
         <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Total Geral</span>
         <span id="cart-total" class="text-3xl font-display font-black text-slate-900 tracking-tight">R$ 0,00</span>
       </div>
+
       <button onclick="window.sendOrder()" id="btn-checkout" class="w-full py-5 rounded-2xl bg-gradient-to-r from-whatsapp-500 to-whatsapp-600 text-white font-black text-sm shadow-xl flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale" disabled>
         <div class="relative z-10 flex items-center gap-2">
           <i data-lucide="message-circle" class="w-6 h-6 fill-white/20"></i>
-          <span>Finalizar no WhatsApp</span>
+          <span id="checkout-label">Finalizar no WhatsApp</span>
         </div>
       </button>
     </div>
@@ -513,31 +514,7 @@
       return doc(db, colName, docId);
     };
 
-    // ✅ CONFIG LOCAL SAFE (ADMIN SEM TRAVAR)
-    window.saveConfigSafe = async (partial, merge = true) => {
-      state.config = merge ? { ...state.config, ...partial } : partial;
-      localStorage.setItem("acai_config_local", JSON.stringify(state.config));
-      try {
-        if (db) await setDoc(getDocRef("loja", "configuracao"), partial, { merge });
-      } catch (e) {
-        console.log("Firestore save blocked/offline:", e?.code || e);
-      }
-      window.renderMenu?.();
-      window.updateUI?.();
-      if (state.isAdmin) window.syncAdminFields?.();
-    };
-
-    window.loadLocalConfig = () => {
-      try {
-        const saved = localStorage.getItem("acai_config_local");
-        if (saved) {
-          const cfg = JSON.parse(saved);
-          state.config = { ...state.config, ...cfg };
-        }
-      } catch (e) {}
-    };
-
-    // UTIL
+    // ========= UTIL =========
     window.toast = (m, t='success') => {
       const el = document.getElementById('toast');
       document.getElementById('toast-msg').innerText = m;
@@ -550,16 +527,56 @@
     };
     window.refreshIcons = () => { if (typeof lucide !== 'undefined') lucide.createIcons(); };
 
-    // ✅ ADMIN CLICK
+    // ========= CONFIG LOCAL SAFE (ADMIN FUNCIONA MESMO SE FIRESTORE FALHAR) =========
+    window.loadLocalConfig = () => {
+      try {
+        const saved = localStorage.getItem("acai_config_local");
+        if (saved) {
+          const cfg = JSON.parse(saved);
+          state.config = { ...state.config, ...cfg };
+        }
+      } catch {}
+    };
+
+    window.saveConfigSafe = async (partial, merge = true) => {
+      state.config = merge ? { ...state.config, ...partial } : partial;
+      localStorage.setItem("acai_config_local", JSON.stringify(state.config));
+
+      try {
+        if (db) await setDoc(getDocRef("loja", "configuracao"), partial, { merge });
+      } catch (e) {
+        console.log("Firestore save blocked/offline:", e?.code || e);
+      }
+
+      window.renderMenu?.();
+      window.updateUI?.();
+      if (state.isAdmin) window.syncAdminFields?.();
+    };
+
+    // ========= FUNÇÃO ABERTO / FECHADO =========
+    window.isStoreOpen = () => {
+      const h = new Date().getHours();
+      const start = state.config.openingHours?.start ?? 16;
+      const end = state.config.openingHours?.end ?? 23;
+      if (state.config.statusMode === 'open') return true;
+      if (state.config.statusMode === 'closed') return false;
+      return (h >= start && h < end);
+    };
+
+    // ========= HEADER ADMIN CLICK =========
     window.handleAdminClick = () => {
       if (state.isAdmin) window.showAdminPanel();
       else document.getElementById('admin-modal').classList.remove('hidden');
     };
 
+    // ========= WHATS =========
     window.openChat = () => {
       const msg = "Olá! Gostaria de tirar uma dúvida.";
       window.open(`https://api.whatsapp.com/send?phone=${state.config.phone.replace(/\D/g,'')}&text=${encodeURIComponent(msg)}`, '_blank');
     };
+
+    // ========= CARRINHO =========
+    function saveCart() { localStorage.setItem('acai_cart_v3', JSON.stringify(state.cart)); }
 
     window.toggleCart = (show) => {
       const drawer = document.getElementById('cart-drawer');
@@ -586,10 +603,33 @@
     };
     window.filterMenu = window.filterCategory;
 
-    window.toggleSelection = (name) => {
-      if (state.selectedItems.has(name)) state.selectedItems.delete(name);
+    // ✅ SEM DELAY: não re-renderiza o menu inteiro a cada clique
+    window.toggleSelection = (name, el) => {
+      const wasSelected = state.selectedItems.has(name);
+
+      if (wasSelected) state.selectedItems.delete(name);
       else state.selectedItems.add(name);
-      window.renderMenu();
+
+      // Atualiza só o card clicado (sem redesenhar tudo)
+      if (el) {
+        const nowSel = !wasSelected;
+        el.classList.toggle('selected', nowSel);
+
+        const cc = el.querySelector('.check-circle');
+        const ci = el.querySelector('.check-icon');
+        if (cc) {
+          cc.classList.toggle('bg-brand-600', nowSel);
+          cc.classList.toggle('border-brand-600', nowSel);
+          cc.classList.toggle('bg-white', !nowSel);
+        }
+        if (ci) {
+          ci.classList.toggle('opacity-100', nowSel);
+          ci.classList.toggle('scale-100', nowSel);
+          ci.classList.toggle('opacity-0', !nowSel);
+          ci.classList.toggle('scale-50', !nowSel);
+        }
+      }
+
       window.updateTotalBar();
     };
 
@@ -604,8 +644,10 @@
       let total = 0;
       state.config.sizes.forEach(i => { if (state.selectedItems.has(i.name)) total += i.price; });
       const final = total * state.qty;
+
       const priceDisplay = document.getElementById('price-display');
       if (priceDisplay) priceDisplay.innerText = `R$ ${final.toFixed(2).replace('.',',')}`;
+
       const btn = document.getElementById('btn-add');
       if (btn) {
         if (final > 0) {
@@ -637,12 +679,13 @@
       if (qtyDisplay) qtyDisplay.innerText = "1";
       if (obsInput) obsInput.value = "";
 
+      // aqui pode re-render, porque mudou seleção total
       window.renderMenu();
       window.updateTotalBar();
       saveCart();
       window.renderCart();
       window.toast("Adicionado!");
-      setTimeout(() => window.toggleCart(true), 300);
+      setTimeout(() => window.toggleCart(true), 200);
     };
 
     window.modCartItem = (id, d) => {
@@ -765,20 +808,25 @@
       const grid = document.getElementById('products-grid');
       if (!grid) return;
       grid.innerHTML = "";
+
       let found = false;
       const searchInput = document.getElementById('search-input');
       const term = searchInput ? searchInput.value.toLowerCase() : "";
 
       state.config.sizes.forEach((item, idx) => {
         if (item.available === false) return;
+
         const matches = item.name.toLowerCase().includes(term) || item.description.toLowerCase().includes(term);
         if ((state.filter === 'Todos' || item.category === state.filter) && matches) {
           found = true;
           const isSel = state.selectedItems.has(item.name);
+
           const div = document.createElement('div');
           div.style.animationDelay = `${idx * 0.05}s`;
           div.className = `product-card bg-white p-4 rounded-[24px] border border-slate-100 flex items-center gap-4 cursor-pointer select-none relative overflow-hidden ${isSel ? 'selected' : ''}`;
-          div.onclick = () => window.toggleSelection(item.name);
+
+          // ✅ PASSA O ELEMENTO pra não re-renderizar tudo
+          div.onclick = () => window.toggleSelection(item.name, div);
 
           const isGourmet = item.category === 'Gourmet';
           div.innerHTML = `
@@ -808,16 +856,6 @@
       window.refreshIcons();
     };
 
-    // ✅ FUNÇÃO ÚNICA DE ABERTO/FECHADO (usada no checkout)
-    window.isStoreOpen = () => {
-      const h = new Date().getHours();
-      const start = state.config.openingHours?.start ?? 16;
-      const end = state.config.openingHours?.end ?? 23;
-      if (state.config.statusMode === 'open') return true;
-      if (state.config.statusMode === 'closed') return false;
-      return (h >= start && h < end);
-    };
-
     window.updateUI = () => {
       const isOpen = window.isStoreOpen();
 
@@ -832,7 +870,6 @@
         stTxt.className = `text-[10px] font-bold uppercase tracking-wider ${isOpen ? 'text-green-600' : 'text-red-500'}`;
       }
 
-      // ✅ Se estiver fechado, trava o checkout
       window.validateCheckout();
     };
 
@@ -862,38 +899,38 @@
 
     window.restoreFormData = () => {
       const saved = localStorage.getItem('acai_form_data');
-      if (saved) {
-        try {
-          const data = JSON.parse(saved);
-          if (document.getElementById('client-name')) document.getElementById('client-name').value = data.name || '';
-          if (document.getElementById('client-phone')) document.getElementById('client-phone').value = data.phone || '';
-          if (document.getElementById('client-address')) document.getElementById('client-address').value = data.address || '';
-          if (document.getElementById('payment-method')) document.getElementById('payment-method').value = data.payment || '';
-          if (document.getElementById('obs-input')) document.getElementById('obs-input').value = data.obs || '';
+      if (!saved) return;
+      try {
+        const data = JSON.parse(saved);
+        if (document.getElementById('client-name')) document.getElementById('client-name').value = data.name || '';
+        if (document.getElementById('client-phone')) document.getElementById('client-phone').value = data.phone || '';
+        if (document.getElementById('client-address')) document.getElementById('client-address').value = data.address || '';
+        if (document.getElementById('payment-method')) document.getElementById('payment-method').value = data.payment || '';
+        if (document.getElementById('obs-input')) document.getElementById('obs-input').value = data.obs || '';
 
-          if (data.deliveryType) {
-            window.setDelivery(data.deliveryType);
-            if (data.deliveryType === 'Entrega' && data.zoneVal) {
-              setTimeout(() => {
-                const zoneSelect = document.getElementById('delivery-zone');
-                if (zoneSelect) {
-                  zoneSelect.value = data.zoneVal;
-                  window.renderCart();
-                }
-              }, 100);
-            }
+        if (data.deliveryType) {
+          window.setDelivery(data.deliveryType);
+          if (data.deliveryType === 'Entrega' && data.zoneVal) {
+            setTimeout(() => {
+              const zoneSelect = document.getElementById('delivery-zone');
+              if (zoneSelect) {
+                zoneSelect.value = data.zoneVal;
+                window.renderCart();
+              }
+            }, 100);
           }
-          window.handlePaymentChange();
-          window.validateCheckout();
-        } catch (e) {}
-      }
+        }
+        window.handlePaymentChange();
+        window.validateCheckout();
+      } catch {}
     };
 
+    // ✅ SEM refreshIcons aqui (deixa mais rápido)
     window.validateCheckout = () => {
       const btn = document.getElementById('btn-checkout');
+      const label = document.getElementById('checkout-label');
       if (!btn) return;
 
-      // ✅ trava se fechado
       const isOpen = window.isStoreOpen();
 
       const name = document.getElementById('client-name')?.value || "";
@@ -909,10 +946,7 @@
       }
 
       btn.disabled = !ok;
-      if (!isOpen) btn.querySelector("span") && (btn.querySelector("span").innerText = "Loja Fechada");
-      else btn.querySelector("span") && (btn.querySelector("span").innerText = "Finalizar no WhatsApp");
-
-      window.refreshIcons();
+      if (label) label.innerText = isOpen ? "Finalizar no WhatsApp" : "Loja Fechada";
     };
 
     window.sendOrder = () => {
@@ -969,10 +1003,8 @@
       };
 
       try {
-        if (db) {
-          addDoc(getCollectionRef("pedidos"), orderObj).catch(()=>{});
-        }
-      } catch(e) {}
+        if (db) addDoc(getCollectionRef("pedidos"), orderObj).catch(()=>{});
+      } catch {}
 
       const localOrders = JSON.parse(localStorage.getItem('acai_orders_local') || '[]');
       localOrders.push(orderObj);
@@ -1028,11 +1060,12 @@
       setTimeout(() => window.location.reload(), 2000);
     };
 
-    // ✅ ADMIN: login continua como estava (Firebase)
+    // ========= ADMIN =========
     window.adminLogin = async () => {
       const e = document.getElementById('adm-email').value;
       const p = document.getElementById('adm-pass').value;
       if (!e || !p) return window.toast("Preencha tudo", "error");
+
       const btn = document.querySelector('#admin-modal button[onclick*="adminLogin"]');
       const originalText = btn.innerText;
       btn.innerText = "Verificando...";
@@ -1041,12 +1074,16 @@
       try {
         await signInWithEmailAndPassword(auth, e, p);
         document.getElementById('admin-modal').classList.add('hidden');
+        state.isAdmin = true;
         window.toast("Admin Conectado!");
+        window.showAdminPanel();
       } catch (err) {
         try {
           await createUserWithEmailAndPassword(auth, e, p);
           document.getElementById('admin-modal').classList.add('hidden');
+          state.isAdmin = true;
           window.toast("Conta criada!");
+          window.showAdminPanel();
         } catch (createErr) {
           console.error(createErr);
           if (createErr.code === 'auth/email-already-in-use') window.toast("Senha incorreta.", "error");
@@ -1058,17 +1095,14 @@
       }
     };
 
-    // ✅ ADMIN: abrir/fechar seguro
     window.showAdminPanel = () => {
-      state.isAdmin = true;
       document.getElementById('admin-panel').classList.remove('hidden');
       window.syncAdminFields();
       window.switchAdminTab('estoque');
-      window.toast("Admin aberto!");
     };
 
     window.adminLogout = () => {
-      try { if (auth) signOut(auth).catch(()=>{}); } catch(e) {}
+      try { if (auth) signOut(auth).catch(()=>{}); } catch {}
       state.isAdmin = false;
       document.getElementById('admin-panel')?.classList.add('hidden');
       window.toast("Saiu do admin");
@@ -1152,7 +1186,6 @@
       window.refreshIcons();
     };
 
-    // ✅ ADMIN CRUD (agora salva SEMPRE no localStorage e tenta Firestore)
     window.addProduct = async () => {
       const name = document.getElementById('new-prod-name').value.trim();
       const desc = document.getElementById('new-prod-desc').value.trim();
@@ -1247,8 +1280,7 @@
       window.updateUI();
     };
 
-    function saveCart() { localStorage.setItem('acai_cart_v3', JSON.stringify(state.cart)); }
-
+    // ========= INIT =========
     window.init = async () => {
       const hideSplash = () => {
         const splash = document.getElementById('splash');
@@ -1260,7 +1292,7 @@
       setTimeout(hideSplash, 3000);
 
       try {
-        window.loadLocalConfig(); // ✅ carrega config local do admin
+        window.loadLocalConfig();
 
         const savedCart = localStorage.getItem('acai_cart_v3');
         if (savedCart) state.cart = JSON.parse(savedCart);
@@ -1286,17 +1318,20 @@
           }
 
           onAuthStateChanged(auth, (user) => {
-            if (user && user.email) {
-              state.isAdmin = true;
-            } else if (state.isAdmin && !user) {
-              state.isAdmin = false;
-            }
+            state.isAdmin = !!(user && user.email);
           });
 
+          // ✅ Snapshot sem “pisar” (só aplica se mudou mesmo)
           onSnapshot(getDocRef('loja', 'configuracao'), (snap) => {
-            if (snap.exists()) {
-              state.config = { ...state.config, ...snap.data() };
-              localStorage.setItem("acai_config_local", JSON.stringify(state.config)); // ✅ espelha no local
+            if (!snap.exists()) return;
+
+            const incoming = snap.data();
+            const current = JSON.stringify(state.config);
+            const next = JSON.stringify({ ...state.config, ...incoming });
+
+            if (current !== next) {
+              state.config = { ...state.config, ...incoming };
+              localStorage.setItem("acai_config_local", JSON.stringify(state.config));
               window.renderMenu();
               window.updateUI();
               if (state.isAdmin) window.syncAdminFields();
@@ -1304,10 +1339,10 @@
           }, () => {
             console.log("Using local config (offline / blocked).");
           });
+
         } catch (fbError) {
           console.warn("Firebase Init Failed (Offline Mode Active)", fbError);
         }
-
       } catch (e) {
         console.error("Critical Init Error", e);
         hideSplash();
