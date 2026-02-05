@@ -667,7 +667,8 @@
     // CONFIG LOCAL SAFE (ADMIN SEM TRAVAR)
     window.saveConfigSafe = async (partial, merge = true) => {
       state.config = merge ? { ...state.config, ...partial } : partial;
-      localStorage.setItem("acai_config_v2", JSON.stringify(state.config));
+      // ✅ ALTERADO PARA v4 PARA FORÇAR ATUALIZAÇÃO NO GITHUB PAGES
+      localStorage.setItem("acai_config_v4", JSON.stringify(state.config));
       try {
         if (db) await setDoc(getDocRef("loja", "configuracao"), partial, { merge });
       } catch (e) {
@@ -680,7 +681,8 @@
 
     window.loadLocalConfig = () => {
       try {
-        const saved = localStorage.getItem("acai_config_v2");
+        // ✅ ALTERADO PARA v4 PARA LER A NOVA VERSÃO
+        const saved = localStorage.getItem("acai_config_v4");
         if (saved) {
           const cfg = JSON.parse(saved);
           state.config = { ...state.config, ...cfg };
