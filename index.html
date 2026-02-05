@@ -11,8 +11,6 @@
   <meta property="og:description" content="Sabor inigualável. Peça agora." />
   <meta property="og:image" content="logoacai.jpeg" />
 
-  <!-- Removido link para manifest.json externo para evitar erros 404 no preview, mantendo app funcional -->
-  <!-- <link rel="manifest" href="manifest.json" /> -->
   <link rel="apple-touch-icon" href="logoacai.jpeg" />
 
   <title>Açaí Ellegance</title>
@@ -411,7 +409,7 @@
         <div class="px-6 py-5 border-b border-slate-50 flex items-center justify-between bg-white rounded-t-[2.5rem] sticky top-0 z-10">
             <div>
                 <h3 class="font-display font-bold text-xl text-slate-900" id="copo-modal-title">Montar Copo</h3>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Monte do seu jeito</p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Escolha até 3 itens (Frutas, Adicionais ou Coberturas)</p>
             </div>
             <button onclick="window.closeCopoModal()" class="p-2 bg-slate-50 rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
                 <i data-lucide="x" class="w-5 h-5"></i>
@@ -669,7 +667,7 @@
     // CONFIG LOCAL SAFE (ADMIN SEM TRAVAR)
     window.saveConfigSafe = async (partial, merge = true) => {
       state.config = merge ? { ...state.config, ...partial } : partial;
-      localStorage.setItem("acai_config_local", JSON.stringify(state.config));
+      localStorage.setItem("acai_config_v2", JSON.stringify(state.config));
       try {
         if (db) await setDoc(getDocRef("loja", "configuracao"), partial, { merge });
       } catch (e) {
@@ -682,7 +680,7 @@
 
     window.loadLocalConfig = () => {
       try {
-        const saved = localStorage.getItem("acai_config_local");
+        const saved = localStorage.getItem("acai_config_v2");
         if (saved) {
           const cfg = JSON.parse(saved);
           state.config = { ...state.config, ...cfg };
