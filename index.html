@@ -348,8 +348,8 @@
         <div class="space-y-4">
           <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-brand-500"></i> Seus Dados</h3>
           <div class="space-y-3">
-            <input id="client-name" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:border-brand-500/20 focus:bg-white outline-none transition-all" placeholder="Nome Completo" oninput="window.saveFormData()">
-            <input id="client-phone" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:border-brand-500/20 focus:bg-white outline-none transition-all" placeholder="Telefone (WhatsApp)" maxlength="15">
+            <input id="client-name" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:border-brand-500/20 focus:bg-white outline-none transition-all" placeholder="Nome Completo" oninput="window.saveFormData(); window.validateCheckout()">
+            <input id="client-phone" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:border-brand-500/20 focus:bg-white outline-none transition-all" placeholder="Telefone (WhatsApp)" maxlength="15" oninput="window.validateCheckout()">
           </div>
         </div>
 
@@ -361,7 +361,7 @@
           </div>
           <div id="delivery-details" class="hidden space-y-3 animate-slide-up">
             <select id="delivery-zone" class="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold outline-none focus:border-brand-500 transition-colors" onchange="window.renderCart(); window.saveFormData()"></select>
-            <textarea id="client-address" rows="2" class="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-medium outline-none resize-none focus:border-brand-500 transition-colors" placeholder="Endereço completo (Rua, Nº, Bairro, Ref)" oninput="window.saveFormData()"></textarea>
+            <textarea id="client-address" rows="2" class="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-medium outline-none resize-none focus:border-brand-500 transition-colors" placeholder="Endereço completo (Rua, Nº, Bairro, Ref)" oninput="window.saveFormData(); window.validateCheckout()"></textarea>
           </div>
         </div>
 
@@ -647,7 +647,7 @@
       config: {
         storeName: "Açaí Ellegance",
         phone: "557998168282",
-        statusMode: "auto",
+        statusMode: "open", // ✅ MODIFICADO PARA OPEN POR PADRÃO
         openingHours: { start: 16, end: 23 },
         sizes: DEFAULT_ITEMS,
         accompaniments: DEFAULT_ACCOMPANIMENTS, // Adicionado ao estado
@@ -696,8 +696,8 @@
     // CONFIG LOCAL SAFE (ADMIN SEM TRAVAR)
     window.saveConfigSafe = async (partial, merge = true) => {
       state.config = merge ? { ...state.config, ...partial } : partial;
-      // ✅ ALTERADO PARA v5 PARA FORÇAR ATUALIZAÇÃO NO GITHUB PAGES
-      localStorage.setItem("acai_config_v5", JSON.stringify(state.config));
+      // ✅ ALTERADO PARA v7 PARA FORÇAR ATUALIZAÇÃO NO GITHUB PAGES
+      localStorage.setItem("acai_config_v7", JSON.stringify(state.config));
       try {
         if (db) await setDoc(getDocRef("loja", "configuracao"), partial, { merge });
       } catch (e) {
@@ -710,8 +710,8 @@
 
     window.loadLocalConfig = () => {
       try {
-        // ✅ ALTERADO PARA v5 PARA LER A NOVA VERSÃO
-        const saved = localStorage.getItem("acai_config_v5");
+        // ✅ ALTERADO PARA v7 PARA LER A NOVA VERSÃO
+        const saved = localStorage.getItem("acai_config_v7");
         if (saved) {
           const cfg = JSON.parse(saved);
           state.config = { ...state.config, ...cfg };
@@ -875,7 +875,13 @@
       let shipping = 0;
       if (state.deliveryType === 'Entrega') {
         const zone = document.getElementById('delivery-zone');
-        if (zone) shipping = parseFloat(zone.value || 0);
+        // CORREÇÃO: Pega o preço do atributo data-price da opção selecionada
+        if (zone && zone.selectedIndex >= 0) {
+           const opt = zone.options[zone.selectedIndex];
+           if (opt.dataset.price) {
+             shipping = parseFloat(opt.dataset.price);
+           }
+        }
       }
 
       const totalEl = document.getElementById('cart-total');
@@ -909,11 +915,15 @@
 
         const sel = document.getElementById('delivery-zone');
         if (sel) {
-          sel.innerHTML = '<option value="" disabled selected>Onde entregamos?</option>';
-          state.config.zones.forEach(z => {
-            const txt = z.price === 0 ? "Grátis" : `+R$ ${z.price.toFixed(2)}`;
-            sel.innerHTML += `<option value="${z.price}" data-name="${z.name}">${z.name} (${txt})</option>`;
-          });
+          // CORREÇÃO: Só preenche se estiver vazio para não resetar seleção do usuário ao clicar de novo
+          if (sel.options.length <= 1) {
+              sel.innerHTML = '<option value="" disabled selected>Onde entregamos?</option>';
+              state.config.zones.forEach((z, index) => {
+                const txt = z.price === 0 ? "Grátis" : `+R$ ${z.price.toFixed(2)}`;
+                // Usa INDEX como value para evitar duplicidade de preços iguais
+                sel.innerHTML += `<option value="${index}" data-price="${z.price}" data-name="${z.name}">${z.name} (${txt})</option>`;
+              });
+          }
         }
       }
       window.renderCart();
@@ -1216,158 +1226,203 @@
       }
     };
 
-    // SÓ FINALIZA SE TIVER ITEM NO CARRINHO
+    // ✅ VALIDAÇÃO DETALHADA NO BOTÃO
     window.validateCheckout = () => {
       const btn = document.getElementById('btn-checkout');
       if (!btn) return;
 
-      // trava se fechado
       const isOpen = window.isStoreOpen();
+      const cartOk = state.cart.length > 0;
+      const name = document.getElementById('client-name')?.value.trim();
+      const phone = document.getElementById('client-phone')?.value.trim();
+      const method = document.getElementById('payment-method')?.value;
+      const isDelivery = state.deliveryType === 'Entrega';
+      const zoneVal = document.getElementById('delivery-zone')?.value;
+      const address = document.getElementById('client-address')?.value.trim();
 
-      const name = document.getElementById('client-name')?.value || "";
-      const phone = document.getElementById('client-phone')?.value || "";
-      const method = document.getElementById('payment-method')?.value || "";
-
-      // agora exige carrinho com itens
-      let ok = isOpen && state.cart.length > 0 && name && phone.length > 10 && method && state.paymentVerified;
-
-      if (state.deliveryType === 'Entrega') {
-        const zoneOk = !!document.getElementById('delivery-zone')?.value;
-        const addrOk = !!document.getElementById('client-address')?.value;
-        if (!zoneOk || !addrOk) ok = false;
-      }
-
-      btn.disabled = !ok;
+      let msg = "Finalizar no WhatsApp";
+      let disabled = false;
 
       if (!isOpen) {
-        btn.querySelector("span") && (btn.querySelector("span").innerText = "Loja Fechada");
-      } else if (state.cart.length === 0) {
-        btn.querySelector("span") && (btn.querySelector("span").innerText = "Carrinho Vazio");
-      } else {
-        btn.querySelector("span") && (btn.querySelector("span").innerText = "Finalizar no WhatsApp");
+        msg = "Loja Fechada";
+        disabled = true;
+      } else if (!cartOk) {
+        msg = "Carrinho Vazio";
+        disabled = true;
+      } else if (!name) {
+        msg = "Informe seu Nome";
+        disabled = true;
+      } else if (!phone || phone.length < 10) {
+        msg = "Informe seu Telefone";
+        disabled = true;
+      } else if (isDelivery && !zoneVal) {
+        msg = "Selecione o Bairro";
+        disabled = true;
+      } else if (isDelivery && !address) {
+        msg = "Informe o Endereço";
+        disabled = true;
+      } else if (!method) {
+        msg = "Escolha o Pagamento";
+        disabled = true;
       }
 
-      window.refreshIcons();
+      btn.disabled = disabled;
+      const icon = disabled ? 'alert-circle' : 'message-circle';
+      // Só atualiza se o texto mudou para evitar piscar o loading
+      const currentText = btn.querySelector('span')?.innerText;
+      if (currentText !== msg) {
+         btn.innerHTML = `<div class="relative z-10 flex items-center gap-2"><i data-lucide="${icon}" class="w-6 h-6 fill-white/20"></i><span>${msg}</span></div>`;
+         window.refreshIcons();
+      }
     };
 
     window.sendOrder = () => {
-      // NÃO ENVIA SE CARRINHO VAZIO
-      if (!state.cart || state.cart.length === 0) {
-        window.toast("Seu carrinho está vazio!", "error");
-        window.validateCheckout();
-        return;
-      }
-
-      if (!window.isStoreOpen()) {
-        window.toast("Loja fechada. Volte no horário!", "error");
-        window.updateUI();
-        return;
-      }
-
-      const btn = document.getElementById('btn-checkout');
-      btn.innerHTML = '<div class="spinner"></div>';
-
-      const name = document.getElementById('client-name').value;
-      const phone = document.getElementById('client-phone').value;
-      const method = document.getElementById('payment-method').value;
-      const totalFinal = document.getElementById('cart-total').innerText;
-
-      let zoneName = "";
-      let address = "";
-      let shipText = "Grátis";
-      let shipValue = 0;
-      let deliveryDetailsStorage = "Retirada";
-
-      if (state.deliveryType === 'Entrega') {
-        const zoneSelect = document.getElementById('delivery-zone');
-        const zoneOption = zoneSelect.selectedOptions[0];
-        zoneName = zoneOption ? zoneOption.getAttribute('data-name') : "";
-        shipValue = parseFloat(zoneSelect.value || 0);
-        address = document.getElementById('client-address').value;
-        shipText = shipValue === 0 ? "Grátis" : `R$ ${shipValue.toFixed(2).replace('.', ',')}`;
-        deliveryDetailsStorage = `${zoneName} - ${address}`;
-      }
-
-      let paymentStatusFull = method;
-      if (method === 'Pix') paymentStatusFull += " (Confirmado no Site ✅)";
-
-      let subtotalVal = 0;
-      state.cart.forEach(i => subtotalVal += i.price * i.qty);
-      const subtotalStr = subtotalVal.toFixed(2).replace('.', ',');
-
-      const itemsStr = state.cart.map(i => `${i.qty}x ${i.name}`).join(", ");
-      const orderObj = {
-        date: new Date().toISOString(),
-        clientName: name,
-        clientPhone: phone,
-        itemsSummary: itemsStr,
-        total: totalFinal,
-        deliveryFee: shipText,
-        paymentMethod: method,
-        deliveryType: state.deliveryType,
-        deliveryDetails: deliveryDetailsStorage,
-        status: 'new',
-        userId: auth?.currentUser?.uid || 'anonymous'
-      };
-
       try {
-        if (db) {
-          addDoc(getCollectionRef("pedidos"), orderObj).catch(()=>{});
+        // NÃO ENVIA SE CARRINHO VAZIO
+        if (!state.cart || state.cart.length === 0) {
+          window.toast("Seu carrinho está vazio!", "error");
+          window.validateCheckout();
+          return;
         }
-      } catch(e) {}
 
-      const localOrders = JSON.parse(localStorage.getItem('acai_orders_local') || '[]');
-      localOrders.push(orderObj);
-      localStorage.setItem('acai_orders_local', JSON.stringify(localOrders));
+        if (!window.isStoreOpen()) {
+          window.toast("Loja fechada. Volte no horário!", "error");
+          window.updateUI();
+          return;
+        }
 
-      if (state.config.googleScriptUrl) {
-        const dataHora = new Date().toLocaleString('pt-BR');
-        const data = {
-          data: dataHora,
-          cliente: name,
-          telefone: phone,
-          valor: totalFinal,
-          pagamento: paymentStatusFull,
-          endereco: deliveryDetailsStorage,
-          itens: itemsStr,
-          taxa: shipText
+        const btn = document.getElementById('btn-checkout');
+        const originalBtnContent = btn.innerHTML; // Save original content
+        btn.innerHTML = '<div class="spinner"></div>';
+        btn.disabled = true; // Disable to prevent double click
+
+        const name = document.getElementById('client-name').value;
+        const phone = document.getElementById('client-phone').value;
+        const method = document.getElementById('payment-method').value;
+        const totalFinal = document.getElementById('cart-total').innerText;
+
+        let zoneName = "";
+        let address = "";
+        let shipText = "Grátis";
+        let shipValue = 0;
+        let deliveryDetailsStorage = "Retirada";
+
+        if (state.deliveryType === 'Entrega') {
+          const zoneSelect = document.getElementById('delivery-zone');
+          const zoneOption = zoneSelect.selectedOptions[0];
+          
+          // CORREÇÃO: Pega dados do dataset
+          zoneName = zoneOption ? (zoneOption.getAttribute('data-name') || zoneOption.text) : "";
+          shipValue = zoneOption ? parseFloat(zoneOption.getAttribute('data-price') || 0) : 0;
+          
+          address = document.getElementById('client-address').value;
+          shipText = shipValue === 0 ? "Grátis" : `R$ ${shipValue.toFixed(2).replace('.', ',')}`;
+          deliveryDetailsStorage = `${zoneName} - ${address}`;
+        }
+
+        let paymentStatusFull = method;
+        if (method === 'Pix') paymentStatusFull += " (Confirmado no Site ✅)";
+
+        let subtotalVal = 0;
+        state.cart.forEach(i => subtotalVal += i.price * i.qty);
+        const subtotalStr = subtotalVal.toFixed(2).replace('.', ',');
+
+        const itemsStr = state.cart.map(i => `${i.qty}x ${i.name}`).join(", ");
+        const orderObj = {
+          date: new Date().toISOString(),
+          clientName: name,
+          clientPhone: phone,
+          itemsSummary: itemsStr,
+          total: totalFinal,
+          deliveryFee: shipText,
+          paymentMethod: method,
+          deliveryType: state.deliveryType,
+          deliveryDetails: deliveryDetailsStorage,
+          status: 'new',
+          userId: auth?.currentUser?.uid || 'anonymous'
         };
-        fetch(state.config.googleScriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(data)
-        }).catch(()=>{});
+
+        try {
+          if (db) {
+            addDoc(getCollectionRef("pedidos"), orderObj).catch(()=>{});
+          }
+        } catch(e) {}
+
+        const localOrders = JSON.parse(localStorage.getItem('acai_orders_local') || '[]');
+        localOrders.push(orderObj);
+        localStorage.setItem('acai_orders_local', JSON.stringify(localOrders));
+
+        if (state.config.googleScriptUrl) {
+          const dataHora = new Date().toLocaleString('pt-BR');
+          const data = {
+            data: dataHora,
+            cliente: name,
+            telefone: phone,
+            valor: totalFinal,
+            pagamento: paymentStatusFull,
+            endereco: deliveryDetailsStorage,
+            itens: itemsStr,
+            taxa: shipText
+          };
+          fetch(state.config.googleScriptUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(data)
+          }).catch(()=>{});
+        }
+
+        let msg = `🥤 *PEDIDO - AÇAÍ ELLEGANCE*\n`;
+        msg += `👤 *Cliente:* ${name}\n`;
+        msg += `💳 *Pagamento:* ${paymentStatusFull}\n`;
+
+        if (state.deliveryType === 'Entrega') {
+          msg += `📍 *Entrega:* ${zoneName}\n`;
+          msg += `🏠 *Endereço:* ${address}\n`;
+        } else {
+          msg += `📍 *Entrega:* Retirada na Loja\n`;
+        }
+
+        msg += `\n*ITENS:*\n`;
+        state.cart.forEach(i => {
+          const itemTotal = (i.price * i.qty).toFixed(2).replace('.', ',');
+          msg += `- ${i.qty}x ${i.name} ${i.obs ? `(${i.obs}) ` : ''}(R$ ${itemTotal})\n`;
+        });
+
+        msg += `\n🧾 *RESUMO:*\n`;
+        msg += `Subtotal: R$ ${subtotalStr}\n`;
+        msg += `Taxa de Entrega: ${shipText}\n`;
+        msg += `💰 *TOTAL FINAL: ${totalFinal}*`;
+
+        const phoneNum = state.config.phone ? state.config.phone.replace(/\D/g,'') : "557998168282";
+        
+        // Tentativa de redirecionamento mais robusta
+        const url = `https://api.whatsapp.com/send?phone=${phoneNum}&text=${encodeURIComponent(msg)}`;
+        
+        // Limpar carrinho ANTES de sair da página
+        state.cart = [];
+        saveCart();
+
+        // Tenta abrir em nova aba primeiro (melhor para alguns navegadores)
+        // Se falhar, usa location.href
+        const win = window.open(url, '_blank');
+        if (!win) {
+             window.location.href = url;
+        }
+
+        // Recarrega a página após um tempo para resetar o estado visual
+        setTimeout(() => window.location.reload(), 3000);
+
+      } catch (err) {
+        console.error("Erro ao enviar pedido:", err);
+        window.toast("Erro ao enviar. Tente novamente.", "error");
+        // Restaura botão em caso de erro
+        const btn = document.getElementById('btn-checkout');
+        if(btn) {
+            btn.innerHTML = '<div class="relative z-10 flex items-center gap-2"><i data-lucide="message-circle" class="w-6 h-6 fill-white/20"></i><span>Tentar Novamente</span></div>';
+            btn.disabled = false;
+        }
       }
-
-      let msg = `🥤 *PEDIDO - AÇAÍ ELLEGANCE*\n`;
-      msg += `👤 *Cliente:* ${name}\n`;
-      msg += `💳 *Pagamento:* ${paymentStatusFull}\n`;
-
-      if (state.deliveryType === 'Entrega') {
-        msg += `📍 *Entrega:* ${zoneName}\n`;
-        msg += `🏠 *Endereço:* ${address}\n`;
-      } else {
-        msg += `📍 *Entrega:* Retirada na Loja\n`;
-      }
-
-      msg += `\n*ITENS:*\n`;
-      state.cart.forEach(i => {
-        const itemTotal = (i.price * i.qty).toFixed(2).replace('.', ',');
-        msg += `- ${i.qty}x ${i.name} ${i.obs ? `(${i.obs}) ` : ''}(R$ ${itemTotal})\n`;
-      });
-
-      msg += `\n🧾 *RESUMO:*\n`;
-      msg += `Subtotal: R$ ${subtotalStr}\n`;
-      msg += `Taxa de Entrega: ${shipText}\n`;
-      msg += `💰 *TOTAL FINAL: ${totalFinal}*`;
-
-      const phoneNum = state.config.phone ? state.config.phone.replace(/\D/g,'') : "557998168282";
-      window.location.href = `https://api.whatsapp.com/send?phone=${phoneNum}&text=${encodeURIComponent(msg)}`;
-
-      state.cart = [];
-      saveCart();
-      setTimeout(() => window.location.reload(), 2000);
     };
 
     // LOGIN DO ADMIN MODIFICADO
