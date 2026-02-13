@@ -51,6 +51,7 @@
             'float': 'float 4s ease-in-out infinite',
             'pulse-green': 'pulse-green 2s infinite',
             'shimmer': 'shimmer 3s linear infinite',
+            'bounce-short': 'bounceShort 1s infinite',
           },
           keyframes: {
             slideUp: {
@@ -69,6 +70,10 @@
             shimmer: {
               '0%': { transform: 'translateX(-150%)' },
               '100%': { transform: 'translateX(150%)' }
+            },
+            bounceShort: {
+              '0%, 100%': { transform: 'translateY(-5%)', animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)' },
+              '50%': { transform: 'translateY(0)', animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)' }
             }
           }
         }
@@ -109,6 +114,18 @@
       background: linear-gradient(to bottom right, #fcfaff, #f3e8ff);
       box-shadow: 0 8px 30px -5px rgba(124, 58, 237, 0.2);
       transform: translateY(-2px);
+    }
+
+    /* Estilo do Post */
+    .news-card {
+        background: linear-gradient(135deg, #fff, #f8fafc);
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+    }
+    .news-card.highlight {
+        background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+        border-color: #d8b4fe;
     }
 
     .check-circle { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -284,6 +301,9 @@
           <p class="text-brand-50 text-xs font-medium opacity-90 max-w-[60%]">A cremosidade que você merece.</p>
         </div>
       </div>
+
+      <!-- MURAL DE AVISOS (FEED) -->
+      <div id="news-feed" class="space-y-4 empty:hidden"></div>
 
       <div class="relative group">
         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -473,9 +493,11 @@
     <div class="p-6 space-y-6 max-w-lg mx-auto pb-24">
       <div class="flex p-1 bg-slate-100 rounded-xl mb-4">
         <button onclick="window.switchAdminTab('estoque')" id="tab-estoque" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-slate-800 transition-all">Estoque</button>
-        <button onclick="window.switchAdminTab('config')" id="tab-config" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all">Configurações</button>
+        <button onclick="window.switchAdminTab('avisos')" id="tab-avisos" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all">Avisos</button>
+        <button onclick="window.switchAdminTab('config')" id="tab-config" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all">Config</button>
       </div>
 
+      <!-- PAINEL ESTOQUE -->
       <div id="view-estoque" class="space-y-4">
         <!-- Produtos -->
         <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 mb-4">
@@ -507,7 +529,7 @@
           </div>
           <div id="stock-list" class="space-y-2 max-h-[40vh] overflow-y-auto pr-1 no-scrollbar border-b border-slate-100 pb-4 mb-4"></div>
           
-          <!-- ✅ NOVA SEÇÃO DE INGREDIENTES -->
+          <!-- ✅ SEÇÃO DE INGREDIENTES -->
           <div class="mt-4 pt-2">
              <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide mb-4">Ingredientes do Copo</h3>
              <div id="stock-ing-list" class="space-y-4"></div>
@@ -515,6 +537,28 @@
         </div>
       </div>
 
+      <!-- ✅ PAINEL AVISOS (POSTS) -->
+      <div id="view-avisos" class="hidden space-y-4">
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
+            <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide mb-4 flex items-center gap-2">
+              <i data-lucide="megaphone" class="w-4 h-4 text-brand-500"></i> Criar Aviso
+            </h3>
+            <div class="space-y-3">
+                <input id="post-title" placeholder="Título (Ex: Promoção do Dia)" class="w-full p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-brand-200">
+                <textarea id="post-msg" rows="3" placeholder="Mensagem para seus clientes..." class="w-full p-3 bg-slate-50 rounded-xl text-xs font-medium outline-none resize-none focus:ring-2 focus:ring-brand-200"></textarea>
+                <button onclick="window.addPost()" class="w-full py-3 bg-brand-600 text-white rounded-xl font-bold text-sm shadow-md active:scale-95 transition-transform">
+                    Publicar Aviso
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
+            <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide mb-4">Avisos Ativos</h3>
+            <div id="admin-posts-list" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <!-- PAINEL CONFIG -->
       <div id="view-config" class="hidden space-y-6">
         <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
           <div class="flex items-center gap-3 mb-5">
@@ -585,7 +629,7 @@
     import { getFirestore, doc, onSnapshot, setDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // ✅ CONFIGURAÇÃO ORIGINAL DO USUÁRIO
-    const firebaseConfig = {
+    const userFirebaseConfig = {
       apiKey: "AIzaSyBakH1kufhFKj-ibAkQNTXhs-WLfxUob28",
       authDomain: "acai-ellegance-app.firebaseapp.com",
       projectId: "acai-ellegance-app",
@@ -594,6 +638,13 @@
       appId: "1:190829563894:web:8494b3663cdd381e5281d7"
     };
 
+    // Use environment config if available (better for this preview), otherwise fallback to user config
+    let firebaseConfig;
+    if (typeof __firebase_config !== 'undefined') {
+       firebaseConfig = JSON.parse(__firebase_config);
+    } else {
+       firebaseConfig = userFirebaseConfig;
+    }
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
     const DEFAULT_ITEMS = [
@@ -616,7 +667,6 @@
       { name: "Copo 300ml", description: "Monte do seu jeito! Escolha frutas, adicionais e coberturas.", price: 13.00, category: "Copos" }
     ];
 
-    // ✅ INGREDIENTES AGORA SÃO OBJETOS COM STATUS
     const DEFAULT_ACCOMPANIMENTS = {
         frutas: [
             {name: "Morango", available: true},
@@ -647,10 +697,14 @@
       config: {
         storeName: "Açaí Ellegance",
         phone: "557998168282",
-        statusMode: "open", // ✅ MODIFICADO PARA OPEN POR PADRÃO
+        statusMode: "open", 
         openingHours: { start: 16, end: 23 },
         sizes: DEFAULT_ITEMS,
-        accompaniments: DEFAULT_ACCOMPANIMENTS, // Adicionado ao estado
+        accompaniments: DEFAULT_ACCOMPANIMENTS,
+        // ✅ NOVO ARRAY DE POSTS
+        posts: [
+            { id: 1, title: 'Bem-vindo!', message: 'Faça seu pedido com facilidade.', date: new Date().toISOString() }
+        ],
         pixKey: "57970392000139",
         pixName: "Gabriel Santana Morais",
         googleScriptUrl: "https://script.google.com/macros/s/AKfycbwtHwhszybzs3OzYOUCY-cHaAi-bCSuvyuViM1mHmEkSYkfHvQvpFmhQLCXXV_ASeAA/exec",
@@ -676,15 +730,13 @@
       deliveryType: "Retirada",
       paymentVerified: false,
       isAdmin: false,
-      currentCopo: null, // item sendo editado
+      currentCopo: null, 
       copoQty: 1
     };
 
     let db, auth;
 
     const getCollectionRef = (colName) => {
-      // Se estivesse usando a config do ambiente, usaria paths complexos.
-      // Como estamos usando sua config específica, mantemos o simples.
       if (typeof __firebase_config !== 'undefined') return collection(db, 'artifacts', appId, 'public', 'data', colName);
       return collection(db, colName);
     };
@@ -693,10 +745,8 @@
       return doc(db, colName, docId);
     };
 
-    // CONFIG LOCAL SAFE (ADMIN SEM TRAVAR)
     window.saveConfigSafe = async (partial, merge = true) => {
       state.config = merge ? { ...state.config, ...partial } : partial;
-      // ✅ ALTERADO PARA v7 PARA FORÇAR ATUALIZAÇÃO NO GITHUB PAGES
       localStorage.setItem("acai_config_v7", JSON.stringify(state.config));
       try {
         if (db) await setDoc(getDocRef("loja", "configuracao"), partial, { merge });
@@ -704,19 +754,19 @@
         console.log("Firestore save blocked/offline:", e?.code || e);
       }
       window.renderMenu?.();
+      window.renderPosts?.(); // Atualiza posts na tela principal
       window.updateUI?.();
       if (state.isAdmin) window.syncAdminFields?.();
     };
 
     window.loadLocalConfig = () => {
       try {
-        // ✅ ALTERADO PARA v7 PARA LER A NOVA VERSÃO
         const saved = localStorage.getItem("acai_config_v7");
         if (saved) {
           const cfg = JSON.parse(saved);
           state.config = { ...state.config, ...cfg };
-          // Fallback se não tiver accompaniments salvo
           if (!state.config.accompaniments) state.config.accompaniments = DEFAULT_ACCOMPANIMENTS;
+          if (!state.config.posts) state.config.posts = []; // Garante array de posts
         }
       } catch (e) {}
     };
@@ -875,7 +925,6 @@
       let shipping = 0;
       if (state.deliveryType === 'Entrega') {
         const zone = document.getElementById('delivery-zone');
-        // CORREÇÃO: Pega o preço do atributo data-price da opção selecionada
         if (zone && zone.selectedIndex >= 0) {
            const opt = zone.options[zone.selectedIndex];
            if (opt.dataset.price) {
@@ -915,12 +964,10 @@
 
         const sel = document.getElementById('delivery-zone');
         if (sel) {
-          // CORREÇÃO: Só preenche se estiver vazio para não resetar seleção do usuário ao clicar de novo
           if (sel.options.length <= 1) {
               sel.innerHTML = '<option value="" disabled selected>Onde entregamos?</option>';
               state.config.zones.forEach((z, index) => {
                 const txt = z.price === 0 ? "Grátis" : `+R$ ${z.price.toFixed(2)}`;
-                // Usa INDEX como value para evitar duplicidade de preços iguais
                 sel.innerHTML += `<option value="${index}" data-price="${z.price}" data-name="${z.name}">${z.name} (${txt})</option>`;
               });
           }
@@ -961,7 +1008,6 @@
         state.currentCopo = item;
         state.copoQty = 1;
         document.getElementById('copo-modal-title').innerText = item.name;
-        // Atualiza subtítulo com instrução do limite global
         document.querySelector('#copo-modal p').innerText = "Escolha até 3 itens (Frutas, Adicionais ou Coberturas)";
         document.getElementById('copo-qty-display').innerText = "1";
         document.getElementById('copo-total-price').innerText = `R$ ${item.price.toFixed(2).replace('.',',')}`;
@@ -969,7 +1015,6 @@
         const container = document.getElementById('copo-options-container');
         container.innerHTML = "";
 
-        // ✅ ITEM INCLUSO: Leite Condensado (Fixo no topo)
         container.innerHTML += `
             <div class="mb-4 bg-yellow-50 border border-yellow-200 p-4 rounded-2xl flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center">
@@ -982,11 +1027,9 @@
             </div>
         `;
 
-        // Helper para renderizar seção
         const renderSection = (title, options, type) => {
             let html = `<div class="mb-6"><h4 class="text-sm font-black text-slate-700 uppercase mb-3 flex items-center gap-2"><div class="w-1.5 h-4 bg-brand-500 rounded-full"></div>${title}</h4><div class="grid grid-cols-2 gap-3">`;
             
-            // FILTRAR APENAS DISPONÍVEIS
             const availableOptions = options.filter(o => o.available);
 
             if(availableOptions.length === 0) {
@@ -1023,7 +1066,6 @@
         state.currentCopo = null;
     };
 
-    // ✅ LÓGICA DE LIMITE DE 3 GLOBAL (TUDO INCLUSO)
     window.checkCopoLimits = (checkbox) => {
         const checkboxes = document.querySelectorAll('.limit-global');
         const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
@@ -1041,22 +1083,19 @@
         state.copoQty = Math.max(1, state.copoQty + d);
         document.getElementById('copo-qty-display').innerText = state.copoQty;
         if(state.currentCopo) {
-             const total = state.currentCopo.price * state.copoQty;
-             document.getElementById('copo-total-price').innerText = `R$ ${total.toFixed(2).replace('.',',')}`;
+              const total = state.currentCopo.price * state.copoQty;
+              document.getElementById('copo-total-price').innerText = `R$ ${total.toFixed(2).replace('.',',')}`;
         }
     };
 
     window.addCopoToCart = () => {
         if(!state.currentCopo) return;
 
-        // Coletar opções marcadas
         const checkboxes = document.querySelectorAll('.option-checkbox:checked');
         const selectedOptions = Array.from(checkboxes).map(cb => cb.value);
 
-        // ✅ Adiciona Leite Condensado automaticamente
         selectedOptions.unshift("Leite Condensado (Incluso)");
 
-        // Criar string de observação com os itens
         let obsText = `Montagem: ${selectedOptions.join(', ')}`;
         
         state.cart.push({
@@ -1073,7 +1112,6 @@
         window.toast("Copo Adicionado!");
         setTimeout(() => window.toggleCart(true), 300);
     };
-    // ---------------------------------
 
     window.renderMenu = () => {
       const grid = document.getElementById('products-grid');
@@ -1093,7 +1131,6 @@
           div.style.animationDelay = `${idx * 0.05}s`;
           div.className = `product-card bg-white p-4 rounded-[24px] border border-slate-100 flex items-center gap-4 cursor-pointer select-none relative overflow-hidden ${isSel ? 'selected' : ''}`;
           
-          // Lógica de clique diferenciada
           div.onclick = () => {
               if (item.category === 'Copos') {
                   window.openCopoModal(item);
@@ -1145,6 +1182,88 @@
       window.refreshIcons();
     };
 
+    // ✅ RENDERIZAÇÃO DE POSTS NO FEED
+    window.renderPosts = () => {
+        const feed = document.getElementById('news-feed');
+        if(!feed) return;
+        feed.innerHTML = "";
+
+        const posts = state.config.posts || [];
+        if(posts.length === 0) {
+            feed.classList.add('hidden');
+            return;
+        }
+
+        feed.classList.remove('hidden');
+        posts.forEach(post => {
+            feed.innerHTML += `
+                <div class="news-card highlight p-4 rounded-[20px] flex gap-4 animate-slide-up">
+                    <div class="w-12 h-12 rounded-full bg-white border border-brand-100 flex items-center justify-center text-brand-500 shadow-sm shrink-0">
+                        <i data-lucide="megaphone" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-slate-800 text-sm leading-tight">${post.title}</h3>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">${post.message}</p>
+                        <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-wider">Aviso da Loja</p>
+                    </div>
+                </div>
+            `;
+        });
+        window.refreshIcons();
+    };
+
+    // ✅ LÓGICA DE POSTS DO ADMIN
+    window.renderPostsAdmin = () => {
+        const list = document.getElementById('admin-posts-list');
+        if(!list) return;
+        list.innerHTML = "";
+
+        const posts = state.config.posts || [];
+        if(posts.length === 0) list.innerHTML = `<p class="text-xs text-slate-400 italic">Nenhum aviso ativo.</p>`;
+
+        posts.forEach((post, index) => {
+             list.innerHTML += `
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-start">
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-800">${post.title}</h4>
+                        <p class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${post.message}</p>
+                    </div>
+                    <button onclick="window.removePost(${index})" class="p-1.5 text-red-400 hover:text-red-600 bg-white rounded-lg shadow-sm">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+             `;
+        });
+        window.refreshIcons();
+    };
+
+    window.addPost = async () => {
+        const title = document.getElementById('post-title').value.trim();
+        const msg = document.getElementById('post-msg').value.trim();
+
+        if(!title || !msg) return window.toast("Preencha título e mensagem", "error");
+
+        const newPost = { id: Date.now(), title, message: msg, date: new Date().toISOString() };
+        const newPosts = [newPost, ...(state.config.posts || [])]; // Adiciona no topo
+
+        await window.saveConfigSafe({ posts: newPosts }, true);
+        
+        document.getElementById('post-title').value = "";
+        document.getElementById('post-msg').value = "";
+        
+        window.renderPostsAdmin();
+        window.toast("Aviso Publicado!");
+    };
+
+    window.removePost = async (index) => {
+        if(!confirm("Remover este aviso?")) return;
+        const newPosts = [...(state.config.posts || [])];
+        newPosts.splice(index, 1);
+        await window.saveConfigSafe({ posts: newPosts }, true);
+        window.renderPostsAdmin();
+        window.toast("Aviso Removido!");
+    };
+
     // FUNÇÃO ÚNICA DE ABERTO/FECHADO (usada no checkout)
     window.isStoreOpen = () => {
       const h = new Date().getHours();
@@ -1169,7 +1288,6 @@
         stTxt.className = `text-[10px] font-bold uppercase tracking-wider ${isOpen ? 'text-green-600' : 'text-red-500'}`;
       }
 
-      // Se estiver fechado, trava o checkout
       window.validateCheckout();
     };
 
@@ -1268,7 +1386,6 @@
 
       btn.disabled = disabled;
       const icon = disabled ? 'alert-circle' : 'message-circle';
-      // Só atualiza se o texto mudou para evitar piscar o loading
       const currentText = btn.querySelector('span')?.innerText;
       if (currentText !== msg) {
          btn.innerHTML = `<div class="relative z-10 flex items-center gap-2"><i data-lucide="${icon}" class="w-6 h-6 fill-white/20"></i><span>${msg}</span></div>`;
@@ -1278,7 +1395,6 @@
 
     window.sendOrder = () => {
       try {
-        // NÃO ENVIA SE CARRINHO VAZIO
         if (!state.cart || state.cart.length === 0) {
           window.toast("Seu carrinho está vazio!", "error");
           window.validateCheckout();
@@ -1292,9 +1408,9 @@
         }
 
         const btn = document.getElementById('btn-checkout');
-        const originalBtnContent = btn.innerHTML; // Save original content
+        const originalBtnContent = btn.innerHTML;
         btn.innerHTML = '<div class="spinner"></div>';
-        btn.disabled = true; // Disable to prevent double click
+        btn.disabled = true;
 
         const name = document.getElementById('client-name').value;
         const phone = document.getElementById('client-phone').value;
@@ -1311,7 +1427,6 @@
           const zoneSelect = document.getElementById('delivery-zone');
           const zoneOption = zoneSelect.selectedOptions[0];
           
-          // CORREÇÃO: Pega dados do dataset
           zoneName = zoneOption ? (zoneOption.getAttribute('data-name') || zoneOption.text) : "";
           shipValue = zoneOption ? parseFloat(zoneOption.getAttribute('data-price') || 0) : 0;
           
@@ -1396,27 +1511,21 @@
 
         const phoneNum = state.config.phone ? state.config.phone.replace(/\D/g,'') : "557998168282";
         
-        // Tentativa de redirecionamento mais robusta
         const url = `https://api.whatsapp.com/send?phone=${phoneNum}&text=${encodeURIComponent(msg)}`;
         
-        // Limpar carrinho ANTES de sair da página
         state.cart = [];
         saveCart();
 
-        // Tenta abrir em nova aba primeiro (melhor para alguns navegadores)
-        // Se falhar, usa location.href
         const win = window.open(url, '_blank');
         if (!win) {
-             window.location.href = url;
+              window.location.href = url;
         }
 
-        // Recarrega a página após um tempo para resetar o estado visual
         setTimeout(() => window.location.reload(), 3000);
 
       } catch (err) {
         console.error("Erro ao enviar pedido:", err);
         window.toast("Erro ao enviar. Tente novamente.", "error");
-        // Restaura botão em caso de erro
         const btn = document.getElementById('btn-checkout');
         if(btn) {
             btn.innerHTML = '<div class="relative z-10 flex items-center gap-2"><i data-lucide="message-circle" class="w-6 h-6 fill-white/20"></i><span>Tentar Novamente</span></div>';
@@ -1425,12 +1534,10 @@
       }
     };
 
-    // LOGIN DO ADMIN MODIFICADO
     window.adminLogin = async () => {
       const e = document.getElementById('adm-email').value;
       const p = document.getElementById('adm-pass').value;
       
-      // ✅ SENHA MESTRA LOCAL (Bypass Firebase)
       if (p === 'Açaiellgance123') {
         document.getElementById('admin-modal').classList.add('hidden');
         window.showAdminPanel();
@@ -1449,12 +1556,10 @@
         window.toast("Admin Conectado!");
       } catch (err) {
         try {
-          // Tenta criar usuário se não existir, mas se falhar por permissão, cai no erro
           await createUserWithEmailAndPassword(auth, e, p);
           document.getElementById('admin-modal').classList.add('hidden');
           window.toast("Conta criada!");
         } catch (createErr) {
-            // Se falhar tudo, tenta senha mestra novamente por segurança ou avisa
             if (p === '1234') {
                 document.getElementById('admin-modal').classList.add('hidden');
                 window.showAdminPanel();
@@ -1469,7 +1574,6 @@
       }
     };
 
-    // ADMIN: abrir/fechar seguro
     window.showAdminPanel = () => {
       state.isAdmin = true;
       document.getElementById('admin-panel').classList.remove('hidden');
@@ -1486,7 +1590,7 @@
     };
 
     window.switchAdminTab = (tab) => {
-      const tabs = ['estoque', 'config'];
+      const tabs = ['estoque', 'avisos', 'config'];
       tabs.forEach(t => {
         const view = document.getElementById(`view-${t}`);
         const btn = document.getElementById(`tab-${t}`);
@@ -1515,6 +1619,7 @@
       });
 
       window.renderStockAdmin();
+      window.renderPostsAdmin();
       window.renderZonesAdmin();
     };
 
@@ -1565,7 +1670,6 @@
         outros.forEach(item => list.innerHTML += renderItemHTML(item));
       }
 
-      // ✅ RENDERIZAÇÃO DA PARTE DE INGREDIENTES
       window.renderAccompanimentsAdmin();
       window.refreshIcons();
     };
@@ -1578,7 +1682,6 @@
         const renderCat = (catName, items, type) => {
             let html = `<div class="mb-4"><h4 class="text-xs font-bold text-slate-500 uppercase mb-2 border-b border-slate-100 pb-1">${catName}</h4>`;
             
-            // Lista de itens
             items.forEach((item, idx) => {
                 const isOff = item.available === false;
                 html += `
@@ -1596,7 +1699,6 @@
                 `;
             });
 
-            // Input para adicionar novo
             html += `
                 <div class="flex gap-2 mt-2">
                     <input id="new-ing-${type}" placeholder="Novo item..." class="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-brand-300">
@@ -1643,7 +1745,6 @@
         window.toast("Ingrediente removido!");
     };
 
-    // ADMIN CRUD (agora salva SEMPRE no localStorage e tenta Firestore)
     window.addProduct = async () => {
       const name = document.getElementById('new-prod-name').value.trim();
       const desc = document.getElementById('new-prod-desc').value.trim();
@@ -1751,7 +1852,7 @@
       setTimeout(hideSplash, 3000);
 
       try {
-        window.loadLocalConfig(); // carrega config local do admin
+        window.loadLocalConfig(); 
 
         const savedCart = localStorage.getItem('acai_cart_v3');
         if (savedCart) state.cart = JSON.parse(savedCart);
@@ -1759,6 +1860,7 @@
         window.setupPhoneMask();
         window.renderMenu();
         window.renderCart();
+        window.renderPosts(); 
         window.updateUI();
         window.restoreFormData();
         hideSplash();
@@ -1789,6 +1891,7 @@
               state.config = { ...state.config, ...snap.data() };
               localStorage.setItem("acai_config_local", JSON.stringify(state.config)); // espelha no local
               window.renderMenu();
+              window.renderPosts(); // Atualiza posts em tempo real
               window.updateUI();
               if (state.isAdmin) window.syncAdminFields();
             }
