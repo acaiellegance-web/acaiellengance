@@ -145,11 +145,11 @@
     .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
     .safe-pt { padding-top: env(safe-area-inset-top); }
 
-    /* ✅ MARCA D'ÁGUA REDESENHADA (ESQUERDA) */
+    /* MARCA D'ÁGUA REDESENHADA (ESQUERDA) */
     .watermark-footer {
       position: fixed;
       left: 24px;
-      bottom: 128px; /* Alinhado com o botão do WhatsApp */
+      bottom: 128px;
       z-index: 40;
       pointer-events: none;
       display: flex;
@@ -165,18 +165,14 @@
       gap: 8px;
       padding: 8px 14px;
       border-radius: 12px;
-
-      /* Glassmorphism Premium */
       background: rgba(255, 255, 255, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.6);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-
       box-shadow: 
         0 4px 6px -1px rgba(0, 0, 0, 0.05), 
         0 10px 15px -3px rgba(0, 0, 0, 0.05),
         inset 0 0 0 1px rgba(255,255,255,0.5);
-
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -227,7 +223,7 @@
 
 <body class="antialiased text-slate-800 bg-slate-50 overflow-x-hidden">
 
-  <!-- ✅ MARCA D'ÁGUA -->
+  <!-- MARCA D'ÁGUA -->
   <div class="watermark-footer" aria-hidden="true">
     <div class="wm-pill">
       <div class="wm-icon-box">
@@ -332,7 +328,7 @@
     <div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-white via-white to-transparent pt-10 pointer-events-none safe-pb">
       <div class="max-w-lg mx-auto flex items-center gap-3 pointer-events-auto">
         
-        <!-- Botão Admin Extra (Fica no canto esquerdo, discreto) -->
+        <!-- Botão Admin Extra -->
         <button onclick="window.handleAdminClick()" class="absolute -top-6 left-1/2 -translate-x-1/2 text-slate-300 hover:text-brand-500 transition-colors">
             <i data-lucide="lock" class="w-4 h-4"></i>
         </button>
@@ -369,7 +365,7 @@
           <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-brand-500"></i> Seus Dados</h3>
           <div class="space-y-3">
             <input id="client-name" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:border-brand-500/20 focus:bg-white outline-none transition-all" placeholder="Nome Completo" oninput="window.saveFormData(); window.validateCheckout()">
-            <input id="client-phone" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:border-brand-500/20 focus:bg-white outline-none transition-all" placeholder="Telefone (WhatsApp)" maxlength="15" oninput="window.validateCheckout()">
+            <input id="client-phone" class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold border-2 border-transparent focus:border-brand-500/20 focus:bg-white outline-none transition-all" placeholder="Telefone (WhatsApp)" maxlength="15">
           </div>
         </div>
 
@@ -529,7 +525,7 @@
           </div>
           <div id="stock-list" class="space-y-2 max-h-[40vh] overflow-y-auto pr-1 no-scrollbar border-b border-slate-100 pb-4 mb-4"></div>
           
-          <!-- ✅ SEÇÃO DE INGREDIENTES -->
+          <!-- SEÇÃO DE INGREDIENTES -->
           <div class="mt-4 pt-2">
              <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide mb-4">Ingredientes do Copo</h3>
              <div id="stock-ing-list" class="space-y-4"></div>
@@ -537,7 +533,7 @@
         </div>
       </div>
 
-      <!-- ✅ PAINEL AVISOS (POSTS) -->
+      <!-- ✅ PAINEL AVISOS E POSTS (COM IMAGEM) -->
       <div id="view-avisos" class="hidden space-y-4">
         <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
             <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide mb-4 flex items-center gap-2">
@@ -546,7 +542,28 @@
             <div class="space-y-3">
                 <input id="post-title" placeholder="Título (Ex: Promoção do Dia)" class="w-full p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-brand-200">
                 <textarea id="post-msg" rows="3" placeholder="Mensagem para seus clientes..." class="w-full p-3 bg-slate-50 rounded-xl text-xs font-medium outline-none resize-none focus:ring-2 focus:ring-brand-200"></textarea>
-                <button onclick="window.addPost()" class="w-full py-3 bg-brand-600 text-white rounded-xl font-bold text-sm shadow-md active:scale-95 transition-transform">
+                
+                <!-- UPLOAD/LINK DA IMAGEM -->
+                <div class="flex flex-col gap-2 mt-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Imagem do Post (Opcional)</label>
+                    <div class="flex items-center gap-2">
+                        <input id="post-image-url" type="url" placeholder="Cole o Link da Imagem aqui" class="flex-1 p-3 bg-slate-50 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-brand-200" oninput="window.previewPastedImage(this.value)">
+                        
+                        <label class="p-3 bg-brand-50 text-brand-600 rounded-xl cursor-pointer hover:bg-brand-100 transition-colors shadow-sm flex items-center justify-center relative group" title="Enviar arquivo do celular/PC">
+                            <i data-lucide="image-plus" class="w-5 h-5"></i>
+                            <input type="file" id="post-image-file" accept="image/*" class="hidden" onchange="window.handlePostImage(this)">
+                        </label>
+                    </div>
+                    
+                    <div id="image-preview-container" class="hidden relative mt-2 group">
+                        <img id="post-image-preview" class="w-full h-auto max-h-[500px] object-contain rounded-xl border border-slate-200 shadow-sm bg-slate-100" />
+                        <button onclick="window.clearPostImage()" class="absolute top-3 right-3 p-2 bg-slate-900/60 backdrop-blur-md text-white rounded-full hover:bg-red-500 transition-all shadow-lg active:scale-95" title="Remover imagem">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="window.addPost()" class="w-full mt-2 py-3 bg-brand-600 text-white rounded-xl font-bold text-sm shadow-md active:scale-95 transition-transform">
                     Publicar Aviso
                 </button>
             </div>
@@ -617,6 +634,21 @@
     </div>
   </div>
 
+  <!-- CUSTOM CONFIRM MODAL (Novo) -->
+  <div id="confirm-modal" class="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-6 transition-all">
+    <div class="bg-white w-full max-w-xs p-6 rounded-3xl shadow-2xl animate-slide-up text-center">
+      <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+      </div>
+      <h3 class="font-display font-bold text-lg text-slate-900 mb-2">Atenção</h3>
+      <p id="confirm-msg" class="text-sm text-slate-500 mb-6">Tem certeza que deseja continuar?</p>
+      <div class="flex gap-3">
+        <button onclick="window.closeConfirm()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm active:scale-95 transition-all">Cancelar</button>
+        <button onclick="window._currentConfirmAction()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold text-sm shadow-md shadow-red-500/20 active:scale-95 transition-all">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md text-white px-6 py-4 rounded-full shadow-2xl opacity-0 pointer-events-none z-[110] transition-all duration-500 transform -translate-y-20 flex items-center gap-3 justify-center">
     <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
@@ -628,7 +660,7 @@
     import { getAuth, signInAnonymously, signInWithCustomToken, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, onSnapshot, setDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // ✅ CONFIGURAÇÃO ORIGINAL DO USUÁRIO
+    // CONFIGURAÇÃO FIREBASE
     const userFirebaseConfig = {
       apiKey: "AIzaSyBakH1kufhFKj-ibAkQNTXhs-WLfxUob28",
       authDomain: "acai-ellegance-app.firebaseapp.com",
@@ -638,7 +670,6 @@
       appId: "1:190829563894:web:8494b3663cdd381e5281d7"
     };
 
-    // Use environment config if available (better for this preview), otherwise fallback to user config
     let firebaseConfig;
     if (typeof __firebase_config !== 'undefined') {
        firebaseConfig = JSON.parse(__firebase_config);
@@ -663,7 +694,6 @@
       { name: "M&M 300ml", description: "Açaí, leite em pó, nutella e M&M", price: 13.00, category: "Gourmet" },
       { name: "Morango com Nutella 500ml", description: "Açaí, morango, nutella", price: 18.00, category: "Gourmet" },
       { name: "Ovomaltine 500ml", description: "Açaí, ovomaltine e nutella", price: 18.00, category: "Gourmet" },
-      // Novos Itens Copos
       { name: "Copo 300ml", description: "Monte do seu jeito! Escolha frutas, adicionais e coberturas.", price: 13.00, category: "Copos" }
     ];
 
@@ -701,9 +731,8 @@
         openingHours: { start: 16, end: 23 },
         sizes: DEFAULT_ITEMS,
         accompaniments: DEFAULT_ACCOMPANIMENTS,
-        // ✅ NOVO ARRAY DE POSTS
         posts: [
-            { id: 1, title: 'Bem-vindo!', message: 'Faça seu pedido com facilidade.', date: new Date().toISOString() }
+            { id: 1, title: 'Bem-vindo!', message: 'Faça seu pedido com facilidade.', image: '', date: new Date().toISOString() }
         ],
         pixKey: "57970392000139",
         pixName: "Gabriel Santana Morais",
@@ -754,7 +783,7 @@
         console.log("Firestore save blocked/offline:", e?.code || e);
       }
       window.renderMenu?.();
-      window.renderPosts?.(); // Atualiza posts na tela principal
+      window.renderPosts?.();
       window.updateUI?.();
       if (state.isAdmin) window.syncAdminFields?.();
     };
@@ -766,12 +795,12 @@
           const cfg = JSON.parse(saved);
           state.config = { ...state.config, ...cfg };
           if (!state.config.accompaniments) state.config.accompaniments = DEFAULT_ACCOMPANIMENTS;
-          if (!state.config.posts) state.config.posts = []; // Garante array de posts
+          if (!state.config.posts) state.config.posts = [];
         }
       } catch (e) {}
     };
 
-    // UTIL
+    // UTIL & MODAL CUSTOM CONFIRM
     window.toast = (m, t='success') => {
       const el = document.getElementById('toast');
       document.getElementById('toast-msg').innerText = m;
@@ -783,6 +812,20 @@
       }, 2500);
     };
     window.refreshIcons = () => { if (typeof lucide !== 'undefined') lucide.createIcons(); };
+
+    window._currentConfirmAction = null;
+    window.customConfirm = (msg, onConfirm) => {
+        const modal = document.getElementById('confirm-modal');
+        document.getElementById('confirm-msg').innerText = msg;
+        modal.classList.remove('hidden');
+        window._currentConfirmAction = () => {
+            modal.classList.add('hidden');
+            if(onConfirm) onConfirm();
+        };
+    };
+    window.closeConfirm = () => {
+        document.getElementById('confirm-modal').classList.add('hidden');
+    };
 
     // ADMIN CLICK
     window.handleAdminClick = () => {
@@ -1003,7 +1046,6 @@
       }
     };
 
-    // --- LÓGICA COPO PERSONALIZADO ---
     window.openCopoModal = (item) => {
         state.currentCopo = item;
         state.copoQty = 1;
@@ -1182,7 +1224,7 @@
       window.refreshIcons();
     };
 
-    // ✅ RENDERIZAÇÃO DE POSTS NO FEED
+    // ✅ RENDERIZAÇÃO DE POSTS (CLIENTE)
     window.renderPosts = () => {
         const feed = document.getElementById('news-feed');
         if(!feed) return;
@@ -1197,22 +1239,25 @@
         feed.classList.remove('hidden');
         posts.forEach(post => {
             feed.innerHTML += `
-                <div class="news-card highlight p-4 rounded-[20px] flex gap-4 animate-slide-up">
-                    <div class="w-12 h-12 rounded-full bg-white border border-brand-100 flex items-center justify-center text-brand-500 shadow-sm shrink-0">
-                        <i data-lucide="megaphone" class="w-6 h-6"></i>
+                <div class="news-card highlight p-4 rounded-[20px] flex flex-col gap-3 animate-slide-up">
+                    <div class="flex gap-4">
+                        <div class="w-12 h-12 rounded-full bg-white border border-brand-100 flex items-center justify-center text-brand-500 shadow-sm shrink-0">
+                            <i data-lucide="megaphone" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-slate-800 text-sm leading-tight">${post.title}</h3>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">${post.message}</p>
+                            <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-wider">Aviso da Loja</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-display font-bold text-slate-800 text-sm leading-tight">${post.title}</h3>
-                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">${post.message}</p>
-                        <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-wider">Aviso da Loja</p>
-                    </div>
+                    ${post.image ? `<img src="${post.image}" class="w-full h-auto rounded-xl shadow-sm border border-slate-100 mt-2" onerror="this.style.display='none'">` : ''}
                 </div>
             `;
         });
         window.refreshIcons();
     };
 
-    // ✅ LÓGICA DE POSTS DO ADMIN
+    // ✅ LÓGICA DE POSTS (ADMIN)
     window.renderPostsAdmin = () => {
         const list = document.getElementById('admin-posts-list');
         if(!list) return;
@@ -1223,12 +1268,13 @@
 
         posts.forEach((post, index) => {
              list.innerHTML += `
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-start">
-                    <div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-start gap-3">
+                    ${post.image ? `<img src="${post.image}" class="w-16 h-16 rounded-xl object-cover shrink-0 border border-slate-200 shadow-sm">` : ''}
+                    <div class="flex-1">
                         <h4 class="text-xs font-bold text-slate-800">${post.title}</h4>
                         <p class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${post.message}</p>
                     </div>
-                    <button onclick="window.removePost(${index})" class="p-1.5 text-red-400 hover:text-red-600 bg-white rounded-lg shadow-sm">
+                    <button onclick="window.removePost(${index})" class="p-1.5 text-red-400 hover:text-red-600 bg-white rounded-lg shadow-sm shrink-0">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -1237,34 +1283,111 @@
         window.refreshIcons();
     };
 
+    // ✅ COMPRESSÃO DE IMAGEM ANTES DO UPLOAD (AJUSTADO PARA PREVENIR TRAVAMENTO)
+    window.handlePostImage = (input) => {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                // Limite otimizado (800x1200) para garantir qualidade visual e não travar o banco do Firebase.
+                const MAX_WIDTH = 800;
+                const MAX_HEIGHT = 1200;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Comprime para JPEG (0.6 qualidade reduz bastante o tamanho sem perda visível)
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+
+                const urlInput = document.getElementById('post-image-url');
+                const preview = document.getElementById('post-image-preview');
+                const previewContainer = document.getElementById('image-preview-container');
+
+                if (urlInput) urlInput.value = dataUrl;
+                if (preview) preview.src = dataUrl;
+                if (previewContainer) previewContainer.classList.remove('hidden');
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    window.previewPastedImage = (url) => {
+        const preview = document.getElementById('post-image-preview');
+        const previewContainer = document.getElementById('image-preview-container');
+        if (url && (url.startsWith('http') || url.startsWith('data:image'))) {
+            if (preview) preview.src = url;
+            if (previewContainer) previewContainer.classList.remove('hidden');
+        } else {
+            if (previewContainer) previewContainer.classList.add('hidden');
+        }
+    };
+
+    window.clearPostImage = () => {
+        document.getElementById('post-image-url').value = '';
+        const fileInput = document.getElementById('post-image-file');
+        if (fileInput) fileInput.value = '';
+        
+        const previewContainer = document.getElementById('image-preview-container');
+        if (previewContainer) previewContainer.classList.add('hidden');
+        
+        const preview = document.getElementById('post-image-preview');
+        if (preview) preview.src = '';
+    };
+
     window.addPost = async () => {
         const title = document.getElementById('post-title').value.trim();
         const msg = document.getElementById('post-msg').value.trim();
+        const imgUrl = document.getElementById('post-image-url').value.trim();
 
         if(!title || !msg) return window.toast("Preencha título e mensagem", "error");
 
-        const newPost = { id: Date.now(), title, message: msg, date: new Date().toISOString() };
-        const newPosts = [newPost, ...(state.config.posts || [])]; // Adiciona no topo
+        const newPost = { id: Date.now(), title, message: msg, image: imgUrl, date: new Date().toISOString() };
+        
+        // Mantém apenas os 5 posts mais recentes para NÃO ESTOURAR O LIMITE DO FIREBASE (1MB)
+        const newPosts = [newPost, ...(state.config.posts || [])].slice(0, 5);
 
         await window.saveConfigSafe({ posts: newPosts }, true);
         
         document.getElementById('post-title').value = "";
         document.getElementById('post-msg').value = "";
+        window.clearPostImage(); 
         
         window.renderPostsAdmin();
         window.toast("Aviso Publicado!");
     };
 
-    window.removePost = async (index) => {
-        if(!confirm("Remover este aviso?")) return;
-        const newPosts = [...(state.config.posts || [])];
-        newPosts.splice(index, 1);
-        await window.saveConfigSafe({ posts: newPosts }, true);
-        window.renderPostsAdmin();
-        window.toast("Aviso Removido!");
+    // UTILIZAÇÃO DO CUSTOM CONFIRM NO LUGAR DOS ALERTAS NATIVOS
+    window.removePost = (index) => {
+        window.customConfirm("Deseja realmente remover este aviso?", async () => {
+            const newPosts = [...(state.config.posts || [])];
+            newPosts.splice(index, 1);
+            await window.saveConfigSafe({ posts: newPosts }, true);
+            window.renderPostsAdmin();
+            window.toast("Aviso Removido!");
+        });
     };
 
-    // FUNÇÃO ÚNICA DE ABERTO/FECHADO (usada no checkout)
     window.isStoreOpen = () => {
       const h = new Date().getHours();
       const start = state.config.openingHours?.start ?? 16;
@@ -1291,12 +1414,18 @@
       window.validateCheckout();
     };
 
+    // CORREÇÃO: Tratamento para seletor de máscara não quebrar o JS
     window.setupPhoneMask = () => {
       const input = document.getElementById('client-phone');
       if (!input) return;
       input.addEventListener('input', (e) => {
-        let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
-        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+        let val = e.target.value.replace(/\D/g, '');
+        if(val.length === 0) { e.target.value = ''; return; }
+        
+        let x = val.match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+        if(x) {
+            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+        }
         window.saveFormData();
         window.validateCheckout();
       });
@@ -1344,7 +1473,6 @@
       }
     };
 
-    // ✅ VALIDAÇÃO DETALHADA NO BOTÃO
     window.validateCheckout = () => {
       const btn = document.getElementById('btn-checkout');
       if (!btn) return;
@@ -1736,13 +1864,14 @@
         window.toast("Ingrediente adicionado!");
     };
 
-    window.removeAccompaniment = async (type, idx) => {
-        if(!confirm("Remover este ingrediente?")) return;
-        const list = [...state.config.accompaniments[type]];
-        list.splice(idx, 1);
-        const newAccompaniments = { ...state.config.accompaniments, [type]: list };
-        await window.saveConfigSafe({ accompaniments: newAccompaniments }, true);
-        window.toast("Ingrediente removido!");
+    window.removeAccompaniment = (type, idx) => {
+        window.customConfirm("Deseja realmente remover este ingrediente?", async () => {
+            const list = [...state.config.accompaniments[type]];
+            list.splice(idx, 1);
+            const newAccompaniments = { ...state.config.accompaniments, [type]: list };
+            await window.saveConfigSafe({ accompaniments: newAccompaniments }, true);
+            window.toast("Ingrediente removido!");
+        });
     };
 
     window.addProduct = async () => {
@@ -1762,12 +1891,13 @@
       window.toast("Produto Adicionado!");
     };
 
-    window.removeProduct = async (idx) => {
-      if (!confirm("Tem certeza que deseja remover este produto?")) return;
-      const newSizes = [...state.config.sizes];
-      newSizes.splice(idx, 1);
-      await window.saveConfigSafe({ sizes: newSizes }, true);
-      window.toast("Produto Removido!");
+    window.removeProduct = (idx) => {
+      window.customConfirm("Tem certeza que deseja remover este produto?", async () => {
+          const newSizes = [...state.config.sizes];
+          newSizes.splice(idx, 1);
+          await window.saveConfigSafe({ sizes: newSizes }, true);
+          window.toast("Produto Removido!");
+      });
     };
 
     window.toggleStock = async (idx) => {
@@ -1809,11 +1939,13 @@
       window.toast("Local adicionado!");
     };
 
-    window.removeZone = async (idx) => {
-      const newZones = [...state.config.zones];
-      newZones.splice(idx, 1);
-      await window.saveConfigSafe({ zones: newZones }, true);
-      window.toast("Local removido!");
+    window.removeZone = (idx) => {
+      window.customConfirm("Deseja realmente remover este local?", async () => {
+          const newZones = [...state.config.zones];
+          newZones.splice(idx, 1);
+          await window.saveConfigSafe({ zones: newZones }, true);
+          window.toast("Local removido!");
+      });
     };
 
     window.saveSettings = async () => {
