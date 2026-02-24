@@ -1187,15 +1187,47 @@
       const grid = document.getElementById('products-grid');
       if (!grid) return;
       grid.innerHTML = "";
-      let found = false;
+      
       const searchInput = document.getElementById('search-input');
       const term = searchInput ? searchInput.value.toLowerCase() : "";
 
-      state.config.sizes.forEach((item, idx) => {
-        if (item.available === false) return;
-        const matches = item.name.toLowerCase().includes(term) || item.description.toLowerCase().includes(term);
-        if ((state.filter === 'Todos' || item.category === state.filter) && matches) {
-          found = true;
+      // 1. Filtrar os itens disponíveis e aplicar a pesquisa
+      let itemsToRender = state.config.sizes
+        .filter(item => item.available !== false)
+        .filter(item => {
+          const matches = item.name.toLowerCase().includes(term) || item.description.toLowerCase().includes(term);
+          return (state.filter === 'Todos' || item.category === state.filter) && matches;
+        });
+
+      // 2. Ordenação Inteligente (Categoria -> ML -> Alfabética)
+      itemsToRender.sort((a, b) => {
+        // Ordena por categoria primeiro se estiver na visão geral
+        if (state.filter === 'Todos') {
+          const catOrder = { "Tradicional": 1, "Gourmet": 2, "Copos": 3 };
+          const catA = catOrder[a.category] || 4;
+          const catB = catOrder[b.category] || 4;
+          if (catA !== catB) return catA - catB;
+        }
+
+        // Extrai o tamanho em ML para colocar 300 antes de 500
+        const matchA = a.name.match(/(\d+)\s*ml/i);
+        const matchB = b.name.match(/(\d+)\s*ml/i);
+        const mlA = matchA ? parseInt(matchA[1]) : 9999;
+        const mlB = matchB ? parseInt(matchB[1]) : 9999;
+
+        if (mlA !== mlB) return mlA - mlB;
+
+        // Desempate por ordem alfabética
+        return a.name.localeCompare(b.name);
+      });
+
+      if (itemsToRender.length === 0) {
+          grid.innerHTML = `<div class="text-center py-10 text-slate-400 text-sm">Nada encontrado.</div>`;
+          window.refreshIcons();
+          return;
+      }
+
+      itemsToRender.forEach((item, idx) => {
           const isSel = state.selectedItems.has(item.name);
           const div = document.createElement('div');
           div.style.animationDelay = `${idx * 0.05}s`;
@@ -1245,10 +1277,7 @@
               </div>
             </div>`;
           grid.appendChild(div);
-        }
       });
-
-      if (!found) grid.innerHTML = `<div class="text-center py-10 text-slate-400 text-sm">Nada encontrado.</div>`;
       window.refreshIcons();
     };
 
@@ -1897,11 +1926,22 @@
           </div>`;
       };
 
+      // Ordenar o painel Admin também pela mesma lógica
+      const sortAdminStock = (a, b) => {
+        const matchA = a.name.match(/(\d+)\s*ml/i);
+        const matchB = b.name.match(/(\d+)\s*ml/i);
+        const mlA = matchA ? parseInt(matchA[1]) : 9999;
+        const mlB = matchB ? parseInt(matchB[1]) : 9999;
+        if (mlA !== mlB) return mlA - mlB;
+        return a.name.localeCompare(b.name);
+      };
+
       const itemsWithIndex = state.config.sizes.map((item, index) => ({ ...item, originalIndex: index }));
-      const tradicionais = itemsWithIndex.filter(i => i.category === 'Tradicional');
-      const gourmets = itemsWithIndex.filter(i => i.category === 'Gourmet');
-      const copos = itemsWithIndex.filter(i => i.category === 'Copos');
-      const outros = itemsWithIndex.filter(i => i.category !== 'Tradicional' && i.category !== 'Gourmet' && i.category !== 'Copos');
+      
+      const tradicionais = itemsWithIndex.filter(i => i.category === 'Tradicional').sort(sortAdminStock);
+      const gourmets = itemsWithIndex.filter(i => i.category === 'Gourmet').sort(sortAdminStock);
+      const copos = itemsWithIndex.filter(i => i.category === 'Copos').sort(sortAdminStock);
+      const outros = itemsWithIndex.filter(i => i.category !== 'Tradicional' && i.category !== 'Gourmet' && i.category !== 'Copos').sort(sortAdminStock);
 
       if (tradicionais.length > 0) {
         list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2"><h4 class="text-xs font-black text-brand-600 uppercase tracking-widest flex items-center gap-2"><i data-lucide="ice-cream-2" class="w-3 h-3"></i> Tradicional</h4></div>`;
