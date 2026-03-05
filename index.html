@@ -342,15 +342,18 @@
           <button onclick="window.filterCategory('Todos')"
             class="cat-btn active px-6 py-2.5 rounded-full text-xs font-black bg-brand-900 text-white shadow-lg whitespace-nowrap active:scale-95 transition-all"
             data-cat="Todos">Todos</button>
-          <button onclick="window.filterCategory('Tradicional')"
+          <button onclick="window.filterCategory('Garrafas Tradicionais')"
             class="cat-btn px-6 py-2.5 rounded-full text-xs font-black bg-white text-slate-500 border border-slate-200 whitespace-nowrap active:scale-95 transition-all"
-            data-cat="Tradicional">Tradicional</button>
-          <button onclick="window.filterCategory('Gourmet')"
+            data-cat="Garrafas Tradicionais">Garrafas Tradicionais</button>
+          <button onclick="window.filterCategory('Garrafas Gourmet')"
             class="cat-btn px-6 py-2.5 rounded-full text-xs font-black bg-white text-slate-500 border border-slate-200 whitespace-nowrap active:scale-95 transition-all"
-            data-cat="Gourmet">Gourmet</button>
+            data-cat="Garrafas Gourmet">Garrafas Gourmet</button>
           <button onclick="window.filterCategory('Copos')"
             class="cat-btn px-6 py-2.5 rounded-full text-xs font-black bg-white text-slate-500 border border-slate-200 whitespace-nowrap active:scale-95 transition-all"
             data-cat="Copos">Copos</button>
+          <button onclick="window.filterCategory('Tigelas 1KG')"
+            class="cat-btn px-6 py-2.5 rounded-full text-xs font-black bg-white text-slate-500 border border-slate-200 whitespace-nowrap active:scale-95 transition-all"
+            data-cat="Tigelas 1KG">1KG</button>
         </div>
       </div>
     </header>
@@ -569,6 +572,90 @@
     </div>
   </div>
 
+  <!-- MODAL EDITAR PRODUTO -->
+  <div id="edit-product-modal"
+    class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center p-6 transition-all">
+    <div
+      class="bg-white w-full max-w-sm p-6 rounded-[2rem] shadow-2xl animate-slide-up relative mt-20 sm:mt-0 max-h-[90vh] overflow-y-auto no-scrollbar">
+      <button onclick="window.closeEditModal()" class="absolute top-5 right-5 text-slate-300 hover:text-slate-600"><i
+          data-lucide="x" class="w-6 h-6"></i></button>
+
+      <div class="mb-6 flex items-center gap-3">
+        <div class="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center text-brand-600">
+          <i data-lucide="edit-3" class="w-5 h-5"></i>
+        </div>
+        <h3 class="font-display font-bold text-xl text-slate-900">Editar Produto</h3>
+      </div>
+
+      <div class="space-y-3">
+        <input type="hidden" id="edit-prod-index">
+        <input id="edit-prod-name" placeholder="Nome do Produto"
+          class="w-full p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none border border-transparent focus:border-brand-200 transition-all">
+        <input id="edit-prod-desc" placeholder="Descrição (ingredientes...)"
+          class="w-full p-3 bg-slate-50 rounded-xl text-xs font-medium outline-none border border-transparent focus:border-brand-200 transition-all">
+        <div class="flex gap-2">
+          <input id="edit-prod-price" type="number" step="0.01" placeholder="Preço (R$)"
+            class="flex-1 p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none border border-transparent focus:border-brand-200 transition-all">
+          <select id="edit-prod-cat"
+            class="flex-1 p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none border border-transparent focus:border-brand-200 transition-all"
+            onchange="window.toggleEditCopoOpts()">
+            <option value="Garrafas Tradicionais">Garrafas Tradicionais</option>
+            <option value="Garrafas Gourmet">Garrafas Gourmet</option>
+            <option value="Copos">Copos</option>
+            <option value="Tigelas 1KG">Tigelas 1KG</option>
+          </select>
+        </div>
+
+        <!-- Opções extras p/ Copos/Tigelas -->
+        <div id="edit-prod-copo-opts" class="hidden mt-2 p-3 bg-blue-50/50 border border-blue-100 rounded-xl space-y-3">
+          <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
+            <input type="checkbox" id="edit-prod-has-complements"
+              class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500" onchange="
+                document.getElementById('edit-prod-max-comp-container').classList.toggle('opacity-50', !this.checked); 
+                document.getElementById('edit-prod-max-comp').disabled = !this.checked;
+                document.getElementById('edit-prod-condensed-milk-container').classList.toggle('opacity-50', !this.checked);
+                document.getElementById('edit-prod-has-condensed-milk').disabled = !this.checked;
+                document.getElementById('edit-prod-milk-mode-container').classList.toggle('opacity-50', !this.checked);
+                document.getElementById('edit-prod-milk-mode').disabled = !this.checked;
+              ">
+            Permitir Complementos
+          </label>
+          <div id="edit-prod-max-comp-container" class="flex items-center justify-between transition-opacity">
+            <span class="text-xs font-medium text-slate-600">Límite Cmp. (0 = Ilim.)</span>
+            <div class="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden shrink-0">
+              <button type="button" onclick="document.getElementById('edit-prod-max-comp').stepDown()"
+                class="px-2 py-1 text-slate-500 hover:bg-slate-50 font-bold" style="width:25px;">-</button>
+              <input type="number" id="edit-prod-max-comp" value="0" min="0"
+                class="w-10 text-center text-xs font-bold py-1 outline-none border-x border-slate-200">
+              <button type="button" onclick="document.getElementById('edit-prod-max-comp').stepUp()"
+                class="px-2 py-1 text-slate-500 hover:bg-slate-50 font-bold" style="width:25px;">+</button>
+            </div>
+          </div>
+
+          <label id="edit-prod-condensed-milk-container"
+            class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer transition-opacity">
+            <input type="checkbox" id="edit-prod-has-condensed-milk"
+              class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+            Tem Leite Condensado?
+          </label>
+
+          <div id="edit-prod-milk-mode-container" class="transition-opacity pt-1">
+            <select id="edit-prod-milk-mode"
+              class="w-full text-xs p-2 bg-white rounded-lg border border-blue-200 outline-none">
+              <option value="included">Sempre Incluso (Grátis)</option>
+              <option value="optional">Opcional Pago (Config Global)</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="window.saveEditedProduct()"
+          class="w-full py-4 mt-2 bg-brand-600 text-white rounded-2xl font-black text-sm shadow-lg active:scale-95 transition-transform">
+          Salvar Alterações
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- PAINEL ADMIN E LOGIN -->
   <div id="admin-modal"
     class="fixed inset-0 z-[80] bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center p-6 transition-all">
@@ -635,9 +722,10 @@
                 class="flex-1 p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none border border-transparent focus:border-brand-200 transition-all">
               <select id="new-prod-cat"
                 class="flex-1 p-3 bg-slate-50 rounded-xl text-xs font-bold outline-none border border-transparent focus:border-brand-200 transition-all">
-                <option value="Tradicional">Tradicional</option>
-                <option value="Gourmet">Gourmet</option>
+                <option value="Garrafas Tradicionais">Garrafas Tradicionais</option>
+                <option value="Garrafas Gourmet">Garrafas Gourmet</option>
                 <option value="Copos">Copos</option>
+                <option value="Tigelas 1KG">Tigelas 1KG</option>
               </select>
             </div>
 
@@ -890,22 +978,25 @@
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
     const DEFAULT_ITEMS = [
-      { name: "Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Tradicional" },
-      { name: "Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Tradicional" },
-      { name: "Amendoim 300ml", description: "Açaí, amendoim, banana e leite condensado", price: 10.00, category: "Tradicional" },
-      { name: "Cupuaçu 300ml", description: "Açaí, cupuaçu, leite condensado", price: 10.00, category: "Tradicional" },
-      { name: "Paçoca 500ml", description: "Açai, paçoca, banana e leite condensado", price: 14.00, category: "Tradicional" },
-      { name: "Ninho 500ml", description: "Açai, leite em pó, banana e leite condensado", price: 14.00, category: "Tradicional" },
-      { name: "Amendoim 500ml", description: "Açai, amendoim, banana e leite condensado", price: 14.00, category: "Tradicional" },
-      { name: "Cupuaçu 500ml", description: "Açai, cupuaçu e leite condensado", price: 14.00, category: "Tradicional" },
-      { name: "Morango 300ml", description: "Açaí, morango, creme de morango", price: 13.00, category: "Gourmet" },
-      { name: "Maracujá 300ml", description: "Açaí, creme de maracujá e leite condensado", price: 13.00, category: "Gourmet" },
-      { name: "Ovomaltine 300ml", description: "Açaí, ovomaltine, nutella", price: 13.00, category: "Gourmet" },
-      { name: "Creme de Ninho 300ml", description: "Açaí, leite em pó, creme de ninho", price: 13.00, category: "Gourmet" },
-      { name: "M&M 300ml", description: "Açaí, leite em pó, nutella e M&M", price: 13.00, category: "Gourmet" },
-      { name: "Morango com Nutella 500ml", description: "Açaí, morango, nutella", price: 18.00, category: "Gourmet" },
-      { name: "Ovomaltine 500ml", description: "Açaí, ovomaltine e nutella", price: 18.00, category: "Gourmet" },
-      { name: "Copo 300ml", description: "Monte do seu jeito! Escolha frutas, adicionais e coberturas.", price: 13.00, category: "Copos" }
+      { name: "Garrafa Paçoca 300ml", description: "Açaí, paçoca, banana e leite condensado", price: 10.00, category: "Garrafas Tradicionais" },
+      { name: "Garrafa Ninho 300ml", description: "Açaí, leite em pó, banana e leite condensado", price: 10.00, category: "Garrafas Tradicionais" },
+      { name: "Garrafa Amendoim 300ml", description: "Açaí, amendoim, banana e leite condensado", price: 10.00, category: "Garrafas Tradicionais" },
+      { name: "Garrafa Cupuaçu 300ml", description: "Açaí, cupuaçu, leite condensado", price: 10.00, category: "Garrafas Tradicionais" },
+      { name: "Garrafa Paçoca 500ml", description: "Açai, paçoca, banana e leite condensado", price: 14.00, category: "Garrafas Tradicionais" },
+      { name: "Garrafa Ninho 500ml", description: "Açai, leite em pó, banana e leite condensado", price: 14.00, category: "Garrafas Tradicionais" },
+      { name: "Garrafa Amendoim 500ml", description: "Açai, amendoim, banana e leite condensado", price: 14.00, category: "Garrafas Tradicionais" },
+      { name: "Garrafa Cupuaçu 500ml", description: "Açai, cupuaçu e leite condensado", price: 14.00, category: "Garrafas Tradicionais" },
+      { name: "Garrafa Morango 300ml", description: "Açaí, morango, creme de morango", price: 13.00, category: "Garrafas Gourmet" },
+      { name: "Garrafa Maracujá 300ml", description: "Açaí, creme de maracujá e leite condensado", price: 13.00, category: "Garrafas Gourmet" },
+      { name: "Garrafa Ovomaltine 300ml", description: "Açaí, ovomaltine, nutella", price: 13.00, category: "Garrafas Gourmet" },
+      { name: "Garrafa Creme de Ninho 300ml", description: "Açaí, leite em pó, creme de ninho", price: 13.00, category: "Garrafas Gourmet" },
+      { name: "Garrafa M&M 300ml", description: "Açaí, leite em pó, nutella e M&M", price: 13.00, category: "Garrafas Gourmet" },
+      { name: "Garrafa Morango com Nutella 500ml", description: "Açaí, morango, nutella", price: 18.00, category: "Garrafas Gourmet" },
+      { name: "Garrafa Ovomaltine 500ml", description: "Açaí, ovomaltine e nutella", price: 18.00, category: "Garrafas Gourmet" },
+      { name: "Copo 300ml", description: "Monte do seu jeito! Escolha frutas, adicionais e coberturas.", price: 13.00, category: "Copos", hasComplements: true, hasCondensedMilk: true, condensedMilkMode: "included" },
+      { name: "Copo 500ml", description: "Monte do seu jeito! Escolha frutas, adicionais e coberturas.", price: 18.00, category: "Copos", hasComplements: true, hasCondensedMilk: true, condensedMilkMode: "optional" },
+      { name: "Tigela 1KG (Até 4 Itens)", description: "Monte com até 4 complementos.", price: 35.00, category: "Tigelas 1KG", hasComplements: true, maxComplements: 4, hasCondensedMilk: true, condensedMilkMode: "included" },
+      { name: "Tigela 1KG (Livre)", description: "Monte sua roleta de sabores da forma que desejar.", price: 25.00, category: "Tigelas 1KG", hasComplements: true, maxComplements: 0, hasCondensedMilk: true, condensedMilkMode: "optional" }
     ];
 
     const DEFAULT_ACCOMPANIMENTS = {
@@ -976,6 +1067,38 @@
       if (state.isAdmin) window.syncAdminFields?.();
     };
 
+    window.migrateData = (cfg) => {
+      if (!cfg || !cfg.sizes) return false;
+      let migrated = false;
+      cfg.sizes.forEach(item => {
+        if (item.category === 'Tradicional') { item.category = 'Garrafas Tradicionais'; migrated = true; }
+        if (item.category === 'Gourmet') { item.category = 'Garrafas Gourmet'; migrated = true; }
+        if (item.name && !item.name.toLowerCase().startsWith('garrafa') && (item.category === 'Garrafas Tradicionais' || item.category === 'Garrafas Gourmet')) {
+          item.name = 'Garrafa ' + item.name;
+          migrated = true;
+        }
+        if (item.name === "Copo 300ml" && !item.condensedMilkMode) {
+          item.condensedMilkMode = "included";
+          item.hasCondensedMilk = true;
+          migrated = true;
+        }
+      });
+
+      const hasTigelas = cfg.sizes.some(i => i.category === 'Tigelas 1KG');
+      if (!hasTigelas) {
+        cfg.sizes.push({ name: "Tigela 1KG (Até 4 Itens)", description: "Monte com até 4 complementos.", price: 35.00, category: "Tigelas 1KG", hasComplements: true, maxComplements: 4, hasCondensedMilk: true, condensedMilkMode: "included" });
+        cfg.sizes.push({ name: "Tigela 1KG (Livre)", description: "Monte sua roleta de sabores da forma que desejar.", price: 25.00, category: "Tigelas 1KG", hasComplements: true, maxComplements: 0, hasCondensedMilk: true, condensedMilkMode: "optional" });
+        migrated = true;
+      }
+
+      const hasCopo500 = cfg.sizes.some(i => i.name.includes("Copo 500ml"));
+      if (!hasCopo500) {
+        cfg.sizes.push({ name: "Copo 500ml", description: "Monte do seu jeito! Escolha frutas, adicionais e coberturas.", price: 18.00, category: "Copos", hasComplements: true, hasCondensedMilk: true, condensedMilkMode: "optional" });
+        migrated = true;
+      }
+      return migrated;
+    };
+
     window.loadLocalConfig = () => {
       try {
         const saved = localStorage.getItem("acai_config_v7");
@@ -987,6 +1110,10 @@
           if (!state.config.highlights || state.config.highlights.length === 0) state.config.highlights = DEFAULT_HIGHLIGHTS;
           if (!state.config.sizes) state.config.sizes = DEFAULT_ITEMS;
           if (!state.config.zones) state.config.zones = [];
+
+          if (window.migrateData(state.config)) {
+            localStorage.setItem("acai_config_v7", JSON.stringify(state.config));
+          }
         }
       } catch (e) { }
     };
@@ -1250,8 +1377,9 @@
       const container = document.getElementById('copo-options-container');
       container.innerHTML = "";
 
-      if (item.category === 'Copos' && item.hasCondensedMilk !== false) {
-        const isMilkOff = state.config.condensedMilkOptional === true;
+      const isCopoOuTigela = item.category === 'Copos' || item.category === 'Tigelas 1KG';
+      if (isCopoOuTigela && item.hasCondensedMilk !== false) {
+        const isMilkOff = item.condensedMilkMode === 'optional' || state.config.condensedMilkOptional === true;
 
         if (!isMilkOff) {
           const milkPrice = state.config.condensedMilkPrice || 0;
@@ -1287,7 +1415,19 @@
           html += `<p class="text-xs text-slate-400 italic p-2">Indisponível no momento.</p>`;
         } else {
           availableOptions.forEach(opt => {
-            const price = parseFloat(opt.price) || 0;
+            let price = parseFloat(opt.price) || 0;
+
+            if (item.name === "Tigela 1KG (Livre)") {
+              const n = opt.name.toLowerCase();
+              if (n.includes('kiwi') || n.includes('morango') || n.includes('nutella')) {
+                price = 3.00;
+              } else {
+                price = 2.00;
+              }
+            } else if (maxCmp > 0) {
+              price = 0;
+            }
+
             const priceLabel = price > 0 ? `<span class="text-[9px] text-green-600 bg-green-50 px-1 py-0.5 rounded ml-1">+ R$ ${price.toFixed(2).replace('.', ',')}</span>` : '';
 
             html += `
@@ -1315,8 +1455,16 @@
       container.innerHTML += renderSection("Adicionais", acc.adicionais, "adicional");
 
       let coberturasPrepend = "";
-      if (item.category === 'Copos' && item.hasCondensedMilk !== false && state.config.condensedMilkOptional === true) {
-        const milkPrice = state.config.condensedMilkPrice || 0;
+      const isCopoOuTigelaCobertura = item.category === 'Copos' || item.category === 'Tigelas 1KG';
+      const isMilkOffCobertura = item.condensedMilkMode === 'optional' || state.config.condensedMilkOptional === true;
+      if (isCopoOuTigelaCobertura && item.hasCondensedMilk !== false && isMilkOffCobertura) {
+        let milkPrice = state.config.condensedMilkPrice || 0;
+        if (item.name === "Tigela 1KG (Livre)") {
+          milkPrice = 2.00;
+        } else if (item.maxComplements > 0) {
+          milkPrice = 0;
+        }
+
         const priceLabel = milkPrice > 0 ? `<span class="text-[9px] text-green-600 bg-green-50 px-1 py-0.5 rounded ml-1">+ R$ ${milkPrice.toFixed(2).replace('.', ',')}</span>` : '';
         coberturasPrepend = `
                <label class="cursor-pointer relative group">
@@ -1375,8 +1523,14 @@
       });
 
       // Sum milk condensed price ONLY if included and NOT optional
-      if (state.currentCopo.category === 'Copos' && state.currentCopo.hasCondensedMilk !== false && state.config.condensedMilkOptional !== true) {
-        extrasTotal += state.config.condensedMilkPrice || 0;
+      const isCopoOuTigelaTotal = state.currentCopo.category === 'Copos' || state.currentCopo.category === 'Tigelas 1KG';
+      const isMilkOffTotal = state.currentCopo.condensedMilkMode === 'optional' || state.config.condensedMilkOptional === true;
+      if (isCopoOuTigelaTotal && state.currentCopo.hasCondensedMilk !== false && !isMilkOffTotal) {
+        let defaultMilkTotal = state.config.condensedMilkPrice || 0;
+        if (state.currentCopo.maxComplements > 0 || state.currentCopo.condensedMilkMode === 'included') {
+          defaultMilkTotal = 0;
+        }
+        extrasTotal += defaultMilkTotal;
       }
 
       const basePrice = state.currentCopo.price || 0;
@@ -1404,8 +1558,13 @@
         return price > 0 ? `${cb.value} (+R$ ${price.toFixed(2).replace('.', ',')})` : cb.value;
       });
 
-      if (state.currentCopo.category === 'Copos' && state.currentCopo.hasCondensedMilk !== false && state.config.condensedMilkOptional !== true) {
-        const mPrice = state.config.condensedMilkPrice || 0;
+      const isCopoOuTigelaCart = state.currentCopo.category === 'Copos' || state.currentCopo.category === 'Tigelas 1KG';
+      const isMilkOffCart = state.currentCopo.condensedMilkMode === 'optional' || state.config.condensedMilkOptional === true;
+      if (isCopoOuTigelaCart && state.currentCopo.hasCondensedMilk !== false && !isMilkOffCart) {
+        let mPrice = state.config.condensedMilkPrice || 0;
+        if (state.currentCopo.maxComplements > 0 || state.currentCopo.condensedMilkMode === 'included') {
+          mPrice = 0;
+        }
         const mText = mPrice > 0 ? `Leite Condensado (+R$ ${mPrice.toFixed(2).replace('.', ',')})` : "Leite Condensado (Incluso)";
         selectedOptions.unshift(mText);
       }
@@ -1493,9 +1652,9 @@
 
       itemsToRender.sort((a, b) => {
         if (state.filter === 'Todos') {
-          const catOrder = { "Tradicional": 1, "Gourmet": 2, "Copos": 3 };
-          const catA = catOrder[a.category] || 4;
-          const catB = catOrder[b.category] || 4;
+          const catOrder = { "Garrafas Tradicionais": 1, "Garrafas Gourmet": 2, "Copos": 3, "Tigelas 1KG": 4 };
+          const catA = catOrder[a.category] || 5;
+          const catB = catOrder[b.category] || 5;
           if (catA !== catB) return catA - catB;
         }
 
@@ -1528,8 +1687,8 @@
           }
         };
 
-        const isGourmet = item.category === 'Gourmet';
-        const isCopo = item.category === 'Copos';
+        const isGourmet = item.category === 'Garrafas Gourmet';
+        const isCopo = item.category === 'Copos' || item.category === 'Tigelas 1KG';
         let icon = 'snowflake';
         let colorClass = 'text-brand-600 bg-brand-50';
 
@@ -1765,7 +1924,6 @@
         const name = document.getElementById('client-name').value;
         const phone = document.getElementById('client-phone').value;
         const method = document.getElementById('payment-method').value;
-        const totalFinal = document.getElementById('cart-total').innerText;
 
         let zoneName = "";
         let address = "";
@@ -1791,6 +1949,9 @@
         let subtotalVal = 0;
         state.cart.forEach(i => subtotalVal += i.price * i.qty);
         const subtotalStr = subtotalVal.toFixed(2).replace('.', ',');
+
+        const totalFinalCalculated = subtotalVal + shipValue;
+        const totalFinal = `R$ ${totalFinalCalculated.toFixed(2).replace('.', ',')}`;
 
         const itemsStr = state.cart.map(i => `${i.qty}x ${i.name}`).join(", ");
         const orderObj = {
@@ -1992,6 +2153,9 @@
               <button onclick="window.toggleStock(${item.originalIndex})" class="px-3 py-1.5 rounded-lg border font-bold text-[10px] ${isOff ? 'bg-green-50 text-green-600 border-green-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}">
                 ${isOff ? 'ATIVAR' : 'PAUSAR'}
               </button>
+              <button onclick="window.openEditModal(${item.originalIndex})" class="p-1.5 text-blue-400 hover:text-blue-600 bg-blue-50 rounded-lg">
+                <i data-lucide="edit-2" class="w-4 h-4"></i>
+              </button>
               <button onclick="window.removeProduct(${item.originalIndex})" class="p-1.5 text-red-400 hover:text-red-600 bg-red-50 rounded-lg">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
@@ -2010,22 +2174,27 @@
 
       const itemsWithIndex = (state.config.sizes || []).map((item, index) => ({ ...item, originalIndex: index }));
 
-      const tradicionais = itemsWithIndex.filter(i => i.category === 'Tradicional').sort(sortAdminStock);
-      const gourmets = itemsWithIndex.filter(i => i.category === 'Gourmet').sort(sortAdminStock);
+      const tradicionais = itemsWithIndex.filter(i => i.category === 'Garrafas Tradicionais').sort(sortAdminStock);
+      const gourmets = itemsWithIndex.filter(i => i.category === 'Garrafas Gourmet').sort(sortAdminStock);
       const copos = itemsWithIndex.filter(i => i.category === 'Copos').sort(sortAdminStock);
-      const outros = itemsWithIndex.filter(i => i.category !== 'Tradicional' && i.category !== 'Gourmet' && i.category !== 'Copos').sort(sortAdminStock);
+      const tigelas = itemsWithIndex.filter(i => i.category === 'Tigelas 1KG').sort(sortAdminStock);
+      const outros = itemsWithIndex.filter(i => i.category !== 'Garrafas Tradicionais' && i.category !== 'Garrafas Gourmet' && i.category !== 'Copos' && i.category !== 'Tigelas 1KG').sort(sortAdminStock);
 
       if (tradicionais.length > 0) {
-        list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2"><h4 class="text-xs font-black text-brand-600 uppercase tracking-widest flex items-center gap-2"><i data-lucide="ice-cream-2" class="w-3 h-3"></i> Tradicional</h4></div>`;
+        list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2"><h4 class="text-xs font-black text-brand-600 uppercase tracking-widest flex items-center gap-2"><i data-lucide="ice-cream-2" class="w-3 h-3"></i> Garrafas Tradicionais</h4></div>`;
         tradicionais.forEach(item => list.innerHTML += renderItemHTML(item));
       }
       if (gourmets.length > 0) {
-        list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-pink-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="sparkles" class="w-3 h-3"></i> Gourmet</h4></div>`;
+        list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-pink-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="sparkles" class="w-3 h-3"></i> Garrafas Gourmet</h4></div>`;
         gourmets.forEach(item => list.innerHTML += renderItemHTML(item));
       }
       if (copos.length > 0) {
         list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-blue-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="cup-soda" class="w-3 h-3"></i> Copos</h4></div>`;
         copos.forEach(item => list.innerHTML += renderItemHTML(item));
+      }
+      if (tigelas.length > 0) {
+        list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-orange-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="package" class="w-3 h-3"></i> Tigelas 1KG</h4></div>`;
+        tigelas.forEach(item => list.innerHTML += renderItemHTML(item));
       }
       if (outros.length > 0) {
         list.innerHTML += `<div class="sticky top-0 bg-white py-3 z-10 border-b border-slate-100 mb-2 mt-2"><h4 class="text-xs font-black text-slate-500 uppercase tracking-widest">Outros</h4></div>`;
@@ -2226,6 +2395,99 @@
         await window.saveConfigSafe({ sizes: newSizes }, true);
         window.toast("Produto Removido!");
       });
+    };
+
+    window.openEditModal = (idx) => {
+      const item = state.config.sizes[idx];
+      if (!item) return;
+
+      document.getElementById('edit-prod-index').value = idx;
+      document.getElementById('edit-prod-name').value = item.name || '';
+      document.getElementById('edit-prod-desc').value = item.description || '';
+      document.getElementById('edit-prod-price').value = item.price || 0;
+
+      const catSelect = document.getElementById('edit-prod-cat');
+      if (Array.from(catSelect.options).some(o => o.value === item.category)) {
+        catSelect.value = item.category;
+      }
+
+      window.toggleEditCopoOpts();
+
+      if (item.category === 'Copos' || item.category === 'Tigelas 1KG') {
+        const hasComp = item.hasComplements !== false;
+        document.getElementById('edit-prod-has-complements').checked = hasComp;
+        document.getElementById('edit-prod-max-comp').value = item.maxComplements || 0;
+        document.getElementById('edit-prod-has-condensed-milk').checked = item.hasCondensedMilk !== false;
+        document.getElementById('edit-prod-milk-mode').value = item.condensedMilkMode || 'optional';
+
+        document.getElementById('edit-prod-max-comp-container').classList.toggle('opacity-50', !hasComp);
+        document.getElementById('edit-prod-max-comp').disabled = !hasComp;
+        document.getElementById('edit-prod-condensed-milk-container').classList.toggle('opacity-50', !hasComp);
+        document.getElementById('edit-prod-has-condensed-milk').disabled = !hasComp;
+        document.getElementById('edit-prod-milk-mode-container').classList.toggle('opacity-50', !hasComp);
+        document.getElementById('edit-prod-milk-mode').disabled = !hasComp;
+      }
+
+      document.getElementById('edit-product-modal').classList.remove('hidden');
+    };
+
+    window.closeEditModal = () => {
+      document.getElementById('edit-product-modal').classList.add('hidden');
+    };
+
+    window.toggleEditCopoOpts = () => {
+      const cat = document.getElementById('edit-prod-cat').value;
+      const sec = document.getElementById('edit-prod-copo-opts');
+      if (cat === 'Copos' || cat === 'Tigelas 1KG') sec.classList.remove('hidden');
+      else sec.classList.add('hidden');
+    };
+
+    window.saveEditedProduct = async () => {
+      const idxStr = document.getElementById('edit-prod-index').value;
+      if (idxStr === '') return;
+      const idx = parseInt(idxStr);
+
+      const name = document.getElementById('edit-prod-name').value.trim();
+      const desc = document.getElementById('edit-prod-desc').value.trim();
+      const price = parseFloat(document.getElementById('edit-prod-price').value);
+      const cat = document.getElementById('edit-prod-cat').value;
+
+      if (!name || isNaN(price)) return window.toast("Dados incompletos!", "error");
+
+      const newSizes = [...(state.config.sizes || [])];
+      if (!newSizes[idx]) return;
+
+      const updatedItem = {
+        ...newSizes[idx],
+        name,
+        description: desc,
+        price,
+        category: cat
+      };
+
+      if (cat === 'Copos' || cat === 'Tigelas 1KG') {
+        const hasComp = document.getElementById('edit-prod-has-complements').checked;
+        updatedItem.hasComplements = hasComp;
+        if (hasComp) {
+          updatedItem.maxComplements = parseInt(document.getElementById('edit-prod-max-comp').value) || 0;
+          updatedItem.hasCondensedMilk = document.getElementById('edit-prod-has-condensed-milk').checked;
+          updatedItem.condensedMilkMode = document.getElementById('edit-prod-milk-mode').value;
+        } else {
+          updatedItem.maxComplements = 0;
+          updatedItem.hasCondensedMilk = false;
+        }
+      } else {
+        delete updatedItem.hasComplements;
+        delete updatedItem.maxComplements;
+        delete updatedItem.hasCondensedMilk;
+        delete updatedItem.condensedMilkMode;
+      }
+
+      newSizes[idx] = updatedItem;
+      await window.saveConfigSafe({ sizes: newSizes }, true);
+
+      window.closeEditModal();
+      window.toast("Produto Salvo!");
     };
 
     window.toggleStock = async (idx) => {
@@ -2573,6 +2835,12 @@
               unsubConfig = onSnapshot(getDocRef('loja', 'configuracao'), (snap) => {
                 if (snap.exists()) {
                   state.config = { ...state.config, ...snap.data() };
+
+                  // Rodar migração nos dados da nuvem para evitar limpar as abas novas
+                  if (window.migrateData(state.config)) {
+                    try { setDoc(getDocRef('loja', 'configuracao'), state.config, { merge: true }); } catch (e) { }
+                  }
+
                   localStorage.setItem("acai_config_v7", JSON.stringify(state.config));
                   window.renderMenu();
                   window.renderPosts();
